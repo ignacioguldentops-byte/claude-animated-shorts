@@ -46,8 +46,8 @@ mus *= lp(gain, 3)
 sfx = np.zeros(N)
 crowd = bp(rng.standard_normal(N), 300, 2500) * 0.08 + bp(rng.standard_normal(N), 120, 600) * 0.05
 cg = np.zeros(N)
-for a, b in [(0, 194), (368, 1296), (1618, 1830)]: cg[(tt >= a/30) & (tt < b/30)] = 1
-for f0, f1, g in [(1262, 1330, 2.6), (816, 850, 1.6), (1618, 1690, 2.4)]: cg[(tt >= f0/30) & (tt < f1/30)] *= g
+for a, b in [(0, 194), (368, 1296), (1618, 1686)]: cg[(tt >= a/30) & (tt < b/30)] = 1
+for f0, f1, g in [(1262, 1300, 2.6), (816, 850, 1.6), (1618, 1690, 2.4), (150, 194, 2.0), (510, 592, 2.2)]: cg[(tt >= f0/30) & (tt < f1/30)] *= g
 sfx += crowd * lp(cg, 2) * (0.8 + 0.2 * np.sin(tt * 0.7))
 def whistle(d=0.5):
     n = int(d * SR); t = np.arange(n) / SR; f = 2900 + 80 * np.sin(2 * np.pi * 28 * t)
@@ -64,11 +64,11 @@ def boing(): n = int(0.25 * SR); t = np.arange(n) / SR; return np.sin(2 * np.pi 
 def zoom(): n = int(0.45 * SR); t = np.arange(n) / SR; return bp(rng.standard_normal(n), 800, 4000) * (t / 0.45) ** 2 * 0.6
 F = lambda f: f / 30
 at(sfx, whistle(0.7), F(370))                 # kick-off
-for f in (210, 240, 270, 300): at(sfx, kick(), F(f), 0.5)   # kid kicking the ball
-at(sfx, kick(), F(655), 0.9)                   # the loop
+for f in range(200, 310, 13): at(sfx, kick(), F(f), 0.4)   # kid kicking the ball
+at(sfx, kick(), F(645), 0.9)                   # the loop
 at(sfx, thud(70, 0.4), F(810), 1.2); at(sfx, swish(), F(818), 0.8)   # punch + net
 at(sfx, boing(), F(918), 0.6)                  # "?" pop
-for f in (1000, 1020, 1100, 1113, 1126, 1139): at(sfx, kick(), F(f), 0.5)
+for f in (1037, 1072, 1100, 1113, 1126, 1139, 1150): at(sfx, kick(), F(f), 0.5)
 for f in (1168, 1186, 1193, 1203, 1226): at(sfx, thud(110, 0.25), F(f), 0.9); at(sfx, kick(), F(f - 4), 0.5)
 at(sfx, zoom(), F(1140), 0.7)
 at(sfx, kick(), F(1252), 1.0); at(sfx, swish(0.5), F(1262), 1.0)
@@ -76,7 +76,14 @@ at(sfx, boing(), F(1390), 0.5)
 for f in range(1471, 1540, 9): at(sfx, clink(), F(f + (f % 4)), 0.5)
 at(sfx, zoom(), F(1572), 0.6); at(sfx, clink(), F(1592), 0.4)
 for k in range(3): at(sfx, whistle(0.35 if k < 2 else 0.9), F(1622) + k * 0.45, 0.8)   # final whistle
-at(sfx, kick(), F(1806), 0.6); at(sfx, kick(), F(1818), 0.6)
+at(sfx, kick(), F(1800), 0.5); at(sfx, kick(), F(1813), 0.8)
+def whoosh(d=0.32):
+    n = int(d * SR); t = np.arange(n) / SR; return bp(rng.standard_normal(n), 400, 2600) * np.sin(np.pi * t / d) ** 2 * 0.5
+for f in (66, 106, 152, 512, 652, 726, 752, 806, 828, 901, 1080, 1088, 1268, 1470, 1547, 1648, 1766, 1808): at(sfx, whoosh(), F(f), 0.55)   # camera whips, the pirouette
+for f in (64, 866, 1037, 1768, 1813): at(sfx, clink(), F(f), 0.45)   # sparkles
+for f in (104, 118, 132, 146): at(sfx, kick(), F(f), 0.4)   # keepie-uppies
+at(sfx, thud(80, 0.3), F(1090), 0.7)   # the two who crash
+at(sfx, thud(100, 0.2), F(1262), 0.8)
 # ---------- mix: duck music under the voice, music +3 dB, sfx -6 dB (skill standard) ----------
 venv = lp(np.abs(voice), 8); duck = 1 - 0.55 * np.clip(venv / (np.percentile(venv, 90) + 1e-9), 0, 1)
 m = mus / (np.max(np.abs(mus)) + 1e-9) * 0.18 * 10 ** (3 / 20) * duck

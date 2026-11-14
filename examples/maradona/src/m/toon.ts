@@ -342,6 +342,16 @@ const faceSide = (p: Pen, hx: number, hy: number, W: number, expr: Expr, lid: nu
 const BONNET = "#e9cf8f", BONNET_BRIM = "#d6b46a";
 /** parts of a hat that sit behind the head (bonnet) */
 const hatBehind = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, light: number, thick: number, ow: number, side: boolean) => {
+  if (o.curly && o.hair) { // big curly mane: a ring of ink-rimmed bumps round the crown and down past the ears
+    const u = H.a / 50, mx = cx - (side ? 22 * u : 0), my = hc - 0.16 * H.b, ra = 1.1 * H.a, rb = 1.08 * H.b;
+    const bumps: [number, number, number][] = [];
+    for (let i = 0; i <= 13; i++) { const an = rad((side ? 128 : 152) + i * ((side ? 214 : 236) / 13)); bumps.push([mx + ra * Math.cos(an), my + rb * Math.sin(an), (21 + 5 * rnd(H.seed + i, 31)) * u]); }
+    for (const [x, y, r] of bumps) p.ell(x, y, r + ow * 0.8, r + ow * 0.8, INK, 0);
+    for (const [x, y, r] of bumps) p.ell(x, y, r, r, o.hair, 0);
+    p.ell(mx, my, ra, rb, o.hair, 0);
+    for (let i = 0; i < 5; i++) { const an = rad(215 + i * 28); p.arc(mx + 0.72 * ra * Math.cos(an), my + 0.72 * rb * Math.sin(an), 13 * u, 11 * u, 200 + i * 20, 330 + i * 20, 2.2 * u, shade(o.hair, 1.9)); }
+    return;
+  }
   if (o.hat !== "bonnet") return;
   const bb = blobPts(cx - (side ? 12 : 0) * (H.a / 50), hc - 0.07 * 2 * H.b, { ...H, a: H.a * 1.17, b: H.b * 1.13, asym: 0, egg: 0.04, seed: H.seed + 3 });
   p.shadedFill(bb, BONNET, mul(BONNET, SH_CLOTH), light, H.a * 1.17);
@@ -378,7 +388,7 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
       p.ell(tx, ty, 7 * u, 7 * u, "#2b7a4b", 2.5 * u); // green tuft
     }
   } else if (o.hat === "cap" || o.hat === "hair") {
-    const cut = crown + (o.hat === "cap" ? 0.3 : 0.42) * HH;
+    const cut = crown + (o.hat === "cap" ? 0.3 : o.curly ? 0.25 : 0.31) * HH;
     const keep = (x: number, y: number) => y < cut || (side && o.hat === "hair" && x < cx - 6 * u && y < hc + 0.42 * H.b);
     // start the arc at the first kept point after a dropped one, so the kept run is contiguous and the cut closes it
     const n = hp.length, startIdx = Math.max(0, hp.findIndex(([x, y], i) => keep(x, y) && !keep(hp[(i + n - 1) % n][0], hp[(i + n - 1) % n][1])));
@@ -387,16 +397,22 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
     if (arc.length < 3) return;
     if (o.hat === "hair") { // scalloped lower edge
       const [x0, y0] = arc[arc.length - 1], [x1, y1] = arc[0];
-      for (let i = 1; i < 6; i++) arc.push([x0 + ((x1 - x0) * i) / 6, y0 + ((y1 - y0) * i) / 6 + (i % 2 ? 4 * u : 0)]);
+      if (side && o.curly) arc.push([x0 - 12 * u, y0 + 5 * u], [cx + 6 * u, y0 + 2 * u], [cx - 14 * u, y0 + 7 * u], [cx - 30 * u, y0 + 4 * u], [cx - 40 * u, (y0 + y1) / 2 + 6 * u]);
+      else for (let i = 1; i < 6; i++) arc.push([x0 + ((x1 - x0) * i) / 6, y0 + ((y1 - y0) * i) / 6 + (i % 2 ? 4 * u : 0)]);
     }
     const col = o.hat === "cap" ? o.cap! : o.hair!;
+    if (o.curly) { // fringe only: flat fill, ink only on the scalloped hairline (the mane behind carries the silhouette)
+      p.poly(arc, col, 0);
+      p.stroke([...arc.slice(-6), arc[0]], ow * 0.7);
+    } else {
     p.shadedFill(arc, col, mul(col, SH_FELT), light, H.a, 0.35);
     p.poly(arc, null, ow);
-    if (o.curly) { // curls: overlapping ink-rimmed bumps round the crown
+    }
+    if (o.curly && false) { // curls: overlapping ink-rimmed bumps round the crown
       for (let i = 0; i < 9; i++) { const an = rad(188 + i * 20.5); p.ell(cx + 0.97 * H.a * Math.cos(an), hc + 0.95 * H.b * Math.sin(an), 19 * u, 19 * u, col, ow * 0.75); }
       for (let i = 0; i < 8; i++) { const an = rad(198 + i * 20.5); p.ell(cx + 0.74 * H.a * Math.cos(an), hc + 0.78 * H.b * Math.sin(an), 20 * u, 18 * u, col, 0); }
     }
-    if (o.hat === "hair") {
+    if (o.hat === "hair" && !o.curly) {
       const s = side ? -1 : facing || 1;
       p.stroke([[cx + s * 10 * u, cut - 30 * u], [cx + s * 2 * u, cut - 12 * u]], 1.2 * u);
     }
@@ -438,7 +454,7 @@ const BUILD: Record<Build, { a: number; torso: number; legs: number; tw: number 
 
 export type FrontOpts = {
   phase?: number; expr?: Expr; mode?: "march" | "stroll" | "stand" | "sit" | "fall"; look?: number; blink?: boolean | number; lift?: number;
-  prop?: Prop; tilt?: number; headTilt?: number; wave?: number;
+  prop?: Prop; tilt?: number; headTilt?: number; wave?: number; waveL?: number;
   /** canvas angle the key light comes FROM (painted crescent + thick outline side) */
   light?: number; facing?: -1 | 0 | 1; seed?: number;
 };
@@ -457,7 +473,7 @@ const kitLeg = (p: Pen, pts: P2[], w: number, o: Outfit, col: string, far = fals
   p.stroke(low, w * 1.9 - 5, shade(o.socks, k));
 };
 export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
-  const { phase = 0, expr = "neutral", mode = "march", look = 0, blink = false, lift = 60, prop = null, tilt = 0, headTilt = 0, wave,
+  const { phase = 0, expr = "neutral", mode = "march", look = 0, blink = false, lift = 60, prop = null, tilt = 0, headTilt = 0, wave, waveL,
     light = DEF_LIGHT, facing = 0, seed = 1 } = opts;
   const Bd = BUILD[o.build ?? "adult"], skin = o.skin ?? SKIN, two = Math.PI * 2, lid = lidOf(blink);
   const H = headBlob(seed, Bd.a, facing), W = 2 * H.a, HH = 2 * H.b, u = W / 100;
@@ -527,13 +543,17 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   if (mode === "sit") for (const side of [-1, 1]) arms.push({ pts: [sh(side), [tcx + side * (1.1 * T.a + 6 * u), sh(side)[1] + 0.4 * HH], [tcx + side * (1.2 * T.a + 10 * u), torsoBot + 0.04 * HH]], front: false });
   else if (mode === "fall") for (const side of [-1, 1]) arms.push({ pts: [sh(side), [tcx + side * (1.15 * T.a + 12 * u), sh(side)[1] - 0.25 * HH], [tcx + side * (1.3 * T.a + 24 * u), sh(side)[1] - 0.68 * HH]], front: false });
   else {
-    arms.push({ pts: prop === "shako" ? hang(-1, 0) : hang(-1, -sw), front: false });
+    const raised = (side: number, w: number): [P2, P2, P2] => { // w: 0 = hanging .. 1 = hand high and wide of the head
+      const h = hang(side, 0), S = sh(side), k = clamp(w, 0, 1);
+      return [S, lerp2(h[1], [tcx + side * (1.1 * T.a + 26 * u), S[1] - 0.3 * HH], k), lerp2(h[2], [tcx + side * (1.15 * T.a + 62 * u), S[1] - 0.95 * HH], k)];
+    };
+    if (waveL !== undefined) arms.push({ pts: raised(-1, waveL), front: false });
+    else arms.push({ pts: prop === "shako" ? hang(-1, 0) : hang(-1, -sw), front: false });
     if (rifle) {
       const G = lerp2(R0, R1, 0.1);
       arms.push({ pts: [sh(1), [tcx + 1.12 * T.a + 5 * u, sh(1)[1] + 0.45 * HH], G], front: false });
     } else if (wave !== undefined) {
-      const S = sh(1);
-      arms.push({ pts: [S, [tcx + 1.1 * T.a + 10 * u + 3 * u * wave, S[1] - 0.22 * HH], [tcx + 1.18 * T.a + 16 * u + 12 * u * wave, S[1] - 0.6 * HH]], front: false });
+      arms.push({ pts: raised(1, wave), front: false });
     } else if (prop === "icecream") {
       const S = sh(1);
       arms.push({ pts: [S, [tcx + 1.05 * T.a + 4 * u, S[1] + 0.45 * HH], [tcx + 0.5 * T.a, S[1] + 0.4 * HH]], front: true });
@@ -621,7 +641,7 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
 };
 
 export type SideOpts = {
-  phase?: number; expr?: Expr; mode?: "march" | "stand" | "swing" | "push"; blink?: boolean | number; stomp?: number; pose?: number;
+  phase?: number; expr?: Expr; mode?: "march" | "stand" | "swing" | "push"; blink?: boolean | number; stomp?: number; pose?: number; leanAdd?: number;
   /** step length as a multiple of 0.8 m (370 units): matches 1.6 m/s at 2 steps/s; scale by the view's foreshortening */
   stride?: number; light?: number; seed?: number;
   /** push mode: where the hands land at pose 1, in final canvas units (e.g. the swing kid's back) */
@@ -680,6 +700,7 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
   } else {
     legs.push({ ank: [300 - 4 * u, ankY], pitch: 0, near: false }, { ank: [300 + 4 * u, ankY], pitch: 0, near: true });
   }
+  lean += opts.leanAdd ?? 0;
   const torsoBot = hipY + 0.12 * HH, chin = torsoBot - Bd.torso * HH, hc = chin - H.b, crown = hc - H.b, hip: P2 = [300, hipY];
   p.rot = null;
   for (const L of legs) {

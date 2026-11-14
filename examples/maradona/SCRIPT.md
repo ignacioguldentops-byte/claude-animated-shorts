@@ -21,3 +21,7 @@ And to this day, half the world remembers that match for his hand, and the other
 
 Voice: Kokoro (am_michael, speed 1.32) via voice/tts.py; word times estimated per sentence. Music + SFX: audio/mix.py, -14 LUFS.
 Render: `npx remotion render src/index.tsx MaradonaShort out/video.mp4 --codec h264 --crf 16 --gl swangle` (Remotion 4, three 0.169).
+
+v3 (2026-11-14): camera rewritten (whips, cranes, tracking, cut behind the net), screen-space lighting layer (night washes with
+light pools, glows, shafts, vignette: `lightingAt` in story.ts + `Lights` in Main.tsx), curly mane and visible faces, raised-arm
+poses, squash and stretch, restaurant set for the waiters, night bedroom, crowd flashes, roof shadow with the speaker "spider".

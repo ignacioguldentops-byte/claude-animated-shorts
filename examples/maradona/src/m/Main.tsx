@@ -18,7 +18,7 @@ import { InkPass, noInkFallback } from "./ink";
 import { LensBlur, GrainEffect } from "./lensblur";
 import { GradeEffect, GRADES, GRADE_STRENGTH, gradeFor } from "./grade";
 
-import { TOTAL, FLASH_AT, SHOTS, layersAt, dofAt } from "./story";
+import { TOTAL, FLASH_AT, SHOTS, layersAt, dofAt, camAt, lightingAt } from "./story";
 
 export const MARADONA_FRAMES = TOTAL;
 
@@ -87,12 +87,55 @@ const Inner: React.FC<{ id: number }> = ({ id }) => {
 
 /** test stills only: inputProps `{ post: { dpr: 0.5 } }` forces the WebGL buffer size (R3F clamps dpr to >= 1 by default) */
 const dprOverride = () => (getInputProps() as { post?: { dpr?: number } }).post?.dpr;
+/** screen-space lighting over the 3D canvas: a multiply night wash with light pools cut out of it (they light the
+ *  characters too), additive glows on hands / lamps / the cup, slanted light shafts and a vignette. */
+const pcam = new THREE.PerspectiveCamera(40, 1080 / 1920, 0.1, 1500), pv = new THREE.Vector3();
+const Lights: React.FC<{ id: number }> = ({ id }) => {
+  const f = useCurrentFrame();
+  const c = camAt(id, f), L = lightingAt(id, f);
+  pcam.position.set(...c.pos); pcam.up.set(0, 1, 0); pcam.lookAt(...c.look); pcam.rotateZ(c.roll); pcam.fov = c.fov; pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  const proj = (p: [number, number, number], r: number) => {
+    pv.set(...p).applyMatrix4(pcam.matrixWorldInverse); const depth = -pv.z;
+    pv.set(...p).project(pcam);
+    return { x: (pv.x * 0.5 + 0.5) * 1080, y: (1 - (pv.y * 0.5 + 0.5)) * 1920, r: depth > 0.05 ? (r * 960) / (Math.tan((c.fov * Math.PI) / 360) * depth) : 0 };
+  };
+  const full: React.CSSProperties = { position: "absolute", left: 0, top: 0, width: "100%", height: "100%" };
+  const u = `l${id}`;
+  return (
+    <>
+      <svg viewBox="0 0 1080 1920" style={{ ...full, mixBlendMode: "multiply" }}>
+        <defs>
+          <radialGradient id={`${u}h`}><stop offset="0" stopColor="#000" stopOpacity="1" /><stop offset="0.45" stopColor="#000" stopOpacity="0.95" /><stop offset="1" stopColor="#000" stopOpacity="0" /></radialGradient>
+          <radialGradient id={`${u}v`} cx="0.5" cy="0.46" r="0.75"><stop offset="0.45" stopColor="#1b1440" stopOpacity="0" /><stop offset="1" stopColor="#1b1440" stopOpacity={L.vig} /></radialGradient>
+          <mask id={`${u}m`}><rect width="1080" height="1920" fill="#fff" />
+            {L.pools.map((p, i) => { const q = proj(p.p, p.r); return q.r > 0 ? <circle key={i} cx={q.x} cy={q.y} r={q.r} fill={`url(#${u}h)`} /> : null; })}
+          </mask>
+        </defs>
+        {L.wash ? <rect width="1080" height="1920" fill={L.wash.col} opacity={L.wash.a} mask={`url(#${u}m)`} /> : null}
+        <rect width="1080" height="1920" fill={`url(#${u}v)`} />
+      </svg>
+      <svg viewBox="0 0 1080 1920" style={{ ...full, mixBlendMode: "screen" }}>
+        <defs>
+          {L.glows.map((g, i) => <radialGradient key={i} id={`${u}g${i}`}><stop offset="0" stopColor={g.col} stopOpacity={g.a} /><stop offset="0.35" stopColor={g.col} stopOpacity={g.a * 0.45} /><stop offset="1" stopColor={g.col} stopOpacity="0" /></radialGradient>)}
+          <linearGradient id={`${u}b`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff4d0" stopOpacity={0.5 * (L.beams ?? 0)} /><stop offset="1" stopColor="#fff4d0" stopOpacity="0" /></linearGradient>
+          <filter id={`${u}f`}><feGaussianBlur stdDeviation="14" /></filter>
+        </defs>
+        {L.beams ? <g filter={`url(#${u}f)`} transform={`rotate(${-18 + 1.5 * Math.sin(f / 30)} 900 -200)`}>
+          {[0, 1, 2, 3, 4].map((i) => <polygon key={i} points={`${420 + i * 150},-200 ${500 + i * 150},-200 ${330 + i * 190 + 12 * Math.sin(f / 20 + i)},1500 ${130 + i * 190 + 12 * Math.sin(f / 20 + i)},1500`} fill={`url(#${u}b)`} opacity={0.5 + 0.5 * ((i * 37) % 3) / 2} />)}
+        </g> : null}
+        {L.glows.map((g, i) => { const q = proj(g.p, g.r); return q.r > 0 ? <circle key={i} cx={q.x} cy={q.y} r={q.r} fill={`url(#${u}g${i})`} /> : null; })}
+        {L.tint ? <rect width="1080" height="1920" fill={L.tint.col} opacity={L.tint.a} /> : null}
+      </svg>
+    </>
+  );
+};
 const ShotView: React.FC<{ id: number; alpha: number }> = ({ id, alpha }) => (
   <AbsoluteFill style={{ opacity: alpha }}>
     <ThreeCanvas width={1080} height={1920} {...(dprOverride() ? { dpr: dprOverride() } : {})} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance", toneMappingExposure: 1.0 }}
       camera={{ fov: 40, near: 0.2, far: 1500 }}>
       <Inner id={id} />
     </ThreeCanvas>
+    <Lights id={id} />
   </AbsoluteFill>
 );
 

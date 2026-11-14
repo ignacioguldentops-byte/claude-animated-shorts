@@ -41,11 +41,10 @@ export const fxPlates = (p: Pen, n: number, lean: number) => {
   }
 };
 
-/** red dot with a downward arrow: the centre of gravity marker, 200 x 300 canvas */
+/** white downward arrow: "low to the ground", 200 x 300 canvas */
 export const fxCog = (p: Pen) => {
-  p.line([[100, 40], [100, 210]], "#ffffff", 16);
-  p.poly([[60, 190], [140, 190], [100, 270]], "#ffffff", 9);
-  p.ell(100, 40, 34, 34, "#e8433a", 9);
+  p.line([[100, 40], [100, 210]], "#ffffff", 22);
+  p.poly([[50, 180], [150, 180], [100, 275]], "#ffffff", 10);
 };
 
 /** confetti speck, 64 x 64 */
@@ -61,4 +60,25 @@ export const fxQ = (p: Pen) => {
   p.arc(100, 80, 55, 50, 180, 400, 34, INK); p.arc(100, 80, 55, 50, 180, 400, 20, "#ffffff");
   p.line([[124, 128], [100, 150], [100, 178]], "#ffffff", 20);
   p.ell(100, 225, 17, 17, "#ffffff", 7);
+};
+
+/** camera flash in the crowd / sparkle: four-point white star, 128 x 128 */
+export const fxFlash = (p: Pen) => {
+  const g = p.g; g.fillStyle = "#ffffff"; g.beginPath();
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, r = i % 2 ? 9 : 60; g.lineTo(64 + r * Math.cos(a), 64 + r * Math.sin(a)); }
+  g.closePath(); g.fill(); g.beginPath(); g.arc(64, 64, 16, 0, Math.PI * 2); g.fill();
+};
+
+/** sleeping "z", 120 x 120 */
+export const fxZ = (p: Pen) => { p.line([[30, 30], [90, 30], [30, 90], [90, 90]], "#ffffff", 13); };
+
+/** height-difference bracket: two ticks and a double arrow between them, 120 x 400 */
+export const fxBracket = (p: Pen) => {
+  p.line([[20, 30], [100, 30]], "#ffffff", 12); p.line([[20, 370], [100, 370]], "#ffffff", 12); p.line([[60, 60], [60, 340]], "#ffffff", 10);
+  p.poly([[36, 80], [84, 80], [60, 44]], "#ffffff", 6); p.poly([[36, 320], [84, 320], [60, 356]], "#ffffff", 6);
+};
+
+/** sweat drops flying off, 200 x 200 */
+export const fxSweat = (p: Pen) => {
+  for (const [x, y, r] of [[50, 60, 0.5], [120, 40, 0], [160, 100, -0.5]] as const) p.poly([[x, y - 26], [x + 13, y + 6], [x, y + 20], [x - 13, y + 6]].map(([a, b]) => [x + (a - x) * Math.cos(r) - (b - y) * Math.sin(r), y + (a - x) * Math.sin(r) + (b - y) * Math.cos(r)] as [number, number]), "#9fd4ff", 6);
 };
