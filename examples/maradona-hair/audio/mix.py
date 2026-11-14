@@ -3,7 +3,9 @@ import numpy as np, soundfile as sf
 from scipy.signal import butter, sosfilt
 SR = 48000; FR = 1890; TOTAL = FR / 30; N = int(TOTAL * SR)
 rng = np.random.default_rng(7)
-v, vsr = sf.read("/home/user/maradona/voice2/voice.wav")
+import sys
+VOICE = sys.argv[1] if len(sys.argv) > 1 else "/home/user/maradona/voice2/voice.wav"; TAG = sys.argv[2] if len(sys.argv) > 2 else ""
+v, vsr = sf.read(VOICE)
 vi = np.interp(np.arange(int(len(v) * SR / vsr)) / SR, np.arange(len(v)) / vsr, v)
 voice = np.zeros(N); voice[:min(N, len(vi))] = vi[:N]
 def bp(x, lo, hi, o=2): return sosfilt(butter(o, [lo, hi], "band", fs=SR, output="sos"), x)
@@ -147,6 +149,6 @@ s = sfx / (np.max(np.abs(sfx)) + 1e-9) * 0.45 * 10 ** (-6 / 20)
 mix = voice * 0.8 + m + s
 fade = np.ones(N); fade[-int(0.2 * SR):] = np.linspace(1, 0, int(0.2 * SR)); mix *= fade
 mix = np.tanh(mix * 1.1) / 1.1
-sf.write("mix_raw.wav", np.stack([mix, mix], 1), SR)
+sf.write("mix_raw" + TAG + ".wav", np.stack([mix, mix], 1), SR)
 sf.write("music.wav", m, SR); sf.write("sfx.wav", s, SR)
 print("ok", N / SR)
