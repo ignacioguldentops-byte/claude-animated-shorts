@@ -96,7 +96,7 @@ export const camAt = (id: number, f: number): Cam => {
     case 7: c = path([{ f: 874, pos: [40.6, 1.7, -11.5], look: [43.5, 1.6, -14.2], fov: 36, roll: 0.05 }], f, 0.003); break;
     case 8: c = path([{ f: 956, pos: [-1.6, 0.35, 2.4], look: [0.4, 0.5, 0.2], fov: 44, roll: 0.07 }], f, 0.004); break;
     case 9: { const x = runX(Math.max(f, 1095)); c = path([{ f: 1046, pos: [-14, 13, 22], look: [-8, 1, 0], fov: 40 }, { f: 1158, pos: [x - 7, 9, 19], look: [x + 2, 1, 0], fov: 40 }], f, 0); break; }
-    case 10: { const x = runX(f); c = { pos: [x - 2.2, 2.2, 9.0], look: [x + 1.6, 1.1, 0], fov: 42, roll: 0.03 }; break; }
+    case 10: { const x = runX(f); c = { pos: [x - 0.8, 2.2, 9.0], look: [x + 0.9, 1.1, 0], fov: 42, roll: 0.03 }; break; }
     case 11: c = path([{ f: 1296, pos: [0.4, 1.0, 5.6], look: [0.4, 1.0, 0], fov: 38, roll: 0 }, { f: 1380, pos: [0.4, 0.75, 4.6], look: [0.4, 0.85, 0], fov: 38, roll: 0.03 }], f); break;
     case 12: c = path([{ f: 1422, pos: [BX - 2.0, 1.6, 8.6], look: [BX - 2.0, 1.45, 0], fov: 40, roll: -0.03 }, { f: 1540, pos: [BX - 2.0, 1.55, 7.4], look: [BX - 2.0, 1.4, 0], fov: 40, roll: 0.03 }], f); break;
     case 13: c = path([{ f: 1618, pos: [-3.0, 0.8, 7.0], look: [0, 2.6, 0], fov: 44, roll: 0.06 }], f, 0.004); break;

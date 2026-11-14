@@ -13,13 +13,13 @@ import { FPS, SHOTS, BX, RM, GX, W, V3, camAt, smooth, clamp01, runX, BEATEN, le
 
 // ---------------- outfits ----------------
 const HAIR = "#1d1310";
-export const DIEGO: Outfit = { jacket: "#2d4ea8", pants: "#1f2433", boots: INK, hat: "hair", hair: HAIR, skin: "#e9b98f", build: "stout", buttons: "none" };
-const DIEGO86: Outfit = { ...DIEGO, jacket: "#8ec9ee", stripes: "#fbfbf6", pants: "#1f2433" }; // striped home shirt (final)
-const ARG = (v: number): Outfit => ({ ...DIEGO, build: "adult", skin: ["#f1c9a2", "#e2b088", "#f5d2b0"][v % 3], hair: ["#2a1d16", "#3b2a1c", "#16100c"][v % 3] });
-const ENG = (v: number): Outfit => ({ buttons: "none", jacket: "#f4f3ee", pants: "#26315e", boots: INK, hat: "hair", hair: ["#b9884f", "#4a3020", "#d6b46a", "#2a1d16"][v % 4], skin: ["#ffe2c2", "#f5c9a0", "#ffdcc0", "#c99067"][v % 4] });
-const KEEPER: Outfit = { buttons: "none", jacket: "#8d939b", pants: "#2c2f36", boots: INK, hat: "hair", hair: "#6b4a30", skin: "#ffdcc0", moustache: undefined };
-const REF: Outfit = { buttons: "none", jacket: "#1e1e24", pants: "#1e1e24", boots: INK, hat: "hair", hair: "#22180f", skin: "#c99067", moustache: "#22180f" };
-const KID: Outfit = { buttons: "none", jacket: "#e9e1cf", pants: "#3b5b9a", boots: "#6b4a30", hat: "hair", hair: HAIR, skin: "#e9b98f", build: "kid" };
+export const DIEGO: Outfit = { jacket: "#2d4ea8", pants: "#1f2433", boots: INK, hat: "hair", hair: HAIR, skin: "#e9b98f", build: "stout", buttons: "none", shorts: "#f4f3ee", socks: "#f4f3ee", curly: true, num: "10" };
+const DIEGO86: Outfit = { ...DIEGO, jacket: "#8ec9ee", stripes: "#fbfbf6", shorts: "#1f2433" }; // striped home shirt (final)
+const ARG = (v: number): Outfit => ({ ...DIEGO, build: "adult", curly: false, num: String([3, 7, 11, 5, 2, 9][v % 6]), skin: ["#f1c9a2", "#e2b088", "#f5d2b0"][v % 3], hair: ["#2a1d16", "#3b2a1c", "#16100c"][v % 3] });
+const ENG = (v: number): Outfit => ({ buttons: "none", shorts: "#2b3a78", socks: "#f4f3ee", jacket: "#f4f3ee", pants: "#26315e", boots: INK, hat: "hair", hair: ["#b9884f", "#4a3020", "#d6b46a", "#2a1d16"][v % 4], skin: ["#ffe2c2", "#f5c9a0", "#ffdcc0", "#c99067"][v % 4] });
+const KEEPER: Outfit = { buttons: "none", shorts: "#2c2f36", socks: "#8d939b", jacket: "#8d939b", pants: "#2c2f36", boots: INK, hat: "hair", hair: "#6b4a30", skin: "#ffdcc0", moustache: undefined };
+const REF: Outfit = { buttons: "none", shorts: "#1e1e24", socks: "#1e1e24", jacket: "#1e1e24", pants: "#1e1e24", boots: INK, hat: "hair", hair: "#22180f", skin: "#c99067", moustache: "#22180f" };
+const KID: Outfit = { buttons: "none", curly: true, shorts: "#3b5b9a", socks: "#e9b98f", jacket: "#e9e1cf", pants: "#3b5b9a", boots: "#6b4a30", hat: "hair", hair: HAIR, skin: "#e9b98f", build: "kid" };
 const WAITER: Outfit = { jacket: "#f6f3ec", pants: "#22242c", boots: INK, hat: "hair", hair: "#3b2a1c", buttons: "#22242c", moustache: "#3b2a1c", skin: "#f1c9a2" };
 
 // ---------------- painted textures ----------------
@@ -248,6 +248,29 @@ export class World {
     add(R, roof, lam("roof", () => ({ map: rt, side: THREE.DoubleSide })));
     // floodlight masts on the rim
     for (const a of [0.6, 2.55, 3.75, 5.7]) { const [x, z] = inner(a), L = Math.hypot(x, z), k = 1 + 46 / L; add(R, box(x * k - 0.6, 30, z * k - 0.6, x * k + 0.6, 62, z * k + 0.6), lam("mast", () => ({ color: "#b9b4ac" }))); add(R, box(x * k - 3, 62, z * k - 1, x * k + 3, 66, z * k + 1), lam("lamps", () => ({ color: "#f1ede0" }))); }
+    // corner flags
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      add(R, box(sx * 52.5 - 0.03, 0, sz * 34 - 0.03, sx * 52.5 + 0.03, 1.6, sz * 34 + 0.03), lam("post", () => ({ color: "#f7f7f2" })));
+      add(R, box(sx * 52.5 - 0.02, 1.2, sz * 34, sx * 52.5 + 0.02, 1.6, sz * 34 + 0.5), lam("cflag", () => ({ color: "#f2c230" })));
+    }
+    // dugouts on the far touchline: bench + roof + back wall
+    for (const dx of [-14, 14]) {
+      add(R, box(dx - 5, 0, -37.6, dx + 5, 2.1, -37.4), lam("dugBack", () => ({ color: "#c9d6e2" })));
+      add(R, box(dx - 5.2, 2.1, -37.7, dx + 5.2, 2.25, -35.6), lam("dugRoof", () => ({ color: "#2f5fae" })));
+      for (const ex of [-5, 5]) add(R, box(dx + ex - 0.08, 0, -37.6, dx + ex + 0.08, 2.1, -35.8), lam("dugBack", () => ({ color: "#c9d6e2" })));
+      add(R, box(dx - 4.6, 0.35, -37.2, dx + 4.6, 0.5, -36.7), lam("bench", () => ({ color: "#8a5a34" })));
+    }
+    // players' tunnel mouth in the fascia + big hanging banners (plain tricolours, no text)
+    add(R, box(-4, 0, -46.6, 4, 2.4, -45.2), lam("tunnel", () => ({ color: "#2a2a34" })));
+    const ban = (key: string, cols: string[]) => lam("ban" + key, () => ({ map: ctex("ban" + key, 96, 64, (g) => { cols.forEach((c, i) => { g.fillStyle = c; g.fillRect(0, (i * 64) / cols.length, 96, 64 / cols.length + 1); }); }) }));
+    const bans: [number, string, string[]][] = [[-40, "a", ["#8ec9ee", "#ffffff", "#8ec9ee"]], [-24, "m", ["#2f8a4a", "#ffffff", "#d23b35"]], [22, "a", ["#8ec9ee", "#ffffff", "#8ec9ee"]], [38, "e", ["#ffffff", "#d23b35", "#ffffff"]]];
+    for (const [bx, k, cols] of bans) for (const sz of [-1, 1]) add(R, box(bx - 4, 0.5, sz * 45.75 - 0.05, bx + 4, 2.4, sz * 45.75 + 0.05), ban(k, cols));
+    // TV camera gantry on the near touchline
+    add(R, box(-1.2, 0, 41, 1.2, 0.3, 43), lam("gantry", () => ({ color: "#5c5866" })));
+    // noon shade thrown by the roof over the far third of the pitch (soft multiply band): gives the bowl depth
+    const shadeTex = ctex("roofShade", 16, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, "#8d93c4"); gr.addColorStop(0.72, "#8d93c4"); gr.addColorStop(1, "#ffffff"); g.fillStyle = gr; g.fillRect(0, 0, 16, 256); });
+    const sh = new THREE.Mesh(ground(-70, 70, -50, -9, 0.012), new THREE.MeshBasicMaterial({ map: shadeTex, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor, depthWrite: false, fog: false, toneMapped: false }));
+    sh.layers.set(NOINK); sh.renderOrder = 0.2; R.add(sh);
     // goals: white posts + bar, net
     const post = lam("post", () => ({ color: "#f7f7f2" }));
     const nt = repT(netTex());
@@ -298,6 +321,12 @@ export class World {
       }
       if (i % 3 === 2) { const px = BX + side * 4.8; add(R, box(px - 0.1, 0, z - 0.1, px + 0.1, 6.5, z + 0.1), lam("pole", () => ({ color: "#7a6a58" }))); }
     }
+    // overhead wires between the poles, a washing line, roof water tanks, a low fence
+    for (const side of [-1, 1]) for (const h of [6.3, 5.9]) add(R, box(BX + side * 4.8 - 0.015, h, -80, BX + side * 4.8 + 0.015, h + 0.03, 80), lam("wire", () => ({ color: "#2a2430" })), false);
+    add(R, box(BX - 4.6, 2.5, 13.99, BX + 4.6, 2.52, 14.01), lam("wire", () => ({ color: "#2a2430" })), false);
+    ["#e8e4da", "#d64a3c", "#8ec9ee", "#f2c94c", "#e8e4da"].forEach((c, i) => add(R, box(BX - 3.4 + i * 1.5, 1.75, 13.98, BX - 2.7 + i * 1.5, 2.5, 14.02), lam("wash" + c, () => ({ color: c }))));
+    for (let i = 0; i < 18; i += 2) for (const side of [-1, 1]) { const tz = -80 + i * 9 + 1; const cyl = new THREE.CylinderGeometry(0.55, 0.55, 1.0, 14); cyl.translate(BX + side * 8.5, 4.3, tz); add(R, cyl, lam("tank", () => ({ color: "#4a5a7a" }))); }
+    for (let i = 0; i < 30; i++) add(R, box(BX + 4.95, 0, 9 + i * 0.35, BX + 5.05, 0.9 + (i % 3) * 0.08, 9.2 + i * 0.35), lam("fence", () => ({ color: "#8a6a48" })));
     // a café table + chairs for the waiters' corner
     const wood = lam("wood", () => ({ color: "#9a6a42" }));
     add(R, box(BX + 1.2, 0, -1.6, BX + 1.3, 0.72, -1.5), wood); add(R, box(BX + 0.7, 0.72, -2.1, BX + 1.8, 0.78, -1.0), wood);
@@ -346,8 +375,8 @@ export class World {
       case 1: { // hook: Diego in the blue shirt, ball at his feet, the bowl roaring behind
         P(this.person(D, 36, 0, 0.6, { fo: { mode: "stand", expr: f < 100 ? "smile_closed" : "grin", blink: blink(3), look: -0.3, facing: -1 } }));
         this.contact(st, 36, 0.6, 1); this.ball(st, 35.55, 0, 1.0, 0);
-        P(this.person(who(ENG(1), 21), 41, 0, -4, { fo: { mode: "stand", expr: "stern", blink: blink(21), look: -1 } })); this.contact(st, 41, -4);
-        P(this.person(who(ARG(2), 22), 30.5, 0, -6, { fo: { mode: "stand", expr: "neutral", blink: blink(22), look: 1 } })); this.contact(st, 30.5, -6);
+        P(this.person(who(ENG(1), 21), 41.6, 0, -2.6, { fo: { mode: "stand", expr: "stern", blink: blink(21), look: -1 } })); this.contact(st, 41.6, -2.6); P(this.person(who(ENG(3), 23), 45, 0, -8.2, { fo: { mode: "stand", expr: "nervous", blink: blink(23), look: -1 } })); this.contact(st, 45, -8.2);
+        P(this.person(who(ARG(2), 22), 38.6, 0, -6.6, { fo: { mode: "stand", expr: "neutral", blink: blink(22), look: 1 } })); this.contact(st, 38.6, -6.6);
         break;
       }
       case 2: { // kid Diego kicking a ball up the dirt road
@@ -448,10 +477,10 @@ export class World {
       }
       case 13: { // champions: Diego on shoulders with the cup
         const D2 = who(DIEGO86, 4, 0.92);
-        P(this.person(who({ ...ARG(1), jacket: "#8ec9ee", stripes: "#fbfbf6", pants: "#1f2433" }, 31), -0.6, 0, -0.2, { fo: { mode: "stand", expr: "laugh", blink: blink(31), wave: 1 } })); this.contact(st, -0.6, -0.2);
-        P(this.person(who({ ...ARG(2), jacket: "#8ec9ee", stripes: "#fbfbf6", pants: "#1f2433" }, 32), 0.6, 0, -0.2, { fo: { mode: "stand", expr: "grin", blink: blink(32), wave: 1 } })); this.contact(st, 0.6, -0.2);
+        P(this.person(who({ ...ARG(1), jacket: "#8ec9ee", stripes: "#fbfbf6", shorts: "#1f2433" }, 31), -0.6, 0, -0.2, { fo: { mode: "stand", expr: "laugh", blink: blink(31), wave: 1 } })); this.contact(st, -0.6, -0.2);
+        P(this.person(who({ ...ARG(2), jacket: "#8ec9ee", stripes: "#fbfbf6", shorts: "#1f2433" }, 32), 0.6, 0, -0.2, { fo: { mode: "stand", expr: "grin", blink: blink(32), wave: 1 } })); this.contact(st, 0.6, -0.2);
         P(this.person(D2, 0, 1.35 + 0.04 * Math.sin(f / 5), 0.25, { fo: { mode: "sit", expr: "laugh", blink: blink(4), wave: 1 } }));
-        st.fx.push({ key: "cup", cw: 300, ch: 500, draw: fxCup, x: 0.42, y: 2.95 + 0.04 * Math.sin(f / 5), z: 0.3, w: 0.42, h: 0.7 });
+        st.fx.push({ key: "cup", cw: 300, ch: 500, draw: fxCup, x: 0.36, y: 2.62 + 0.04 * Math.sin(f / 5), z: 0.32, w: 0.33, h: 0.55 });
         for (let i = 0; i < 26; i++) {
           const cx = (hs(i, 1) - 0.5) * 5, cy = 5 - ((f - 1618) * (0.03 + 0.02 * hs(i, 2)) + hs(i, 3) * 4) % 5, cz = (hs(i, 4) - 0.5) * 2 + 0.6;
           const col = ["#8ec9ee", "#ffffff", "#f2c443"][i % 3];

@@ -17,7 +17,7 @@ export type Build = "adult" | "stout" | "kid";
 export type Outfit = {
   jacket: string; pants: string; boots: string; hat?: string | null; belt?: string | null; buttons?: string; rifle?: boolean;
   sash?: string; sword?: boolean; moustache?: string; skin?: string; head?: number; cap?: string; hair?: string; dress?: string;
-  build?: Build; stripes?: string; num?: string;
+  build?: Build; stripes?: string; num?: string; socks?: string; shorts?: string; curly?: boolean;
 };
 type P2 = [number, number];
 
@@ -392,6 +392,10 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
     const col = o.hat === "cap" ? o.cap! : o.hair!;
     p.shadedFill(arc, col, mul(col, SH_FELT), light, H.a, 0.35);
     p.poly(arc, null, ow);
+    if (o.curly) { // curls: overlapping ink-rimmed bumps round the crown
+      for (let i = 0; i < 9; i++) { const an = rad(188 + i * 20.5); p.ell(cx + 0.97 * H.a * Math.cos(an), hc + 0.95 * H.b * Math.sin(an), 19 * u, 19 * u, col, ow * 0.75); }
+      for (let i = 0; i < 8; i++) { const an = rad(198 + i * 20.5); p.ell(cx + 0.74 * H.a * Math.cos(an), hc + 0.78 * H.b * Math.sin(an), 20 * u, 18 * u, col, 0); }
+    }
     if (o.hat === "hair") {
       const s = side ? -1 : facing || 1;
       p.stroke([[cx + s * 10 * u, cut - 30 * u], [cx + s * 2 * u, cut - 12 * u]], 1.2 * u);
@@ -444,6 +448,14 @@ const footStroke = (p: Pen, a: P2, b: P2, w: number, col: string) => {
   p.stroke([a, b], w, col);
 };
 
+/** footballer leg: bare skin with an ink rim, sock on the lower part (outfits with `socks`); plain stick leg otherwise */
+const kitLeg = (p: Pen, pts: P2[], w: number, o: Outfit, col: string, far = false) => {
+  if (!o.socks) { p.stroke(pts, w, col); return; }
+  const skin = o.skin ?? SKIN, k = far ? 0.8 : 1, cut = Math.max(1, Math.round((pts.length - 1) * 0.55));
+  p.stroke(pts, w * 1.9, INK); p.stroke(pts, w * 1.9 - 5, shade(skin, k));
+  const low = pts.length === 3 ? [lerp2(pts[1], pts[2], 0.25), pts[2]] : pts.slice(cut);
+  p.stroke(low, w * 1.9 - 5, shade(o.socks, k));
+};
 export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   const { phase = 0, expr = "neutral", mode = "march", look = 0, blink = false, lift = 60, prop = null, tilt = 0, headTilt = 0, wave,
     light = DEF_LIGHT, facing = 0, seed = 1 } = opts;
@@ -462,7 +474,7 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   if (mode === "sit") {
     for (const side of [-1, 1]) {
       const h: P2 = [300 + side * 15 * u, hipY], k: P2 = [300 + side * 36 * u, hipY + 0.2 * HH], f: P2 = [300 + side * 44 * u, sole - 8 * u];
-      p.stroke(curve(h, k, f), legW, legCol);
+      kitLeg(p, curve(h, k, f), legW, o, legCol);
       footStroke(p, [f[0] - side * 2 * u, f[1]], [f[0] + side * 12 * u, f[1] - 5 * u], footW, footCol);
     }
   } else if (mode === "fall") {
@@ -471,7 +483,7 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       [[300 + 15 * u, hipY], [300 + 50 * u, hipY + 0.45 * HH], [300 + 76 * u, hipY + 0.22 * HH]],
     ];
     legs.forEach(([h, k, f], i) => {
-      p.stroke(curve(h, k, f), legW, legCol);
+      kitLeg(p, curve(h, k, f), legW, o, legCol);
       footStroke(p, f, [f[0] + (i ? 14 : -14) * u, f[1] + (i ? -6 : 4) * u], footW, footCol);
     });
   } else if (o.dress) {
@@ -486,10 +498,12 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       const up = Math.max(0, Math.sin(two * (phase + ph))) * L;
       const hx = 300 + side * 15 * u, fx = 300 + side * 22 * u, fy = sole - 4 * u - up;
       const k: P2 = [(hx + fx) / 2 + side * (1.5 * u + up * 0.16), (hipY + fy) / 2 - up * 0.08];
-      p.stroke(curve([hx, hipY], k, [fx, fy]), legW, legCol);
+      kitLeg(p, curve([hx, hipY], k, [fx, fy]), legW, o, legCol);
       footStroke(p, [fx - side * 3 * u, fy], [fx + side * 13 * u, fy + 0.5 * u], footW, footCol);
     }
   }
+  if (o.shorts && mode !== "sit") p.poly([[300 - 31 * u, hipY - 0.12 * HH], [300 + 31 * u, hipY - 0.12 * HH], [300 + 36 * u, hipY + 0.36 * HH], [300 + 5 * u, hipY + 0.36 * HH],
+    [300, hipY + 0.2 * HH], [300 - 5 * u, hipY + 0.36 * HH], [300 - 36 * u, hipY + 0.36 * HH]], o.shorts, 3.2 * u);
   // ---- upper body: rotates about the hips (tilt + a small weight-shift sway on every step) ----
   const sway = mode === "march" ? 1.6 * Math.sin(two * phase) : mode === "stroll" ? 1.0 * Math.sin(two * phase) : 0;
   const A = tilt + sway;
@@ -554,6 +568,7 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   } else {
     p.gradFill(tp, o.jacket, mul(o.jacket, SH_CLOTH), light);
     p.clip(tp, () => {
+      if (o.num) { const g = p.g, [nx, ny] = p.P(tcx, tcy + 0.1 * T.b); g.save(); g.font = `900 ${Math.round(0.62 * T.b)}px Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = o.stripes ? "#1f2433" : "#f4f3ee"; g.fillText(o.num, nx, ny); g.restore(); }
     if (o.stripes) for (let k = -3; k <= 3; k++) if (k % 2 === 0) p.band([[tcx + k * 0.3 * T.a, chin - 0.3 * HH], [tcx + k * 0.3 * T.a, torsoBot + 0.1 * HH]], o.stripes, 0.15 * T.a, 0, "butt");
       if (o.belt) {
         for (const s of [-1, 1]) p.band([[tcx - s * 0.75 * T.a, chin - 0.05 * HH], [tcx + s * 0.8 * T.a, torsoBot - 0.1 * HH]], o.belt!, 5.5 * u, 1.8 * u);
@@ -670,11 +685,12 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
   for (const L of legs) {
     const knee = mode === "swing" ? ([300 + l1 * 0.98 + (L.near ? 0 : -6 * u), hipY + 6 * u] as P2) : ik(hip, L.ank, l1, l2);
     const hp0: P2 = [300 + (L.near ? 0 : -5 * u), hipY];
-    p.stroke([hp0, knee, L.ank], 5.8 * u, L.near ? nearCol : farCol);
+    kitLeg(p, [hp0, knee, L.ank], 5.8 * u, o, L.near ? nearCol : farCol, !L.near);
     const c = Math.cos(L.pitch), s = Math.sin(L.pitch);
     footStroke(p, [L.ank[0] - 3 * u * c, L.ank[1] - 3 * u * s], [L.ank[0] + 13 * u * c, L.ank[1] + 13 * u * s + 0.5 * u],
       7.5 * u, L.near ? footCol : footCol === INK ? INK : shade(footCol, 0.82));
   }
+  if (o.shorts && mode !== "swing") p.poly([[300 - 24 * u, hipY - 0.12 * HH], [300 + 22 * u, hipY - 0.12 * HH], [300 + 27 * u, hipY + 0.34 * HH], [300 - 26 * u, hipY + 0.34 * HH]], o.shorts, 3.2 * u);
   // ---- upper body leans about the hip ----
   p.rot = lean ? [rad(lean), 300, hipY] : null;
   const T: Blob = { a: (o.build === "stout" ? 0.36 : 0.31) * W, b: 0.5 * (torsoBot - (chin - 0.25 * HH)), nTop: 2.2, nBot: 2.5, egg: 0.1, asym: 0.06,
