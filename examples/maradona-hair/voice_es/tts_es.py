@@ -1,6 +1,6 @@
 # Spanish narration fitted to the picture: one clip per clause, placed at the frame where the picture expects it,
 # gently sped up (pitch kept) when a clause is longer than its slot.
-# usage: python3 tts_es.py kokoro [voice]   |   python3 tts_es.py eleven <voice_id> [speed]
+# usage: python3 tts_es.py kokoro [voice]   |   python3 tts_es.py eleven <voice_id> [speed]   |   python3 tts_es.py edge [voice] [rate]
 import json, sys, subprocess, os, numpy as np, soundfile as sf
 ENGINE = sys.argv[1] if len(sys.argv) > 1 else "kokoro"
 SEG = [
@@ -42,6 +42,15 @@ def synth(i, text):
         except NameError: K = Kokoro("/home/user/tts/kokoro.onnx", "/home/user/tts/voices.bin")
         a, sr = K.create(text.replace("Gennaro", "Yenaro"), voice=sys.argv[2] if len(sys.argv) > 2 else "em_alex", speed=1.12, lang="es")
         sf.write(out, a, sr)
+    elif ENGINE == "edge":
+        voice = sys.argv[2] if len(sys.argv) > 2 else "es-ES-AlvaroNeural"; rate = sys.argv[3] if len(sys.argv) > 3 else "+12%"
+        mp3 = out.replace(".wav", ".mp3")
+        for k in range(4):
+            r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "edge_one.py"), voice, rate, mp3, text.replace("Gennaro", "Yenaro")])
+            if r.returncode == 0 and os.path.getsize(mp3) > 2000: break
+            import time; time.sleep(2 + 3 * k)
+        else: raise SystemExit("edge voice failed for clause %d" % i)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", mp3, "-ar", str(SR), "-ac", "1", out], check=True)
     else:
         import urllib.request
         vid = sys.argv[2]; speed = float(sys.argv[3]) if len(sys.argv) > 3 else 1.1

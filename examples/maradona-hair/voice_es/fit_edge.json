@@ -1,0 +1,262 @@
+[
+ {
+  "i": 0,
+  "frame": 2,
+  "start": 0.07,
+  "late": 0.0,
+  "dur": 4.68,
+  "tempo": 1.0,
+  "over": -1.12,
+  "text": "Un camarero de Nápoles hizo mundialmente famoso su bar vacío con un pelo que cogió de un asiento de avión."
+ },
+ {
+  "i": 1,
+  "frame": 176,
+  "start": 5.87,
+  "late": 0.0,
+  "dur": 3.38,
+  "tempo": 1.0,
+  "over": -1.29,
+  "text": "Se llama Gennaro, y su bar está tan vacío que ya no entran ni las moscas."
+ },
+ {
+  "i": 2,
+  "frame": 316,
+  "start": 10.53,
+  "late": 0.0,
+  "dur": 4.35,
+  "tempo": 1.0,
+  "over": -1.35,
+  "text": "Una noche vuelve en avión desde Milán, y el hombre que duerme en el asiento de delante es Diego Maradona."
+ },
+ {
+  "i": 3,
+  "frame": 487,
+  "start": 16.23,
+  "late": 0.0,
+  "dur": 2.11,
+  "tempo": 1.0,
+  "over": 0.04,
+  "text": "En Nápoles, eso es ir detrás de un santo."
+ },
+ {
+  "i": 4,
+  "frame": 549,
+  "start": 18.39,
+  "late": 0.09,
+  "dur": 1.6,
+  "tempo": 1.0,
+  "over": -0.47,
+  "text": "Gennaro no se atreve ni a saludarlo."
+ },
+ {
+  "i": 5,
+  "frame": 614,
+  "start": 20.47,
+  "late": 0.0,
+  "dur": 3.3,
+  "tempo": 1.0,
+  "over": -0.57,
+  "text": "Así que se pasa dos horas mirando la nuca de esa famosa cabeza rizada."
+ },
+ {
+  "i": 6,
+  "frame": 730,
+  "start": 24.33,
+  "late": 0.0,
+  "dur": 0.52,
+  "tempo": 1.0,
+  "over": -0.38,
+  "text": "Aterrizan."
+ },
+ {
+  "i": 7,
+  "frame": 757,
+  "start": 25.23,
+  "late": 0.0,
+  "dur": 0.92,
+  "tempo": 1.0,
+  "over": -0.35,
+  "text": "Maradona se baja."
+ },
+ {
+  "i": 8,
+  "frame": 795,
+  "start": 26.5,
+  "late": 0.0,
+  "dur": 2.96,
+  "tempo": 1.027,
+  "over": 0.13,
+  "text": "Y ahí, en el reposacabezas, queda un único pelo negro."
+ },
+ {
+  "i": 9,
+  "frame": 880,
+  "start": 29.51,
+  "late": 0.18,
+  "dur": 0.9,
+  "tempo": 1.0,
+  "over": 0.0,
+  "text": "Mira a la izquierda."
+ },
+ {
+  "i": 10,
+  "frame": 912,
+  "start": 30.45,
+  "late": 0.05,
+  "dur": 0.58,
+  "tempo": 1.0,
+  "over": -0.24,
+  "text": "A la derecha."
+ },
+ {
+  "i": 11,
+  "frame": 938,
+  "start": 31.27,
+  "late": 0.0,
+  "dur": 1.21,
+  "tempo": 1.0,
+  "over": -0.32,
+  "text": "Y se lo guarda en la cartera."
+ },
+ {
+  "i": 12,
+  "frame": 984,
+  "start": 32.8,
+  "late": 0.0,
+  "dur": 3.49,
+  "tempo": 1.0,
+  "over": -0.71,
+  "text": "De vuelta en el bar, lo pone en un marquito dorado, con velas y flores."
+ },
+ {
+  "i": 13,
+  "frame": 1110,
+  "start": 37.0,
+  "late": 0.0,
+  "dur": 2.13,
+  "tempo": 1.084,
+  "over": 0.13,
+  "text": "Su mujer le dice: Gennaro, es un pelo."
+ },
+ {
+  "i": 14,
+  "frame": 1170,
+  "start": 39.18,
+  "late": 0.18,
+  "dur": 2.92,
+  "tempo": 1.0,
+  "over": -0.17,
+  "text": "Pero a la mañana siguiente, una anciana entra y se arrodilla delante."
+ },
+ {
+  "i": 15,
+  "frame": 1268,
+  "start": 42.27,
+  "late": 0.0,
+  "dur": 2.24,
+  "tempo": 1.0,
+  "over": -0.52,
+  "text": "A mediodía, la cola da la vuelta a la manzana."
+ },
+ {
+  "i": 16,
+  "frame": 1351,
+  "start": 45.03,
+  "late": 0.0,
+  "dur": 2.02,
+  "tempo": 1.069,
+  "over": 0.12,
+  "text": "Espera. ¿Rezarle a un pelo?"
+ },
+ {
+  "i": 17,
+  "frame": 1408,
+  "start": 47.1,
+  "late": 0.17,
+  "dur": 2.93,
+  "tempo": 1.109,
+  "over": 0.13,
+  "text": "Verás: antes de Maradona, el Nápoles nunca había ganado la liga."
+ },
+ {
+  "i": 18,
+  "frame": 1497,
+  "start": 50.08,
+  "late": 0.18,
+  "dur": 0.46,
+  "tempo": 1.0,
+  "over": -0.06,
+  "text": "Ni una."
+ },
+ {
+  "i": 19,
+  "frame": 1518,
+  "start": 50.6,
+  "late": 0.0,
+  "dur": 1.13,
+  "tempo": 1.0,
+  "over": -0.43,
+  "text": "Con él, ganó dos."
+ },
+ {
+  "i": 20,
+  "frame": 1565,
+  "start": 52.17,
+  "late": 0.0,
+  "dur": 1.0,
+  "tempo": 1.0,
+  "over": -0.43,
+  "text": "No era un futbolista."
+ },
+ {
+  "i": 21,
+  "frame": 1608,
+  "start": 53.6,
+  "late": 0.0,
+  "dur": 0.71,
+  "tempo": 1.0,
+  "over": -0.36,
+  "text": "Era un milagro."
+ },
+ {
+  "i": 22,
+  "frame": 1640,
+  "start": 54.67,
+  "late": 0.0,
+  "dur": 1.58,
+  "tempo": 1.0,
+  "over": -0.22,
+  "text": "Y todo milagro pide una reliquia."
+ },
+ {
+  "i": 23,
+  "frame": 1694,
+  "start": 56.47,
+  "late": 0.0,
+  "dur": 2.31,
+  "tempo": 1.0,
+  "over": -0.43,
+  "text": "Más de treinta años después, el pelo sigue ahí."
+ },
+ {
+  "i": 24,
+  "frame": 1776,
+  "start": 59.2,
+  "late": 0.0,
+  "dur": 2.13,
+  "tempo": 1.0,
+  "over": 0.1,
+  "text": "Y si quieres una foto, solo hay una regla."
+ },
+ {
+  "i": 25,
+  "frame": 1837,
+  "start": 61.38,
+  "late": 0.15,
+  "dur": 1.37,
+  "tempo": 1.0,
+  "over": -0.11,
+  "text": "Primero, pides un café."
+ }
+]
