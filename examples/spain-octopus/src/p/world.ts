@@ -126,7 +126,7 @@ const blanketTex = () => ctex("blanket", 256, 256, (g) => {
 // ---------------- geometry helpers ----------------
 // ---------------- staging types ----------------
 type Place = { key: string; draw: (p: Pen) => void; x: number; y: number; z: number; scale: number; mirror?: boolean; roll?: number; faceUp?: boolean; sx?: number; sy?: number };
-type FxPlace = { key: string; cw: number; ch: number; draw: (p: Pen) => void; x: number; y: number; z: number; w: number; h: number; flat?: boolean; rot?: number; soft?: boolean; glow?: number; tint?: string };
+type FxPlace = { key: string; cw: number; ch: number; draw: (p: Pen) => void; x: number; y: number; z: number; w: number; h: number; flat?: boolean; fixed?: boolean; rot?: number; soft?: boolean; glow?: number; tint?: string };
 type Stage = { places: Place[]; fx: FxPlace[] };
 
 const tier = (d: number): [number, number, number] =>
@@ -412,9 +412,9 @@ export class World {
       }
       case 8: { // Manolo watches it on the little TV: "luck"
         const bah = f >= B.suerte;
-        G(MANOLO, 5, c(0.42, 0, -1.5), { expr: bah ? "grin" : "laugh", look: bah ? 0 : -1, facing: bah ? 0 : -1, armR: bah ? "wave" : "hip", armL: "hip", headTilt: bah ? 6 : 0 }, { roll: bah ? 0 : 0.03 * Math.sin(f * 0.8) });
-        K("tv", 520, 440, fxTV, c(-0.4, 1.14, -0.76), 0.5, 0.423);
-        const t = Math.round(((f * 0.022) % 1) * 12) / 12; K(`scr|tv|${t}`, 800, 450, (p) => fxScreen(p, "de", "en", -1, t, "happy"), c(-0.438, 1.129, -0.745), 0.33, 0.186, { glow: 1.5 });
+        G(MANOLO, 5, c(0.3, 0, -1.5), { expr: bah ? "grin" : "laugh", look: bah ? 0 : -1, facing: bah ? 0 : -1, armR: bah ? "wave" : "hip", armL: "hip", headTilt: bah ? 6 : 0 }, { roll: bah ? 0 : 0.03 * Math.sin(f * 0.8) });
+        K("tv", 520, 440, fxTV, c(-0.3, 1.14, -0.76), 0.5, 0.423);
+        const t = Math.round(((f * 0.022) % 1) * 12) / 12; K(`scr|tv|${t}`, 800, 450, (p) => fxScreen(p, "de", "en", -1, t, "happy"), c(-0.338, 1.129, -0.745), 0.33, 0.186, { glow: 1.5 });
         stall(); G(folk(13, "town"), 40, c(1.75, 0, 0.3), { back: true, armR: "front", holdR: "plate" });
         break;
       }
@@ -455,7 +455,7 @@ export class World {
       }
       case 13: { // the final: the whole plaza under the big screen
         const t = Math.round(((f * 0.022) % 1) * 12) / 12;
-        K(`scr|big|${t}`, 800, 450, (p) => fxScreen(p, "es", "nl", 0, t, "think"), SCREEN, 5.3, 2.98, { glow: 1.7 });
+        K(`scr|big|${t}`, 800, 450, (p) => fxScreen(p, "nl", "es", 0, t, "think"), SCREEN, 5.3, 2.98, { glow: 1.7, fixed: true });
         for (let i = 0; i < 40; i++) { const row = Math.floor(i / 8), col = i % 8, x = -4.6 + col * 1.3 + (row % 2) * 0.6 + 0.3 * (hs(i, 1) - 0.5), z = 1.2 + row * 1.5 + 0.4 * hs(i, 2);
           G(i === 3 ? MANOLO : folk(200 + i * 3, "es"), 300 + i, c(x, hop(i, 0.03, 5), z), { back: true, ...(i % 5 === 0 ? { armR: "up", holdR: "flagES" } : i % 7 === 1 ? { armL: "up", armR: "up" } : {}) }); }
         break;
@@ -496,7 +496,7 @@ export class World {
         break;
       }
       case 17: { // world champions: the cup goes up
-        G(KEEPER_ES, 70, [0, hop(0, 0.14, 3), 0], { expr: "laugh", armL: "up", armR: "up" }); K("cup", 300, 500, fxCup, [0, 2.72 + hop(0, 0.14, 3), 0.06], 0.5, 0.83); spark([0.16, 3.0, 0.1], 0.2);
+        G(KEEPER_ES, 70, [0, hop(0, 0.14, 3), 0], { expr: "laugh", armL: "up", armR: "up" }); K("cup", 300, 500, fxCup, [0, 2.52 + hop(0, 0.14, 3), 0.06], 0.56, 0.93); spark([0.18, 2.85, 0.1], 0.2);
         const team: [number, number][] = [[-1.1, -0.2], [1.1, -0.2], [-1.9, 0.3], [1.9, 0.3], [-0.6, -0.9], [0.6, -0.9], [-1.5, -1.0], [1.5, -1.0]];
         team.forEach(([x, z], i) => G(spain(i), 71 + i, [x, hop(i + 1, 0.16, 2.6), z], { expr: i % 2 ? "laugh" : "grin", armL: i % 3 ? "up" : "wave", armR: "up", facing: x < 0 ? 1 : -1 }));
         this.conf(st, f - a + 40, 0, 1.4, 0.6, 46, 6); this.flashes(st, f, 0.3);
@@ -673,6 +673,7 @@ export class World {
       e.use(!!p.soft); e.bind(); if (p.tint) { e.soft.color.set(p.tint).multiplyScalar(p.glow ?? 1); e.mat.color.set(p.tint).multiplyScalar(p.glow ?? 1); } else { e.soft.color.setScalar(p.glow ?? 1); e.mat.color.setScalar(p.glow ?? 1); }
       const m = e.mesh; m.visible = true; m.position.set(p.x, p.y, p.z); m.scale.set(p.w, p.h, 1);
       if (p.flat) m.rotation.set(-Math.PI / 2, 0, p.rot ?? 0);
+      else if (p.fixed) m.rotation.set(0, 0, p.rot ?? 0);
       else { m.rotation.set(0, 0, 0); m.lookAt(cam.position); if (p.rot) m.rotateZ(p.rot); }
     }
     return focus;

@@ -77,9 +77,9 @@ const q = (x: number, y: number, z: number): V3 => [AX + x, y, z];
 export const PAUL_HOME: V3 = q(0, 2.5, -5.25);
 export const BOX_L: V3 = q(-0.92, 1.33, -5.0), BOX_R: V3 = q(0.92, 1.33, -5.0);
 /** Paul gliding from home to a box (side -1 / +1), k = 0..1 */
-export const paulTo = (side: number, k: number): V3 => lerp3(PAUL_HOME, q(side * 0.42, 1.93, -5.12), smooth(k));
+export const paulTo = (side: number, k: number): V3 => lerp3(PAUL_HOME, q(side * 0.4, 1.74, -5.12), smooth(k));
 export const PORTRAIT: V3 = c(7.0, 0.44 + 0.86, 1.25);
-export const SCREEN: V3 = c(0, 5.05, -2.78);
+export const SCREEN: V3 = c(0, 5.05, -2.77);
 export const BOWL: V3 = c(0.3, 1.12, 2.72);
 
 // ---------------- cameras ----------------
@@ -141,8 +141,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: B.m5, e: "cut", pos: q(0, 1.75, 0.7), look: q(0, 2.1, -5.1), fov: 50 },
     ], f, 0.0028); break;
     case 8: cam = path([ // Manolo and the little TV
-      { f: a, pos: c(0.05, 1.4, 1.55), look: c(0, 1.25, -1.1), fov: 46 },
-      { f: B.suerte + 4, d: 10, pos: c(0.3, 1.45, 0.9), look: c(0.3, 1.34, -1.4), fov: 42, roll: 0.03 },
+      { f: a, pos: c(0.02, 1.4, 1.6), look: c(0, 1.25, -1.1), fov: 46 },
+      { f: B.suerte + 4, d: 10, pos: c(0.2, 1.45, 1.0), look: c(0.2, 1.32, -1.4), fov: 44, roll: 0.03 },
     ], f); break;
     case 9: cam = path([ // Germany vs Spain: wide with the press -> close on Paul -> he goes right
       { f: a, pos: q(0, 1.75, 1.0), look: q(0, 2.0, -5.1), fov: 50 },
