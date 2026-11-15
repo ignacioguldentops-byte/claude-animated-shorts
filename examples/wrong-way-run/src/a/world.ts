@@ -313,7 +313,7 @@ export class World {
     switch (id) {
       case 1: { // cold open: he runs, ball under his arm, two team-mates chasing
         G(MARSHALL, 5, [mx, 0, 0], { ...run(), facing: -1, expr: "grin", armR: "front", holdR: "football", armL: [30, 30, 10] });
-        G(viking(1), 21, [mx + 3.4, 0, 1.6], { ...run(0.3), facing: -1, expr: "shock", armL: "up", armR: "up" }); G(viking(2), 22, [mx + 5.2, 0, -1.8], { ...run(0.6), facing: -1, expr: "pained", armR: "reach", armL: "up" });
+        G(viking(1), 21, [mx + 1.55 + 0.1 * Math.sin(f * 0.3), 0, 1.0], { ...run(0.3), facing: -1, expr: "shock", armL: "up", armR: "up" }); G(viking(2), 22, [mx + 2.5 + 0.1 * Math.sin(f * 0.23), 0, -1.2], { ...run(0.6), facing: -1, expr: "pained", armR: "reach", armL: "up" });
         this.puffs(st, f, (fe) => [runX(1, fe) + 0.5, 0.15], 5, 14, 0.55); bench(true);
         break;
       }

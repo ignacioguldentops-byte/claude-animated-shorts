@@ -98,7 +98,7 @@ const kick = (f: number) => { for (const k of KICKS) { const d = f - k; if (d >=
 export const camAt = (id: number, f: number): Cam => {
   let cam: Cam; const S = SHOTS[id - 1], a = S.a, mx = runX(id, f), bob = 0.03 * Math.sin(f * 0.9);
   switch (id) {
-    case 1: cam = { pos: [mx - 0.5, 1.25 + bob, 4.5], look: [mx - 0.7, 1.2, 0], fov: 46, roll: 0.03 }; break;
+    case 1: cam = { pos: [mx + 0.4, 1.3 + bob, 6.0], look: [mx + 0.55, 1.2, 0], fov: 50, roll: 0.03 }; break;
     case 2: cam = path([
       { f: a, pos: [-46.2, 1.0, 2.7], look: [-49.6, 1.25, 0], fov: 50, roll: -0.03 },
       { f: B.celeb + 4, d: 10, pos: [-47.2, 0.6, 2.9], look: [-49.6, 1.7, 0], fov: 50, roll: 0.04 },
@@ -127,8 +127,8 @@ export const camAt = (id: number, f: number): Cam => {
     ], f, 0.003); break;
     case 9: cam = { pos: [mx - 0.3, 1.3 + bob, 3.6], look: [mx - 0.4, 1.25, 0], fov: 44, roll: -0.03 }; break;
     case 10: cam = path([
-      { f: a, pos: [-43.4, 1.5, 6.4], look: [-50.2, 1.8, 0], fov: 50 },
-      { f: B.lanza + 8, d: 10, pos: [-44.2, 1.2, 5.8], look: [-52, 2.8, 0.3], fov: 52, roll: 0.03 },
+      { f: a, pos: [-47.2, 1.3, 4.6], look: [-49.4, 1.5, 0], fov: 50 },
+      { f: B.lanza + 8, d: 10, pos: [-47.6, 1.0, 4.0], look: [-50.4, 2.2, 0.2], fov: 52, roll: 0.03 },
     ], f); break;
     case 11: cam = path([
       { f: a, pos: [-46.9, 1.35, 4.4], look: [-48.9, 1.3, 0], fov: 46 },
