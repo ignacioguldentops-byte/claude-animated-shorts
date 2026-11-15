@@ -1,0 +1,7 @@
+import { build } from "esbuild"; import { createRequire } from 'module'; const { chromium } = createRequire('/opt/node-tools/node_modules/playwright/index.js')('/opt/node-tools/node_modules/playwright/index.js'); import fs from "fs";
+const [out, itemsJson, k = "0.8"] = process.argv.slice(2);
+await build({ entryPoints: ["tools/fxsheet.ts"], bundle: true, outfile: "out/fxsheet.js", format: "iife", logLevel: "error" });
+const b = await chromium.launch(); const pg = await b.newPage();
+await pg.setContent("<html><body></body></html>"); await pg.addScriptTag({ path: "out/fxsheet.js" });
+const url = await pg.evaluate(([it, kk]) => window.sheet(JSON.parse(it), Number(kk)), [fs.readFileSync(itemsJson, "utf8"), k]);
+fs.writeFileSync(out, Buffer.from(url.split(",")[1], "base64")); await b.close();
