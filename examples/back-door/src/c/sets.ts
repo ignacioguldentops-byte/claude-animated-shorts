@@ -79,12 +79,12 @@ export function buildCafe(R: THREE.Object3D): SetRefs {
   return { wallOld, wallNew, shrine, shrineOld, door, doorShut };
 }
 
-const FAC: FacadeOpt[] = [
-  { wall: "#e6a56a", lite: "#f6cf9a", dark: "#b9743e", shutter: "#3f7a5a", seed: 1 },
-  { wall: "#e88a7a", lite: "#f6b8a8", dark: "#b85a50", shutter: "#5a4a3a", seed: 2 },
-  { wall: "#ecd08a", lite: "#f8e8b8", dark: "#c4a45a", shutter: "#3f6a8a", seed: 3 },
-  { wall: "#d9785a", lite: "#f0a88a", dark: "#a8503a", shutter: "#3f7a5a", seed: 4 },
-  { wall: "#f0c0a0", lite: "#fbe0cc", dark: "#c89070", shutter: "#7a4a3a", seed: 5 },
+const FAC: FacadeOpt[] = [ // Lisbon: tiled fronts, ochre, pink, white with coloured shutters
+  { wall: "#e9eef4", lite: "#ffffff", dark: "#9aa8b8", shutter: "#2f5f9a", seed: 1, tile: ["#f4f7fb", "#3f6fb8"] },
+  { wall: "#efc65a", lite: "#fbe6a0", dark: "#c49a3a", shutter: "#2f7a5a", seed: 2 },
+  { wall: "#f0a8a0", lite: "#fbd0c8", dark: "#c07870", shutter: "#7a2f3a", seed: 3 },
+  { wall: "#eef0e4", lite: "#ffffff", dark: "#a8b098", shutter: "#2f7a5a", seed: 4, tile: ["#f4f6ea", "#3f8a5a"] },
+  { wall: "#f6f1e6", lite: "#ffffff", dark: "#b8b0a0", shutter: "#2f5f9a", seed: 5 },
 ];
 const FAC_SEEN = new Set<string>();
 export function buildAlley(R: THREE.Object3D) {

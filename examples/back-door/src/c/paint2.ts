@@ -234,7 +234,7 @@ export const PAINT: Record<string, Painter> = {
 };
 
 // ---------------- Naples facades ----------------
-export type FacadeOpt = { wall: string; lite: string; dark: string; shutter: string; shop?: number; seed: number };
+export type FacadeOpt = { wall: string; lite: string; dark: string; shutter: string; shop?: number; seed: number; tile?: [string, string] };
 /** facade wm x hm metres at 200 px/m. glow = true paints only the lit windows (emissive map). */
 export const facadePainter = (wm: number, hm: number, o: FacadeOpt, glow: boolean): Painter => ({ w: Math.round(wm * 200), h: Math.round(hm * 200), draw: (g, r0) => {
   const M = 200, Wp = wm * M, Hp = hm * M, Y = (m: number) => (hm - m) * M;
@@ -242,6 +242,10 @@ export const facadePainter = (wm: number, hm: number, o: FacadeOpt, glow: boolea
   if (glow) { g.fillStyle = "#000"; g.fillRect(0, 0, Wp, Hp); }
   else {
     plaster(g, r0, 0, 0, Wp, Hp, o.wall, o.lite, o.dark);
+    if (o.tile) { // azulejos: small glazed tiles with a diamond motif, above the ground floor
+      const T = 30, y1 = Y(3.95); for (let y = 66; y < y1; y += T) for (let x = 0; x < Wp; x += T) { g.fillStyle = o.tile[0]; g.fillRect(x, y, T - 1.5, T - 1.5); g.fillStyle = o.tile[1]; g.beginPath(); g.moveTo(x + T / 2, y + 5); g.lineTo(x + T - 5, y + T / 2); g.lineTo(x + T / 2, y + T - 5); g.lineTo(x + 5, y + T / 2); g.closePath(); g.fill(); }
+      g.fillStyle = "rgba(30,20,60,0.08)"; g.fillRect(0, 66, Wp, y1 - 66);
+    }
     g.fillStyle = vgrad(g, Y(3.6), Hp, "rgba(40,20,60,0)", "rgba(40,20,60,0.25)"); g.fillRect(0, Y(3.6), Wp, Hp);
   }
   const floors = Math.floor((hm - 4.0) / 3.3), cols = Math.max(1, Math.round(wm / 2.7)), cw = Wp / cols;
