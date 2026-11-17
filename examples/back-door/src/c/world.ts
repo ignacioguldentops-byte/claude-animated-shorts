@@ -419,7 +419,7 @@ export class World {
       }
       case 15: { // he wanted to take them to dinner, to give something back
         const turn = f >= B.devol;
-        G(STAR_SUIT, 5, c(1.3, 0, 1.25), turn ? { expr: "nervous", armR: "front", holdR: "flower", armL: "hang", look: 1, headTilt: 5 } : { back: true, armR: "front", holdR: "flower" });
+        G(STAR_SUIT, 5, c(1.3, 0, 1.25), turn ? { expr: "nervous", armR: "front", holdR: "flower", armL: "hang", look: 1, headTilt: 5 } : { back: true });
         K("web", 300, 300, fxWeb, c(0.86, 2.06, 0.14), 0.5, 0.5);
         break;
       }
@@ -440,7 +440,7 @@ export class World {
       default: { // ...but by knocking on the same door again
         const k1 = f >= B.knock && f < B.knock + 5, k2 = f >= B.knock + 8 && f < B.knock + 13, dk = doorK(18, f);
         G(STAR_SUIT, 5, c(1.15, 0, 0.95), { back: true, armR: k1 || k2 ? "up" : "hang" });
-        G(PAULA, 9, c(1.95, 0, 1.25), dk > 0.5 ? { back: true, armR: "front", holdR: "flower" } : { facing: -1, expr: "smile", armR: "front", holdR: "flower" });
+        G(PAULA, 9, c(1.95, 0, 1.25), dk > 0.5 ? { back: true } : { facing: -1, expr: "smile", armR: "front", holdR: "flower" });
         if (k1 || k2) K("knock", 200, 200, fxKnock, c(1.4, 1.8, 0.22), 0.45, 0.45, { rot: 0.4 });
         spill(dk);
         break;
