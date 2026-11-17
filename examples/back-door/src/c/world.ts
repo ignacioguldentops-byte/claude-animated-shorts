@@ -10,11 +10,11 @@ import { ctex, rep, rng, grassHD, facadeHD, cloudHD } from "./paint";
 import { Pen, figure, Char, Pose, fxBurst, fxContact, fxPuff, fxStars, fxRing, fxCloud, INK } from "./toon";
 import { fxBall, fxCup, fxConfetti, fxQ, fxFlash, fxZ, fxWeb, fxPlane, fxMoon } from "./props";
 import { fxBurger, fxWho, fxSleeper, fxTear, fxRain, fxRumble, fxSpill, fxKnock, fxHeart } from "./gearc";
-import { FPS, SHOTS, B, V3, camAt, smooth, clamp01, lerp, ramp, lampsAt, AIR, SEAT, WIN, walkX, doorK } from "./story";
+import { FPS, SHOTS, B, V3, camAt, smooth, clamp01, lerp, ramp, lampsAt, AIR, SEAT, WIN, walkX, doorK, BENCH_Z, BENCH_TOP, BENCH_MID } from "./story";
 import { lam, add, box, ground, repT } from "./kit";
 import { buildCafe, buildAlley, buildPlane, SetRefs, NIGHT_MATS, LAMP_MATS, CX, PZ } from "./sets";
 import { buildRoom, buildBooth, HX, BOOTH } from "./sets2";
-import { KID, KID_PJ, KID_TRAVEL, PAL1, PAL2, EDNA, WORKER2, WORKER3, STAR, STAR_SUIT, PAULA, mate } from "./cast";
+import { KID, KID_PJ, KID_TRAVEL, PAL1, PAL2, EDNA, WORKER2, WORKER3, STAR, STAR_SUIT, PAULA, PASS1, PASS2, mate } from "./cast";
 const GX = 52.5;
 const CKEY = new WeakMap<Char, string>();
 const outQ = (x: number) => 1 - (1 - clamp01(x)) ** 3;
@@ -324,29 +324,33 @@ export class World {
     const spill = (k: number) => { if (k > 0.05) K("spill", 256, 256, fxSpill, c(1.25, 0.025, 1.45), 2.4, 2.7, { flat: true, soft: true, glow: 1.3 * k }); };
     const zs = (x: number, y: number, z: number, i: number) => { const t = ((f + i * 17) % 50) / 50; K("z", 120, 120, fxZ, [x + 0.12 + t * 0.2, y + 0.18 + t * 0.4, z + 0.05], 0.1 + t * 0.08, 0.1 + t * 0.08); };
     const cup = (x: number, y: number, z: number, s = 1) => K("cup", 300, 500, fxCup, [x, y, z], 0.56 * s, 0.93 * s);
-    const sitY = -0.2;
+    const CUP_ARM: [number, number, number] = [3, -160, 6], CUP_Y = 2.36; // both hands under the base of the cup, held over the head
+    const STRIDE_KID = 0.269, STRIDE = 0.283;                              // metres per walk cycle (feet stay planted)
+    const bag = (pos: V3) => K("bag", 240, 300, (p) => { p.poly([[40, 60], [200, 54], [210, 290], [36, 292]], "#d9b68a", 9); p.poly([[40, 60], [70, 20], [100, 58], [140, 16], [170, 56], [200, 54]], "#c9a274", 7); p.ell(124, 190, 30, 26, "#b98a5a", 0); }, pos, 0.22, 0.28);
     switch (id) {
-      case 1: { // the star: a cup under the floodlights, then a microphone
+      case 1: { // HOOK: the star lifts a cup under the floodlights, then speaks into a microphone
         if (f < B.tv) {
-          G(STAR, 5, [0, hop(0, 0.1, 3), 0], { expr: "laugh", armL: "up", armR: "up" }); cup(0, 2.3 + hop(0, 0.1, 3), 0.06, 0.85); spark([0.16, 2.6, 0.1], 0.2);
+          const hp = hop(0, 0.08, 3);
+          G(STAR, 5, [0, hp, 0], { expr: "laugh", armL: CUP_ARM, armR: CUP_ARM }); cup(0, CUP_Y + hp, 0.06, 0.85); spark([0.2, 2.75, 0.1], 0.2);
           [[-1.2, -0.4], [1.2, -0.4], [-2.0, 0.2], [2.0, 0.2]].forEach(([x, z], i) => G(mate(i), 20 + i, [x, hop(i + 1, 0.14, 2.6), z], { expr: "laugh", armL: "up", armR: "up", facing: x < 0 ? 1 : -1 }));
-          this.conf(st, f + 40, 0, 1.4, 0.6, 30, 6);
-        } else G(STAR, 5, [0, 0, 0], { expr: "nervous", armR: "chin", holdR: "mic", armL: "hip", look: 1 });
-        this.flashes(st, f, 0.2);
+          this.conf(st, f + 40, 0, 1.4, 0.6, 40, 6);
+        } else G(STAR, 5, [0, 0, 0], { expr: "nervous", armR: "mic", holdR: "mic", armL: "hip", look: 1 });
+        this.flashes(st, f, f < B.tv ? 0.45 : 0.2);
         break;
       }
       case 2: { // three women he cannot find
-        G(STAR, 5, [0, 0, 0], { expr: "nervous", armR: "front", holdR: "mic", armL: "hip", headTilt: -6 });
-        [[-0.78, 2.6], [0, 2.82], [0.78, 2.6]].forEach(([x, y], i) => { const k = pop(a + 4 + i * 10, 10); if (k > 0) K("who|" + i, 300, 440, (p) => fxWho(p, i), [x, y + 0.03 * Math.sin(f * 0.1 + i), 0.1], 0.5 * k, 0.73 * k); });
+        G(STAR, 5, [0, 0, 0], { expr: "nervous", armR: "mic", holdR: "mic", armL: "hip", headTilt: -6 });
+        [[-0.78, 2.6], [0, 2.82], [0.78, 2.6]].forEach(([x, y], i) => { const k = pop(a + 2 + i * 7, 9); if (k > 0) K("who|" + i, 300, 440, (p) => fxWho(p, i), [x, y + 0.03 * Math.sin(f * 0.1 + i), 0.1], 0.5 * k, 0.73 * k); });
         this.flashes(st, f, 0.1);
         break;
       }
-      case 3: { // he owed them a burger
-        K("burger", 400, 320, fxBurger, c(3.5, 0.24, 1.3), 0.52, 0.416); spark(c(3.72, 0.5, 1.4), 0.12 * pop(a + 6, 10)); rain(c(3.5, 0, 1.6), 1);
+      case 3: { // he owed them a burger (it sits on the stone bench by the back door)
+        const k = pop(a, 8);
+        K("burger", 400, 320, fxBurger, c(3.5, BENCH_TOP + 0.2 * k, BENCH_MID), 0.52 * k, 0.416 * k); spark(c(3.74, BENCH_TOP + 0.5, BENCH_MID + 0.1), 0.12 * pop(a + 6, 10)); rain(c(3.5, 0, 1.6), 1);
         break;
       }
       case 4: { // Madeira: one room, three sleeping siblings, the boy awake at the window
-        const turn = f >= B.cuarto + 50;
+        const turn = f >= S.b - 24;
         [[-1.7, 0.77, "#3b2a1c", 0], [-1.7, 1.62, "#16100c", 1], [1.7, 0.77, "#7a4a2a", 2]].forEach(([x, y, hair, i]) => { K(`sleep|${hair}`, 300, 200, (p) => fxSleeper(p, hair as string, i as number), h(x as number, y as number, -2.62), 0.42, 0.28); zs(HX + (x as number), y as number, -2.6, i as number); });
         G(KID_PJ, 5, WIN, turn ? { expr: "nervous", armR: "front", holdR: "ball", look: -1, headTilt: 5 } : { back: true, armR: "front", holdR: "ball" });
         break;
@@ -363,20 +367,20 @@ export class World {
         const cry = f >= B.futb - 20;
         G(KID_TRAVEL, 5, SEAT, { legs: "sit", expr: "nervous", look: 1, armR: "front", holdR: "ball", headTilt: 6 }, { shadow: false });
         if (cry) tears(SEAT[0] + 0.02, 1.13, SEAT[2] - 0.2, 1.1);
-        G(PAULA, 31, [CX + 0.85 - 0.03, 0.17, PZ + 1.07], { legs: "sit", expr: "smile_closed", headTilt: -8 }, { shadow: false }); zs(CX + 0.85, 1.25, PZ + 1.07, 1);
-        G(STAR_SUIT, 32, [CX - 0.85 - 0.03, 0.17, PZ + 0.56], { legs: "sit", expr: "smile_closed", headTilt: 8 }, { shadow: false });
+        G(PASS2, 31, [CX + 0.85 + 0.1, 0.17, PZ + 1.07], { legs: "sit", expr: "smile_closed", headTilt: -8 }, { shadow: false }); zs(CX + 0.95, 1.25, PZ + 1.07, 1);
+        G(PASS1, 32, [CX - 0.85 + 0.1, 0.17, PZ + 0.56], { legs: "sit", expr: "smile_closed", headTilt: 8 }, { shadow: false });
         break;
       }
       case 7: { // the phone booth: he calls her crying
         const sob = f >= B.lloron;
-        G(KID, 5, [BOOTH[0], 0.06, BOOTH[2] - 0.05], { expr: "nervous", armR: "mouth", holdR: "handset", armL: "hang", headTilt: 6 }, { shadow: false, roll: sob ? 0.035 * Math.sin(f * 0.9) : 0 });
+        G(KID, 5, [BOOTH[0], 0.06, BOOTH[2] - 0.05], { expr: "nervous", armR: "ear", holdR: "handset", armL: "hang", headTilt: 6 }, { shadow: false, roll: sob ? 0.03 * Math.sin(f * 0.7) : 0 });
         tears(BOOTH[0] + 0.01, 1.18, BOOTH[2] + 0.12, 1.1); rain([BOOTH[0], 0, BOOTH[2] + 1.2], 1);
         break;
       }
       case 8: { // and at night, hunger
         const mx = walkX(f), k = Math.floor(f / 5) % 2;
         [[KID, 0, 2.4, 5], [PAL1, 0.85, 2.95, 6], [PAL2, 1.6, 2.15, 7]].forEach(([ch, dx, z, sd], i) => {
-          G(ch as Char, sd as number, c(mx + (dx as number), 0, z as number), { legs: "walk", phase: (f - a) / 15 + i * 0.3, facing: -1, expr: i === 2 ? "dazed" : "nervous", armL: "front", armR: "hang", headTilt: 5 });
+          G(ch as Char, sd as number, c(mx + (dx as number), 0, z as number), { legs: "walk", phase: (walkX(a) - mx) / STRIDE_KID + i * 0.3, facing: -1, expr: i === 2 ? "dazed" : "nervous", armL: "front", armR: "hang", headTilt: 5 });
           if ((Math.floor(f / 18) + i) % 3 === 0) K(`rumble|${k}`, 240, 120, (p) => fxRumble(p, k), c(mx + (dx as number) - 0.28, 0.62, (z as number) + 0.15), 0.26, 0.13);
         });
         break;
@@ -384,8 +388,8 @@ export class World {
       case 9: case 10: case 11: { // the door: they knock; three employees open; a paper bag
         const kn = [B.puerta + 6, B.puerta + 14, B.puerta + 22], knocking = id === 9 && kn.some((k0) => f >= k0 && f < k0 + 5);
         if (id === 11 && f >= B.sinp) { // later: the three of them eating on the kerb
-          [[KID, 2.85, 5, "lick"], [PAL1, 3.55, 6, "grin"], [PAL2, 4.25, 7, "smile_closed"]].forEach(([ch, x, sd, ex], i) => G(ch as Char, sd as number, c(x as number, sitY, 1.2), { legs: "sit", expr: ex as Pose["expr"], armR: "mouth", holdR: "burger", armL: "hip", headTilt: i === 1 ? -4 : 4 }, { shadow: false, roll: 0.02 * Math.sin(f * 0.25 + i) }));
-          K("bag", 240, 300, (p) => { p.poly([[40, 60], [200, 54], [210, 290], [36, 292]], "#d9b68a", 9); p.poly([[40, 60], [70, 20], [100, 58], [140, 16], [170, 56], [200, 54]], "#c9a274", 7); p.ell(124, 190, 30, 26, "#b98a5a", 0); }, c(4.75, 0.17, 1.3), 0.22, 0.28);
+          [[KID, 2.98, 5, "lick"], [PAL1, 3.6, 6, "grin"], [PAL2, 4.22, 7, "smile_closed"]].forEach(([ch, x, sd, ex], i) => G(ch as Char, sd as number, c(x as number, 0, BENCH_Z), { legs: "sit", expr: ex as Pose["expr"], armR: "eat", holdR: "burger", armL: "hip", headTilt: i === 1 ? -4 : 4 }, { roll: 0.02 * Math.sin(f * 0.25 + i) }));
+          bag(c(4.85, 0.14, 1.25));
           spill(1); G(EDNA, 41, c(1.05, 0, 0.5), { expr: "smile", facing: 1, armL: "hip" }); break;
         }
         const inside = id === 11, open = id >= 10;
@@ -402,13 +406,13 @@ export class World {
         }
         break;
       }
-      case 12: { // the empty kerb, twenty years later
-        K("wrap", 200, 120, (p) => { p.poly([[14, 100], [50, 30], [150, 22], [190, 96], [120, 112]], "#f1e6cf", 8); p.stroke([[60, 60], [120, 84]], 5, "#d9c9a8"); }, c(3.6 + 0.3 * Math.sin(f * 0.04), 0.14, 1.3), 0.3, 0.18, { rot: 0.2 * Math.sin(f * 0.07) });
-        rain(c(3.5, 0, 1.6), 1); const k = pop(B.porque, 10); if (k > 0) K("q", 200, 250, fxQ, c(3.5, 1.35, 1.3), 0.4 * k, 0.5 * k, { rot: 0.12 * Math.sin(f * 0.2) });
+      case 12: { // the empty bench, twenty years later
+        K("wrap", 200, 120, (p) => { p.poly([[14, 100], [50, 30], [150, 22], [190, 96], [120, 112]], "#f1e6cf", 8); p.stroke([[60, 60], [120, 84]], 5, "#d9c9a8"); }, c(3.6, BENCH_TOP + 0.08, BENCH_MID + 0.1), 0.3, 0.18, { rot: 0.06 * Math.sin(f * 0.07) });
+        rain(c(3.5, 0, 1.6), 1); const k = pop(B.porque, 10); if (k > 0) K("q", 200, 250, fxQ, c(3.6, 1.3, BENCH_MID + 0.1), 0.4 * k, 0.5 * k, { rot: 0.12 * Math.sin(f * 0.2) });
         break;
       }
       case 13: { // that boy ended up winning everything
-        G(STAR, 5, [0, hop(0, 0.14, 3), 0], { expr: "laugh", armL: "up", armR: "up" }); cup(0, 2.3 + hop(0, 0.14, 3), 0.06, 0.85); spark([0.16, 2.6, 0.1], 0.22);
+        G(STAR, 5, [0, hop(0, 0.1, 3), 0], { expr: "laugh", armL: CUP_ARM, armR: CUP_ARM }); cup(0, CUP_Y + hop(0, 0.1, 3), 0.06, 0.85); spark([0.2, 2.75, 0.1], 0.22);
         [[-1.1, -0.2], [1.1, -0.2], [-1.9, 0.3], [1.9, 0.3], [-0.6, -0.9], [0.6, -0.9]].forEach(([x, z], i) => G(mate(i), 20 + i, [x, hop(i + 1, 0.16, 2.6), z], { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: "up", facing: x < 0 ? 1 : -1 }));
         this.conf(st, f - a + 40, 0, 1.4, 0.6, 46, 6); this.flashes(st, f, 0.3);
         break;
@@ -424,17 +428,17 @@ export class World {
         break;
       }
       case 16: { // one of them turned up: Paula
-        const wk = smooth(ramp(f, a + 4, B.paula + 14)), there = f >= B.paula + 14, yes = f >= B.siva;
-        G(STAR_SUIT, 5, c(1.5, 0, 1.3), { facing: 1, expr: yes ? "smile" : there ? "shock" : "nervous", armR: yes ? "reach" : "front", holdR: "flower", armL: "hang", look: 1 });
-        G(PAULA, 9, c(lerp(6.6, 2.42, wk), 0, 1.45), there ? { facing: -1, expr: yes ? "grin" : "smile", armL: yes ? "reach" : "hip", armR: "hip" } : { legs: "walk", phase: (f - a) / 15, facing: -1, expr: "smile" });
-        if (yes) K("heart", 160, 150, fxHeart, c(1.96, 2.3 + 0.2 * clamp01((f - B.siva) / 30), 1.4), 0.16 * pop(B.siva, 10), 0.15 * pop(B.siva, 10));
+        const w0 = a + 4, w1 = B.paula + 14, x0 = 3.5, x1 = 2.42, px = lerp(x0, x1, ramp(f, w0, w1)), there = f >= w1, yes = f >= B.siva, given = f >= B.siva + 14;
+        G(STAR_SUIT, 5, c(1.5, 0, 1.3), { facing: 1, expr: yes ? "smile" : there ? "shock" : "nervous", armR: given ? "hang" : yes ? "reach" : "front", holdR: given ? undefined : "flower", armL: "hang", look: 1 });
+        G(PAULA, 9, c(px, 0, 1.45), there ? { facing: -1, expr: yes ? "grin" : "smile", armL: given ? "front" : "hip", holdL: given ? "flower" : undefined, armR: "hip" } : { legs: "walk", phase: (x0 - px) / STRIDE, facing: -1, expr: "smile" });
+        if (given) { const hk = pop(B.siva + 14, 10); K("heart", 160, 150, fxHeart, c(1.98, 2.2 + 0.12 * clamp01((f - B.siva - 14) / 30), 1.5), 0.3 * hk, 0.28 * hk); }
         K("web", 300, 300, fxWeb, c(0.86, 2.06, 0.14), 0.5, 0.5);
         break;
       }
-      case 17: { // some debts are not paid with money: the two of them on the same kerb
-        G(STAR_SUIT, 5, c(2.95, sitY, 1.2), { legs: "sit", expr: "smile", armR: "mouth", holdR: "burger", armL: "hip", look: 1 }, { shadow: false });
-        G(PAULA, 9, c(3.75, sitY, 1.2), { legs: "sit", expr: "laugh", armL: "mouth", holdL: "burger", armR: "front", holdR: "flower", look: -1 }, { shadow: false, roll: 0.02 * Math.sin(f * 0.3) });
-        K("bag", 240, 300, (p) => { p.poly([[40, 60], [200, 54], [210, 290], [36, 292]], "#d9b68a", 9); p.poly([[40, 60], [70, 20], [100, 58], [140, 16], [170, 56], [200, 54]], "#c9a274", 7); p.ell(124, 190, 30, 26, "#b98a5a", 0); }, c(3.35, 0.17, 1.32), 0.22, 0.28);
+      case 17: { // some debts are not paid with money: the two of them on the same bench
+        G(STAR_SUIT, 5, c(3.1, 0, BENCH_Z), { legs: "sit", expr: "smile", armR: "eat", holdR: "burger", armL: "hip", look: 1 });
+        G(PAULA, 9, c(3.98, 0, BENCH_Z), { legs: "sit", expr: "laugh", armL: "eat", holdL: "burger", armR: "hip", look: -1 }, { roll: 0.02 * Math.sin(f * 0.3) });
+        bag(c(3.54, BENCH_TOP + 0.135, BENCH_MID + 0.1));
         break;
       }
       default: { // ...but by knocking on the same door again
@@ -446,7 +450,7 @@ export class World {
         break;
       }
     }
-    void [spark, lerp, zs];
+    void [spark, lerp, zs, smooth];
     return st;
   }
 

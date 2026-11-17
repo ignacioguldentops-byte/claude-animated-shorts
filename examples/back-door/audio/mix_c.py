@@ -8,10 +8,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ts = open(HERE + "/../src/c/timing.ts").read()
 LINES = json.loads(re.search(r"LINES[^=]*= (\[.*?\]);", ts, re.S).group(1)); FR = int(re.search(r"TOTAL = (\d+)", ts).group(1))
 L = lambda l: LINES[l - 1][0]; E = lambda l: LINES[l - 1][1]; A = lambda l, t=0.0: round(L(l) + (E(l) - L(l)) * t); CUT = 3
-B = dict(tv=A(1, 0.3), tres=A(1, 0.58), burger=A(1, 0.8), antes=L(2) - CUT, cuarto=A(2, 0.45), doce=L(3) - CUT, madre=A(3, 0.52), futb=A(3, 0.84),
-         llama=L(4) - CUT, lloron=A(4, 0.72), hambre=L(5) - CUT, asi=L(6) - CUT, puerta=A(6, 0.42), sobra=A(6, 0.84), abren=L(7) - CUT, edna=A(7, 0.55),
-         dan=L(8) - CUT, sinp=A(8, 0.6), espera=L(9) - CUT, porque=A(9, 0.25), veras=L(10) - CUT, todo=A(10, 0.36), nunca=A(10, 0.56),
-         dijo=L(11) - CUT, devol=A(11, 0.62), una=L(12) - CUT, paula=A(12, 0.3), siva=A(12, 0.75), deudas=L(13) - CUT, misma=L(14) - CUT, knock=A(14, 0.5), end=FR)
+B = dict(tv=A(1, 0.22), tres=A(1, 0.5), burger=A(1, 0.7), antes=L(2) - CUT, cuarto=A(2, 0.14), doce=A(2, 0.36), madre=A(2, 0.62), futb=A(2, 0.9),
+         llama=L(3) - CUT, lloron=A(3, 0.12), hambre=A(3, 0.42), asi=L(4) - CUT, puerta=A(4, 0.36), sobra=A(4, 0.84), abren=L(5) - CUT, edna=A(5, 0.5),
+         dan=L(6) - CUT, sinp=A(6, 0.55), espera=L(7) - CUT, porque=A(7, 0.25), veras=L(8) - CUT, todo=A(8, 0.36), nunca=A(8, 0.56),
+         dijo=L(9) - CUT, devol=A(9, 0.45), una=L(10) - CUT, paula=A(10, 0.25), siva=A(10, 0.68), deudas=L(11) - CUT, misma=L(12) - CUT, knock=A(12, 0.5), end=FR)
 SR = 48000; TOTAL = FR / 30; N = int(TOTAL * SR)
 rng = np.random.default_rng(11)
 VOICE = sys.argv[1]; TAG = sys.argv[2] if len(sys.argv) > 2 else ""
@@ -81,7 +81,7 @@ for b in range(nb):
     t = 0.0
     for m, d in (melM if brt else melm)[b % 4]: at(pn, piano(Am(m), 2.6, 0.9), t0 + t * beat + 0.012, 1.0); t += d
     at(st, strings([Am(k - 12) for k in ch] + [Am(root - 24)], bar + 1.2), t0, 1.0)
-SEC = [(0, B["tres"], 0.0, 0.7), (B["tres"], B["burger"], 0.25, 0.8), (B["burger"], B["espera"], 0.85, 0.8), (B["espera"], B["veras"], 0.4, 0.6), (B["veras"], B["nunca"], 1.0, 1.25),
+SEC = [(0, B["tres"], 0.6, 0.8), (B["tres"], B["burger"], 0.6, 0.8), (B["burger"], B["espera"], 0.85, 0.8), (B["espera"], B["veras"], 0.4, 0.6), (B["veras"], B["nunca"], 1.0, 1.25),
        (B["nunca"], B["una"], 0.8, 0.8), (B["una"], FR - 30, 1.0, 1.0), (FR - 30, FR, 0.0, 0.5)]
 g1 = np.zeros(N); g2 = np.zeros(N)
 for a, b, x1, x2 in SEC: m_ = (tt >= F(a)) & (tt < F(b)); g1[m_] = x1; g2[m_] = x2
@@ -139,8 +139,9 @@ roar(B["veras"] + 4, B["nunca"], 1.3)
 for k in ("tv", "burger", "madre", "edna", "sinp", "todo"): at(sfx, whoosh(0.5, 300, 1800), F(B[k] - 6), 0.3)
 for f0 in (6, 20, 44): at(sfx, shutter(), F(f0), 0.5)
 at(sfx, pop(), F(B["tv"]), 0.4)                                                    # microphone
-for i in range(3): at(sfx, pop(), F(B["tres"] + 4 + i * 10), 0.5)                 # three silhouettes
-at(sfx, sparkle(), F(B["burger"] + 6), 0.5)
+for i in range(3): at(sfx, pop(), F(B["tres"] + 2 + i * 7), 0.5)                 # three silhouettes
+at(sfx, sparkle(), F(B["burger"] + 6), 0.5); at(sfx, thud(70, 0.35), F(B["burger"]), 1.3)   # the burger lands on the cut
+at(sfx, thud(52, 0.7), F(0), 1.7); at(sfx, whoosh(0.5, 200, 3200), F(0), 0.9); at(sfx, sparkle(), F(12), 0.5)   # HOOK: the camera rushes in on the cup
 at(sfx, whoosh(2.4, 150, 900), F(B["doce"] + 4), 0.8)                              # the plane passes
 steps(B["hambre"] + 2, B["asi"], 8, 0.3)
 for k in (B["puerta"] + 6, B["puerta"] + 14, B["puerta"] + 22): at(sfx, thud(150, 0.1), F(k), 1.2)   # knock, knock, knock
@@ -151,7 +152,7 @@ for i in range(4): at(sfx, slide(0.15), F(B["sinp"] + 6 + i * 9), 0.5)
 at(sfx, pop(), F(B["porque"]), 0.5)
 for k in range(3): at(sfx, thud(60, 0.5), F(B["veras"] + 6 + k * 14), 0.7); at(sfx, sparkle(), F(B["veras"] + 8 + k * 14), 0.5)
 steps(B["una"] + 4, B["paula"] + 14, 10, 0.4, 320)                                  # her steps
-at(sfx, sparkle(), F(B["siva"]), 0.6)
+at(sfx, sparkle(), F(B["siva"] + 14), 0.6)
 at(sfx, slide(0.3), F(B["deudas"] + 8), 0.6)
 for k in (B["knock"], B["knock"] + 8): at(sfx, thud(150, 0.1), F(k), 1.2)
 at(sfx, slidew(0.6, 190, 300), F(B["knock"] + 14), 0.5); at(sfx, sparkle(), F(B["knock"] + 22), 0.5)

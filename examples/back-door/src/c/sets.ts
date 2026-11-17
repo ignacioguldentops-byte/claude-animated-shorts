@@ -87,6 +87,8 @@ const FAC: FacadeOpt[] = [ // Lisbon: tiled fronts, ochre, pink, white with colo
   { wall: "#f6f1e6", lite: "#ffffff", dark: "#b8b0a0", shutter: "#2f5f9a", seed: 5 },
 ];
 const FAC_SEEN = new Set<string>();
+/** stone bench against the wall, right of the back door (x relative to CX) */
+export const BENCH = { x0: 2.6, x1: 4.6, z0: 0.6, z1: 1.1, top: 0.29 };
 export function buildAlley(R: THREE.Object3D) {
   const A = (g: THREE.BufferGeometry, m: THREE.Material, cast = false) => add(R, g, m, cast);
   const iron = lam("cIron", () => ({ color: "#2c2a38" })), slab = lam("aSlab", () => ({ color: "#cfc4b4" }));
@@ -148,6 +150,9 @@ export function buildAlley(R: THREE.Object3D) {
     for (let i = 0; i < 6; i++) { const s = new THREE.SphereGeometry(0.1, 10, 8); s.translate(CX + dx - 0.2 + (i % 3) * 0.2, 0.45, 0.45 + Math.floor(i / 3) * 0.22); A(s, lam("fr" + c, () => ({ color: c }))); }
   }
   for (const dx of [0.35, 2.2]) { A(cyl(0.2, 0.15, 0.36, CX + dx, 0.18, 0.42, 14), lam("aPot", () => ({ color: "#c9673a" })), true); const s = new THREE.SphereGeometry(0.3, 12, 10); s.translate(CX + dx, 0.6, 0.42); A(s, lam("aBush", () => ({ color: "#3f8a4a" })), true); }
+  // the stone bench by the back door (the boys eat here; twenty years later it is still there)
+  A(box(CX + BENCH.x0 + 0.08, 0, BENCH.z0 + 0.05, CX + BENCH.x1 - 0.08, BENCH.top - 0.07, BENCH.z1 - 0.05), lam("benchLeg", () => ({ color: "#b9ab94" })), true);
+  A(box(CX + BENCH.x0, BENCH.top - 0.07, BENCH.z0, CX + BENCH.x1, BENCH.top, BENCH.z1), lam("benchTop", () => ({ color: "#e4d8c0" })), true);
 }
 
 export function buildPlane(R: THREE.Object3D) {

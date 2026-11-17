@@ -949,7 +949,7 @@ export const fxBlob = (p: Pen, col: string) => {
 
 // ===================== figure v3: richer cast =====================
 // White bean heads, bigger features, glasses, hats, moustaches, patterned clothes with garments, held props, kneel/sit.
-export type ArmK = "hang" | "hip" | "up" | "wave" | "front" | "chin" | "point" | "pray" | "mouth" | "reach" | "low" | [number, number] | [number, number, number];
+export type ArmK = "hang" | "hip" | "up" | "wave" | "front" | "chin" | "point" | "pray" | "mouth" | "reach" | "low" | "eat" | "ear" | "mic" | [number, number] | [number, number, number];
 export type Hold = "cup" | "camera" | "wallet" | "hair" | "frame" | "cane" | "flower" | "coin" | "rag" | "candle" | "phone" | "bag" | "trophy" | "tweezer" | "pan" | "fork" | "mic" | "scissors" | "plate" | "medal" | "case" | "hook" | "flagES" | "flagDE" | "burger" | "bagP" | "handset" | "ball" | "cupT";
 export type Char = {
   skin?: string; build?: Build; head?: number;
@@ -970,7 +970,10 @@ export type Pose = {
 const ARMS: Record<string, [number, number, number]> = {
   hang: [9, 98, 6], hip: [0, 62, 34], up: [46, -80, 10], wave: [64, -46, 2], front: [-30, 46, 14], chin: [-22, 0, 20], point: [82, 8, -6],
   pray: [-37, 32, 12], mouth: [-25, -12, 20], reach: [74, -16, -2], low: [-18, 74, 10],
+  // drawn over the head (the hand and what it holds stay visible): eating, a phone at the ear, a microphone under the chin
+  eat: [-20, 8, 18], ear: [22, -46, 14], mic: [-24, 16, 18],
 };
+const LATE = new Set(["eat", "ear", "mic"]);
 const holdDraw = (p: Pen, k: Hold, x: number, y: number, u: number, s: number) => {
   const o = 2 * u;
   switch (k) {
@@ -1059,7 +1062,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     const [dx, dy, b] = Array.isArray(a) ? [a[0], a[1], a[2] ?? 8] : ARMS[a ?? "hang"], S = sh(s), hang = !a || a === "hang", fwd = s * sw * (hang ? 1 : 0);
     const Hd: P2 = [S[0] + s * (dx + (hang ? 8 - 6 * Math.max(0, fwd) + 4 * Math.max(0, -fwd) : 0)) * u, S[1] + dy * u - Math.abs(fwd) * 9 * u];
     const E: P2 = [(S[0] + Hd[0]) / 2 + s * b * u, (S[1] + Hd[1]) / 2 + (dy < 20 ? Math.abs(b) * 0.5 * u : 0)];
-    return { pts: [S, E, Hd] as [P2, P2, P2], front: dx < -8, s };
+    return { pts: [S, E, Hd] as [P2, P2, P2], front: dx < -8, s, late: !back && typeof a === "string" && LATE.has(a) };
   };
   const arms = [{ ...mkArm(-1, q.armL), hold: q.holdL }, { ...mkArm(1, q.armR), hold: q.holdR }];
   const drawArm = (a: typeof arms[0]) => {
@@ -1067,7 +1070,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     p.stroke(curve(a.pts[0], a.pts[1], a.pts[2]), 5.4 * u, armCol); p.dot(a.pts[2][0], a.pts[2][1], 6 * u);
     if (a.hold && a.hold !== "cane") holdDraw(p, a.hold, a.pts[2][0], a.pts[2][1] - 5 * u, u * 1.45, a.s);
   };
-  for (const a of arms) if (!a.front) drawArm(a);
+  for (const a of arms) if (!a.front && !a.late) drawArm(a);
   // torso: flat fill -> pattern -> garments -> form shade -> ink ring
   p.path(tp, true); g.fillStyle = c.top; g.fill();
   p.clip(tp, () => {
@@ -1097,7 +1100,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
   if (!back && c.bow) { const y = chin + 0.1 * HH; for (const s of [-1, 1]) p.poly([[tcx, y], [tcx + s * 17 * u, y - 9 * u], [tcx + s * 17 * u, y + 9 * u]], c.bow, 2 * u); p.ell(tcx, y, 4.5 * u, 5 * u, c.bow, 2 * u); }
   if (c.scarf) { const y = chin + 0.08 * HH, [c1, c2] = c.scarf; p.band([[tcx - 0.8 * T.a, y - 2 * u], [tcx, y + 5 * u], [tcx + 0.8 * T.a, y - 2 * u]], c1, 15 * u, 2 * u, "round");
     const tx = tcx + 0.42 * T.a; p.poly(rrect(tx - 9 * u, y, tx + 9 * u, y + 0.62 * HH, 2 * u), c1, 2 * u); for (let i = 0; i < 4; i++) p.band([[tx - 8 * u, y + (0.1 + i * 0.14) * HH], [tx + 8 * u, y + (0.1 + i * 0.14) * HH]], c2, 0.06 * HH, 0, "butt"); }
-  for (const a of arms) if (a.front) drawArm(a);
+  for (const a of arms) if (a.front && !a.late) drawArm(a);
   // ---- head ----
   const Ah = A + headTilt, [cpx, cpy] = rotAbout([300, chin], rad(A), [300, hipY]);
   p.rot = Ah ? [rad(Ah), 300, chin, cpx - 300, cpy - chin] : null;
@@ -1184,4 +1187,5 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     }
   }
   p.rot = null;
+  for (const a of arms) if (a.late) drawArm(a);
 };

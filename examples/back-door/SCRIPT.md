@@ -1,11 +1,10 @@
 # La puerta de atrás — notes
 
-A 62-second vertical short in the house format, in a melancholy key: a famous footballer's childhood, told through one
+A 49-second vertical short in the house format, in a melancholy key: a famous footballer's childhood, told through one
 small true story.
 
 ## What is true (checked)
-- He grew up in Madeira in a small house, sharing a room with his three siblings; as a child he was nicknamed
-  "cry-baby".
+- He grew up in Madeira in a small house, sharing a room with his three siblings (shown, not narrated).
 - At twelve he moved alone to Lisbon (almost a thousand kilometres away) to join a football academy, and he has said he
   cried on the phone to his family.
 - In a 2019 television interview he told how, hungry at night, he and other academy boys knocked on the back door of
@@ -14,9 +13,10 @@ small true story.
 - After the interview one of the women, Paula, came forward on Portuguese radio and said she would accept the dinner.
 
 ## What is staged or simplified
-- All characters are our own bean-head designs; nobody is drawn as a likeness. No brand, logo or club crest appears.
-- The street, the phone booth, the shut door with a cobweb and the last scene (the two of them on the kerb, the door
-  opening again) are staging. The real restaurant closed years ago; whether the dinner took place is not known to us.
+- The narration names the player (first words, as the hook). All characters are our own bean-head designs; nobody
+  is drawn as a likeness. No brand, logo or club crest appears.
+- The street, the phone booth, the stone bench, the shut door with a cobweb and the last scene (the two of them on
+  the bench, the door opening again) are staging. The real restaurant closed years ago; whether the dinner took place is not known to us.
 
 ## Sources
 - https://www.insideedition.com/cristiano-ronaldo-is-searching-for-the-mcdonalds-ladies-who-fed-him-as-a-child-56101
@@ -28,3 +28,11 @@ small true story.
 Same pipeline as `examples/spain-octopus` (narration first, `src/c/timing.ts` drives picture and sound). Sets: the night
 street, burger place, plane cabin and night sky come from the Maradona short's set (`sets.ts`), plus a bedroom and a
 phone booth (`sets2.ts`, `paint4.ts`).
+
+## Second cut (shorter, stronger hook, animation pass)
+- Narration cut from 164 to 123 words (62 s -> 49 s); the first line names the player and the camera rushes in on the
+  cup from frame 0, with an impact sound.
+- A stone bench by the back door: seated figures now sit on real geometry with their feet on the ground.
+- Held items stay visible over the head (`eat`, `ear`, `mic` arm poses in `toon.ts`): burgers, the phone, the microphone.
+- The cup is held with both hands; walk cycles advance one stride per cycle so feet do not slide.
+- `render_c2.sh <range>...` renders any frame ranges as separate pieces.

@@ -20,7 +20,7 @@ def clip(i, text):
 t = 0.12; parts = []; table = []
 for i, (text, gap) in enumerate(LINES):
     a = clip(i, text); table.append([round(t * 30), round((t + len(a) / SR) * 30)]); parts.append((t, a)); t += len(a) / SR + gap
-total = round((t + 1.0) * 30)
+total = round((t + 1.6) * 30)
 mix = np.zeros(int(total / 30 * SR))
 for t0, a in parts: j = int(t0 * SR); mix[j:j + len(a)] += a
 sf.write(f"{HERE}/guide.wav", mix / np.max(np.abs(mix)) * 0.89, SR)

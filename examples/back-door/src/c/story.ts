@@ -1,7 +1,7 @@
 // "La puerta de atrás": timeline of the short. Every beat derives from timing.ts (start/end frame of each narrated line),
 // so the picture re-times itself when the narration changes.
 // Camera grammar from the skill: cuts on big jumps, ease-out glides, every hold creeps, kicks on impacts.
-import { CX, PZ } from "./sets";
+import { CX, PZ, BENCH } from "./sets";
 import { HX, BOOTH } from "./sets2";
 import { LINES, TOTAL as TT } from "./timing";
 import type { LightK } from "./lights";
@@ -21,10 +21,10 @@ const L = (l: number) => LINES[l - 1][0], E = (l: number) => LINES[l - 1][1];
 export const A = (l: number, t = 0) => Math.round(L(l) + (E(l) - L(l)) * t);
 const CUT = 3;
 export const B = {
-  tv: A(1, 0.3), tres: A(1, 0.58), burger: A(1, 0.8), antes: L(2) - CUT, cuarto: A(2, 0.45), doce: L(3) - CUT, madre: A(3, 0.52), futb: A(3, 0.84),
-  llama: L(4) - CUT, lloron: A(4, 0.72), hambre: L(5) - CUT, asi: L(6) - CUT, puerta: A(6, 0.42), sobra: A(6, 0.84), abren: L(7) - CUT, edna: A(7, 0.55),
-  dan: L(8) - CUT, sinp: A(8, 0.6), espera: L(9) - CUT, porque: A(9, 0.25), veras: L(10) - CUT, todo: A(10, 0.36), nunca: A(10, 0.56),
-  dijo: L(11) - CUT, devol: A(11, 0.62), una: L(12) - CUT, paula: A(12, 0.3), siva: A(12, 0.75), deudas: L(13) - CUT, misma: L(14) - CUT, knock: A(14, 0.5), end: TT,
+  tv: A(1, 0.22), tres: A(1, 0.5), burger: A(1, 0.7), antes: L(2) - CUT, cuarto: A(2, 0.14), doce: A(2, 0.36), madre: A(2, 0.62), futb: A(2, 0.9),
+  llama: L(3) - CUT, lloron: A(3, 0.12), hambre: A(3, 0.42), asi: L(4) - CUT, puerta: A(4, 0.36), sobra: A(4, 0.84), abren: L(5) - CUT, edna: A(5, 0.5),
+  dan: L(6) - CUT, sinp: A(6, 0.55), espera: L(7) - CUT, porque: A(7, 0.25), veras: L(8) - CUT, todo: A(8, 0.36), nunca: A(8, 0.56),
+  dijo: L(9) - CUT, devol: A(9, 0.45), una: L(10) - CUT, paula: A(10, 0.25), siva: A(10, 0.68), deudas: L(11) - CUT, misma: L(12) - CUT, knock: A(12, 0.5), end: TT,
 };
 export const AIR: V3 = [CX, 400, 800];
 export type Place = "stadium" | "street" | "home" | "air" | "plane";
@@ -67,9 +67,11 @@ const c = (x: number, y: number, z: number): V3 => [CX + x, y, z];
 const pl = (x: number, y: number, z: number): V3 => [CX + x, y, PZ + z];
 const h = (x: number, y: number, z: number): V3 => [HX + x, y, z];
 // ---------------- shared positions ----------------
-export const DOOR: V3 = c(1.25, 0, 0.15), CURB: V3 = c(3.5, 0, 1.2), SEAT: V3 = pl(-0.03, 0.17, 0.56), WIN: V3 = h(-0.45, 0, -2.55);
+export const DOOR: V3 = c(1.25, 0, 0.15), CURB: V3 = c(3.5, 0, 1.2), SEAT: V3 = pl(0.14, 0.17, 0.56), WIN: V3 = h(-0.45, 0, -2.55);
 /** the three boys walking to the door (shot 8): x of the middle one */
-export const walkX = (f: number) => { const s = SHOTS[7]; return lerp(9.5, 4.6, (f - s.a) / (s.b - s.a)); };
+export const walkX = (f: number) => { const s = SHOTS[7]; return lerp(6.3, 4.75, (f - s.a) / (s.b - s.a)); };
+/** where people sit on the bench (z just in front of its edge) and where things rest on it */
+export const BENCH_Z = BENCH.z1 + 0.05, BENCH_TOP = BENCH.top, BENCH_MID = (BENCH.z0 + BENCH.z1) / 2;
 // ---------------- cameras ----------------
 export type Cam = { pos: V3; look: V3; fov: number; roll: number };
 type Key = { f: number; pos: V3; look: V3; fov?: number; roll?: number; e?: "s" | "o" | "cut"; d?: number };
@@ -90,38 +92,38 @@ const path = (keys: Key[], f: number, creep = 0.0018): Cam => {
   pos = lerp3(look, pos, z);
   return { pos, look, fov, roll };
 };
-export const KICKS: number[] = [B.burger, B.puerta + 6, B.puerta + 14, B.knock, B.knock + 8];
+export const KICKS: number[] = [13, B.burger, B.puerta + 6, B.puerta + 14, B.knock, B.knock + 8];
 const kick = (f: number) => { for (const k of KICKS) { const d = f - k; if (d >= 0 && d < 7) return (d % 2 ? -1 : 1) * 0.03 * (1 - d / 7); } return 0; };
 
 export const camAt = (id: number, f: number): Cam => {
   let cam: Cam; const S = SHOTS[id - 1], a = S.a;
   switch (id) {
-    case 1: cam = path([ // the star under the floodlights -> close: he speaks into a microphone
-      { f: a, pos: [-0.9, 0.6, 4.0], look: [0, 2.0, 0], fov: 54, roll: 0.03 },
-      { f: B.tv, e: "cut", pos: [0.55, 1.65, 2.8], look: [0, 1.6, 0], fov: 42, roll: -0.02 },
+    case 1: cam = path([ // HOOK: the camera rushes in on the star lifting a cup -> close: he speaks into a microphone
+      { f: a, pos: [-2.2, 0.45, 8.6], look: [0, 1.9, 0], fov: 56, roll: 0.06 },
+      { f: a + 13, d: 13, pos: [-0.8, 0.6, 3.7], look: [0, 2.0, 0], fov: 54, roll: 0.03 },
+      { f: B.tv, e: "cut", pos: [0.55, 1.62, 2.7], look: [0, 1.55, 0], fov: 42, roll: -0.02 },
     ], f, 0.0026); break;
     case 2: cam = path([ // three women he cannot find
       { f: a, pos: [0.3, 1.25, 4.2], look: [0, 2.1, 0], fov: 52, roll: 0.02 },
     ], f, 0.003); break;
-    case 3: cam = path([ // a burger on the kerb, in the rain
-      { f: a, pos: c(4.3, 0.55, 2.9), look: c(3.5, 0.24, 1.3), fov: 40, roll: -0.03 },
-      { f: S.b, d: S.b - a, e: "s", pos: c(4.0, 0.5, 2.5), look: c(3.5, 0.26, 1.3), fov: 38, roll: 0 },
+    case 3: cam = path([ // a burger on the stone bench, in the rain
+      { f: a, pos: c(4.35, 0.84, 2.55), look: c(3.5, 0.5, BENCH_MID), fov: 40, roll: -0.03 },
+      { f: S.b, d: S.b - a, e: "s", pos: c(4.05, 0.78, 2.15), look: c(3.5, 0.52, BENCH_MID), fov: 38, roll: 0 },
     ], f); break;
-    case 4: cam = path([ // the room in Madeira -> the boy at the window
-      { f: a, pos: h(0.9, 1.5, 0.4), look: h(-1.7, 1.25, -2.6), fov: 50, roll: 0.02 },
-      { f: B.cuarto - 2, d: 34, e: "s", pos: h(0.6, 1.5, 0.2), look: h(-0.45, 1.3, -2.8), fov: 50, roll: 0 },
-      { f: S.b, d: 50, e: "s", pos: h(0.15, 1.45, -0.9), look: h(-0.45, 1.42, -2.8), fov: 44, roll: -0.02 },
+    case 4: cam = path([ // the room in Madeira: sleeping siblings -> the boy at the window
+      { f: a, pos: h(0.9, 1.5, 0.4), look: h(-1.25, 1.25, -2.6), fov: 50, roll: 0.02 },
+      { f: S.b, d: S.b - a, e: "s", pos: h(0.15, 1.45, -0.9), look: h(-0.45, 1.42, -2.8), fov: 44, roll: -0.02 },
     ], f); break;
     case 5: cam = path([ // a small plane crosses the moon
       { f: a, pos: [AIR[0], AIR[1], AIR[2] + 40], look: [AIR[0], AIR[1] + 2, AIR[2]], fov: 44, roll: -0.04 },
     ], f, 0.0012); break;
     case 6: cam = path([ // the boy alone in his seat
-      { f: a, pos: pl(0.42, 1.5, -1.52), look: pl(0.1, 1.2, 0.56), fov: 54, roll: 0.03 },
-      { f: S.b, d: S.b - a, e: "s", pos: pl(0.2, 1.38, -1.1), look: pl(-0.03, 1.3, 0.56), fov: 44, roll: 0 },
+      { f: a, pos: pl(0.55, 1.5, -1.52), look: pl(0.22, 1.2, 0.56), fov: 54, roll: 0.03 },
+      { f: S.b, d: S.b - a, e: "s", pos: pl(0.32, 1.38, -1.1), look: pl(0.1, 1.3, 0.56), fov: 44, roll: 0 },
     ], f); break;
-    case 7: cam = path([ // the phone booth in the rain -> closer
-      { f: a, pos: c(9.8, 1.9, 3.9), look: [BOOTH[0], 1.3, BOOTH[2]], fov: 50, roll: -0.02 },
-      { f: B.lloron + 10, d: 60, e: "s", pos: [BOOTH[0] + 0.9, 1.45, BOOTH[2] + 2.4], look: [BOOTH[0], 1.3, BOOTH[2]], fov: 40, roll: 0 },
+    case 7: cam = path([ // the phone booth in the rain: he calls home
+      { f: a, pos: [BOOTH[0] + 0.5, 1.5, BOOTH[2] + 3.4], look: [BOOTH[0], 1.25, BOOTH[2]], fov: 44, roll: -0.02 },
+      { f: S.b, d: S.b - a, e: "s", pos: [BOOTH[0] + 0.12, 1.36, BOOTH[2] + 2.2], look: [BOOTH[0], 1.22, BOOTH[2]], fov: 40, roll: 0 },
     ], f); break;
     case 8: { const mx = walkX(f); cam = { pos: c(mx - 3.4, 1.3, 3.6), look: c(mx - 0.1, 1.15, 2.4), fov: 46, roll: 0.02 }; break; }
     case 9: cam = path([ // three boys in front of a closed door
@@ -132,13 +134,13 @@ export const camAt = (id: number, f: number): Cam => {
       { f: a, pos: c(1.6, 2.15, 3.7), look: c(1.3, 1.45, -0.3), fov: 46 },
       { f: B.edna, e: "cut", pos: c(1.48, 1.66, 1.35), look: c(0.98, 1.6, -0.35), fov: 50, roll: 0.03 },
     ], f, 0.0026); break;
-    case 11: cam = path([ // from inside: the bag goes out to the boys -> the three of them eating on the kerb
+    case 11: cam = path([ // from inside: the bag goes out to the boys -> the three of them eating on the bench
       { f: a, pos: c(1.3, 1.6, -1.7), look: c(1.25, 1.3, 0.95), fov: 50, roll: -0.02 },
-      { f: B.sinp, e: "cut", pos: c(3.7, 1.2, 5.2), look: c(3.55, 1.0, 1.2), fov: 50, roll: 0.02 },
+      { f: B.sinp, e: "cut", pos: c(3.6, 1.02, 4.68), look: c(3.6, 0.82, BENCH_Z), fov: 57, roll: 0.02 },
     ], f, 0.0022); break;
-    case 12: cam = path([ // the empty kerb, twenty years of rain
-      { f: a, pos: c(3.7, 1.2, 5.2), look: c(3.55, 1.0, 1.2), fov: 50, roll: 0.02 },
-      { f: S.b, d: S.b - a, e: "s", pos: c(3.1, 3.0, 5.0), look: c(3.3, 0.6, 1.2), fov: 52, roll: -0.02 },
+    case 12: cam = path([ // the empty bench, twenty years of rain
+      { f: a, pos: c(3.6, 1.02, 4.68), look: c(3.6, 0.82, BENCH_Z), fov: 57, roll: 0.02 },
+      { f: S.b, d: S.b - a, e: "s", pos: c(3.1, 2.7, 4.6), look: c(3.45, 0.55, BENCH_MID), fov: 54, roll: -0.02 },
     ], f); break;
     case 13: cam = path([ // the cup
       { f: a, pos: [1.0, 0.6, 4.2], look: [0, 2.1, 0], fov: 54, roll: 0.04 },
@@ -148,7 +150,7 @@ export const camAt = (id: number, f: number): Cam => {
       { f: a, pos: c(3.0, 1.6, 4.5), look: c(1.3, 1.4, 0.2), fov: 50, roll: 0.02 },
       { f: S.b, d: S.b - a, e: "s", pos: c(2.0, 1.45, 3.4), look: c(1.3, 1.35, 0.2), fov: 44, roll: 0 },
     ], f); break;
-    case 15: cam = path([ // the man with the flowers
+    case 15: cam = path([ // the man with the flower
       { f: a, pos: c(2.6, 1.7, 4.7), look: c(1.3, 1.5, 1.0), fov: 48, roll: -0.02 },
       { f: B.devol + 4, d: 14, pos: c(1.9, 1.6, 3.6), look: c(1.3, 1.5, 1.2), fov: 42, roll: 0.02 },
     ], f); break;
@@ -156,8 +158,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: a, pos: c(1.8, 1.6, 5.4), look: c(1.95, 1.5, 1.3), fov: 50, roll: 0.02 },
       { f: B.siva, d: 30, e: "s", pos: c(1.95, 1.6, 4.7), look: c(1.95, 1.45, 1.3), fov: 46, roll: 0 },
     ], f); break;
-    case 17: cam = path([ // the two of them on the kerb with a paper bag
-      { f: a, pos: c(3.3, 1.35, 4.7), look: c(3.35, 1.2, 1.2), fov: 48, roll: -0.02 },
+    case 17: cam = path([ // the two of them on the bench with a paper bag
+      { f: a, pos: c(3.56, 1.12, 4.6), look: c(3.54, 0.94, BENCH_Z), fov: 51, roll: -0.02 },
     ], f, 0.0024); break;
     default: cam = path([ // the same door again -> up over the street
       { f: a, pos: c(1.75, 1.4, 4.4), look: c(1.5, 1.3, 0.3), fov: 46, roll: 0.02 },
@@ -191,7 +193,7 @@ export const lampsAt = (id: number, f: number): Lamp[] => {
     const k = doorK(id, f);
     if (k > 0) Lm.push({ p: c(1.25, 1.7, 0.7), c: "#ffc070", i: 3.6 * k, d: 7 }, { p: c(0.9, 2.3, -2.2), c: "#ffc070", i: 2.6 * k, d: 8 });
     if (id === 7) Lm.push({ p: [BOOTH[0], 2.1, BOOTH[2]], c: "#e8f0ff", i: 2.6 * flick(f, 1), d: 5 });
-    if (id === 3) Lm.push({ p: c(3.6, 1.2, 1.9), c: "#ffd9a0", i: 1.6, d: 4 });
+    if (id === 3) Lm.push({ p: c(3.6, 1.3, 1.7), c: "#ffd9a0", i: 1.6, d: 4 });
   } else if (s.place === "home") {
     Lm.push({ p: h(0, 1.95, -1.7), c: "#ffc070", i: 1.5 * flick(f, 2), d: 6 }, { p: h(-0.4, 1.5, -2.5), c: "#9fb8ff", i: 1.8, d: 5 });
   } else if (s.place === "plane") {

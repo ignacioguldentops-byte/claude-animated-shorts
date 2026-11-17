@@ -14,3 +14,6 @@ export const STAR: Char = { hair: { k: "side", c: "#16100c" }, top: "#c8102e", c
 export const STAR_SUIT: Char = { hair: { k: "side", c: "#2a1d16" }, top: "#2f3a5e", collar: WHITE, tie: "#8a2f3a", buttons: "#c9cdd4", legs: "#2f3a5e", shoes: "#16100c" };
 export const PAULA: Char = { hair: { k: "bun", c: "#8a7a70" }, glasses: "round", earring: "#f2c64a", top: "#7a5a9a", scarf: ["#e9b93c", "#e9b93c"], skirt: "#7a5a9a", legs: "#3b2a30", shoes: "#3a2a22" };
 export const mate = (i: number): Char => ({ hair: { k: (["short", "curly", "side", "bald"] as const)[i % 4], c: ["#2a1d16", "#3b2a1c", "#16100c", "#7a4a2a"][i % 4] }, top: "#c8102e", collar: "#1f7a3a", num: String([3, 5, 8, 10, 11, 14][i % 6]), legs: "#1f7a3a", shorts: "#1f7a3a", bare: true, socks: "#c8102e", shoes: "#f4f1ea", stubble: i % 2 === 0 });
+/** two strangers asleep on the plane */
+export const PASS1: Char = { hair: { k: "bald", c: "#8a7f86" }, stache: "#8a7f86", top: "#7a6a52", collar: "#f7f5ee", legs: "#4a4038", shoes: "#23202a" } as Char;
+export const PASS2: Char = { hair: { k: "long", c: "#7a4a2a" }, top: "#3f8a6a", legs: "#3a3028", shoes: "#23202a" };
