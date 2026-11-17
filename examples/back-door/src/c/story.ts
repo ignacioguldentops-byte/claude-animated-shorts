@@ -163,7 +163,7 @@ export const camAt = (id: number, f: number): Cam => {
     ], f, 0.0024); break;
     default: cam = path([ // the same door again -> up over the street
       { f: a, pos: c(1.75, 1.4, 4.4), look: c(1.5, 1.3, 0.3), fov: 46, roll: 0.02 },
-      { f: S.b - 4, d: S.b - 4 - (B.knock + 12), e: "s", pos: c(5.4, 6.4, 4.5), look: c(1.0, 1.6, 0.9), fov: 56, roll: -0.02 },
+      { f: S.b - 4, d: S.b - 4 - (B.knock + 12), e: "s", pos: c(5.4, 6.4, 4.0), look: c(1.0, 1.6, 0.9), fov: 56, roll: -0.02 },
     ], f); break;
   }
   const k = kick(f);
