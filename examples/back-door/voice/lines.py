@@ -1,6 +1,6 @@
 # The script of "La puerta de atrás" (one entry per line the narrator reads) + pause after each line (seconds).
 LINES = [
- ("Cristiano Ronaldo salió en televisión buscando a tres mujeres. Les debía una hamburguesa.", 0.45),
+ ("Cristiano Ronaldo le debe una hamburguesa a tres mujeres. Y salió en televisión para encontrarlas.", 0.45),
  ("Con doce años dejó Madeira y se fue solo a Lisboa, a casi mil kilómetros de su madre.", 0.40),
  ("La llamaba llorando. Y por las noches, apretaba el hambre.", 0.40),
  ("Así que él y otros chicos llamaban a la puerta de atrás de una hamburguesería, por si sobraba algo.", 0.40),

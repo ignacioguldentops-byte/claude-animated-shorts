@@ -306,7 +306,7 @@ const mouth = (p: Pen, kind: MouthK, mx: number, my: number, u: number, k = 1) =
 /** face v2 (front / 3-4). u = 1 % of the head path width W. Eyes 26u apart on the centre line, brows 20u up, mouth 20u
  *  down, everything slid toward the facing side. No blush, no catchlights. */
 const faceFront = (p: Pen, cx: number, cy: number, W: number, expr: Expr, facing: number, look: number, lid: number, brim: boolean,
-  skin: string, moustache?: string, stout = false) => {
+  skin: string, moustache?: string, stout = false, bw = 1) => {
   const u = W / 100, F = FACE[expr], fx = cx + 7 * u * facing;
   const ex = (F.eye[0] === "shock" ? 12 : 13) * u, ey = cy;
   for (const side of [-1, 1]) {
@@ -315,7 +315,7 @@ const faceFront = (p: Pen, cx: number, cy: number, W: number, expr: Expr, facing
     eye(p, kind, x, ey, u, side, look, skin);
     const [dI, dO] = F.brow, by = ey - (brim ? 17 : 20) * u;
     if (kind === "shock" || kind === "shockHalf") p.arc(x, by - 6 * u, 9 * u, 3 * u, 200, 340, 4 * u);
-    else taper(p, [x - side * 8.5 * u, by + dI * u], [x + side * 8.5 * u, by + dO * u], 5 * u, 2.5 * u);
+    else taper(p, [x - side * (8.5 + 1.5 * (bw - 1)) * u, by + dI * u], [x + side * (8.5 + 2.5 * (bw - 1)) * u, by + dO * u], 5 * u * bw, 2.5 * u * bw);
   }
   const mx = cx + 8 * u * facing, my = cy + 20 * u;
   mouth(p, F.mouth, mx, my, u);
@@ -953,7 +953,8 @@ export type ArmK = "hang" | "hip" | "up" | "wave" | "front" | "chin" | "point" |
 export type Hold = "cup" | "camera" | "wallet" | "hair" | "frame" | "cane" | "flower" | "coin" | "rag" | "candle" | "phone" | "bag" | "trophy" | "tweezer" | "pan" | "fork" | "mic" | "scissors" | "plate" | "medal" | "case" | "hook" | "flagES" | "flagDE" | "burger" | "bagP" | "handset" | "ball" | "cupT";
 export type Char = {
   skin?: string; build?: Build; head?: number;
-  hair?: { k: "curly" | "short" | "bun" | "bald" | "side" | "long" | "tuft"; c: string };
+  hair?: { k: "curly" | "short" | "bun" | "bald" | "side" | "long" | "tuft" | "quiff"; c: string };
+  brows?: number; studs?: string;
   hat?: { k: "coppola" | "scarf" | "beanie" | "bucket" | "cap" | "chef" | "boina"; c: string; c2?: string };
   glasses?: "round" | "sun"; stache?: string; stubble?: boolean; earring?: string;
   top: string; pat?: { k: "v" | "h" | "check" | "dots" | "flower"; c: string };
@@ -964,7 +965,7 @@ export type Char = {
 export type Pose = {
   expr?: Expr; facing?: -1 | 0 | 1; look?: number; blink?: number; tilt?: number; headTilt?: number;
   legs?: "stand" | "walk" | "run" | "kneel" | "sit"; phase?: number; armL?: ArmK; armR?: ArmK; holdL?: Hold; holdR?: Hold;
-  back?: boolean; sweat?: number; light?: number; seed?: number;
+  back?: boolean; sweat?: number; light?: number; seed?: number; wide?: number;
 };
 // hand [dx outward, dy down] in u from the shoulder, elbow bulge outward
 const ARMS: Record<string, [number, number, number]> = {
@@ -1039,7 +1040,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     const L = walk ? (legs === "run" ? 72 : 40) : 0;
     for (const [s, ph] of [[-1, 0], [1, 0.5]] as const) {
       const sn = Math.sin(two * (phase + ph)), up = Math.max(0, sn) * L;
-      const hx = 300 + s * 15 * u, fx = 300 + s * 22 * u + (walk ? facing * 12 * u * Math.cos(two * (phase + ph)) : 0), fy = sole - 4 * u - up;
+      const hx = 300 + s * 15 * u, fx = 300 + s * (22 + (walk ? 0 : q.wide ?? 0)) * u + (walk ? facing * 12 * u * Math.cos(two * (phase + ph)) : 0), fy = sole - 4 * u - up;
       const k: P2 = [(hx + fx) / 2 + s * (1.5 * u + up * 0.16), (hipY + fy) / 2 - up * 0.08];
       drawLeg(curve([hx, hipY], k, [fx, fy]));
       const out = facing || s; foot([fx - out * 3 * u, fy], [fx + out * 13 * u, fy + 0.5 * u]);
@@ -1134,6 +1135,16 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     if (hk === "curly") { const arc = scallop(capPts(0.26), 6, 5); p.poly(arc, hcol, 0); p.stroke([...arc.slice(-6), arc[0]], ow * 0.7); }
     if (hk === "short" || hk === "bun" || hk === "long") { const arc = scallop(capPts(0.3)); p.shadedFill(arc, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(arc, null, ow * 0.9); p.stroke([[cx + (f || 1) * 10 * u, crown + 0.02 * HH], [cx + (f || 1) * 3 * u, crown + 0.2 * HH]], 1.4 * u); }
     if (hk === "side") { const arc = capPts(0.25, 1.03, 0.13 * (f || 1)); p.shadedFill(arc, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(arc, null, ow * 0.9); p.stroke([[cx - (f || 1) * 30 * u, crown + 0.02 * HH], [cx - (f || 1) * 22 * u, crown + 0.17 * HH]], 1.6 * u); }
+    if (hk === "quiff") { // faded sides, a gelled top swept up to a peak on the facing side
+      const d = f || 1, a = H.a, fade = capPts(0.43, 1.012), fc = mix(hcol, skin, 0.45);
+      void fade; p.clip(hp, () => { for (const sg of [-1, 1]) p.poly([[cx + sg * 0.6 * a, crown + 0.1 * HH], [cx + sg * 1.1 * a, crown + 0.1 * HH], [cx + sg * 1.1 * a, crown + 0.47 * HH], [cx + sg * 0.8 * a, crown + 0.45 * HH], [cx + sg * 0.72 * a, crown + 0.3 * HH]], fc, ow * 0.55); });
+      const X = (k: number) => cx + d * k * a, Y = (k: number) => crown + k * HH;
+      const topE: P2[] = [[X(-0.74), Y(0.2)], [X(-0.76), Y(0.06)], [X(-0.6), Y(-0.06)], [X(-0.42), Y(-0.09)], [X(-0.3), Y(-0.06)], [X(-0.14), Y(-0.14)], [X(0.0), Y(-0.1)], [X(0.18), Y(-0.2)], [X(0.3), Y(-0.14)], [X(0.52), Y(-0.26)], [X(0.6), Y(-0.13)], [X(0.76), Y(-0.1)], [X(0.8), Y(0.05)], [X(0.76), Y(0.2)]];
+      const line: P2[] = [[X(0.56), Y(0.18)], [X(0.3), Y(0.13)], [X(0.08), Y(0.18)], [X(-0.2), Y(0.13)], [X(-0.52), Y(0.18)]];
+      const shp = [...topE, ...line]; p.shadedFill(shp, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(shp, null, ow * 0.9);
+      p.stroke([[X(0.1), Y(-0.02)], [X(0.36), Y(-0.09)], [X(0.52), Y(-0.06)]], 3 * u, mix(hcol, "#ffffff", 0.45));
+      p.stroke([[X(-0.3), Y(0.02)], [X(-0.12), Y(-0.03)]], 2.2 * u, mix(hcol, "#ffffff", 0.3));
+    }
     if (hk === "tuft") p.arc(cx + 4 * u, crown - 2 * u, 9 * u, 12 * u, 150, 400, 3 * u, hcol);
   }
   {
@@ -1173,7 +1184,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     if (!back) {
     const brim = !!ht && ht.k !== "scarf", fu = W * 1.08 / 100, fx = cx + 7 * fu * f, ex = 13 * fu, gr = 15.5 * fu;
     if (c.glasses === "round") for (const s of [-1, 1]) p.ell(fx + s * (ex + 2.5 * fu), hc, gr, gr, "#f2f8ff", 0);
-    faceFront(p, cx, hc, W * 1.08, expr, f, look, blink, brim, c.glasses === "round" ? "#f2f8ff" : skin, undefined, false);
+    faceFront(p, cx, hc, W * 1.08, expr, f, look, blink, brim, c.glasses === "round" ? "#f2f8ff" : skin, undefined, false, c.brows ?? 1);
     if (c.glasses) {
       const gx = (s: number) => fx + s * (ex + 2.5 * fu);
       for (const s of [-1, 1]) { p.ell(gx(s), hc, gr, gr, c.glasses === "sun" ? "#2b2636" : null, 3.4 * fu); if (c.glasses === "sun") p.stroke([[gx(s) - 7 * fu, hc - 6 * fu], [gx(s) - 1 * fu, hc - 9 * fu]], 2.2 * fu, "#8f8aa8"); else p.arc(gx(s), hc, gr - 4 * fu, gr - 4 * fu, 205, 250, 2 * fu, "#9cc6ea"); }
@@ -1182,6 +1193,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     }
     if (c.stache) { const mx = cx + 8 * fu * f, my = hc + 13 * fu; for (const s of [-1, 1]) { const pts = curve([mx + s * 1 * fu, my], [mx + s * 14 * fu, my + 7 * fu], [mx + s * 27 * fu, my - 4 * fu], 8); pts.forEach((q0, i) => { if (i) taper(p, pts[i - 1], q0, (9 - i * 0.85) * fu + 3 * fu, (9 - (i + 1) * 0.85) * fu + 3 * fu, INK); }); pts.forEach((q0, i) => { if (i) taper(p, pts[i - 1], q0, (9 - i * 0.85) * fu, (9 - (i + 1) * 0.85) * fu, c.stache!); }); } }
     if (c.stubble) for (let i = 0; i < 14; i++) p.dot(cx + (rnd(seed + i, 41) - 0.5) * 70 * fu + 6 * fu * f, hc + (24 + rnd(seed + i, 42) * 18) * fu, 1.3 * fu, "#8a7f86");
+    if (c.studs) for (const s of [-1, 1]) { const ex2 = cx + s * 0.985 * H.a, ey2 = hc + 0.3 * H.b; p.poly([[ex2, ey2 - 6 * u], [ex2 + 5 * u, ey2], [ex2, ey2 + 6 * u], [ex2 - 5 * u, ey2]], c.studs, 1.5 * u); }
     if (c.earring) p.ell(cx - (f || 1) * 0.96 * H.a, hc + 0.3 * H.b, 5 * u, 5 * u, c.earring, 1.6 * u);
     for (let i = 0; i < (q.sweat ?? 0); i++) { const sx = cx + (i % 2 ? -1 : 1) * (0.72 + 0.08 * i) * H.a, sy = hc - (0.45 - 0.22 * i) * H.b; p.poly([[sx, sy - 9 * u], [sx + 5.5 * u, sy + 2 * u], [sx, sy + 7 * u], [sx - 5.5 * u, sy + 2 * u]], "#a8dcff", 2 * u); }
     }

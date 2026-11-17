@@ -21,7 +21,7 @@ const L = (l: number) => LINES[l - 1][0], E = (l: number) => LINES[l - 1][1];
 export const A = (l: number, t = 0) => Math.round(L(l) + (E(l) - L(l)) * t);
 const CUT = 3;
 export const B = {
-  tv: A(1, 0.22), tres: A(1, 0.5), burger: A(1, 0.7), antes: L(2) - CUT, cuarto: A(2, 0.14), doce: A(2, 0.36), madre: A(2, 0.62), futb: A(2, 0.9),
+  burger: A(1, 0.17), land: A(1, 0.3), tres: A(1, 0.41), tv: A(1, 0.61), antes: L(2) - CUT, cuarto: A(2, 0.14), doce: A(2, 0.36), madre: A(2, 0.62), futb: A(2, 0.9),
   llama: L(3) - CUT, lloron: A(3, 0.12), hambre: A(3, 0.42), asi: L(4) - CUT, puerta: A(4, 0.36), sobra: A(4, 0.84), abren: L(5) - CUT, edna: A(5, 0.5),
   dan: L(6) - CUT, sinp: A(6, 0.55), espera: L(7) - CUT, porque: A(7, 0.25), veras: L(8) - CUT, todo: A(8, 0.36), nunca: A(8, 0.56),
   dijo: L(9) - CUT, devol: A(9, 0.45), una: L(10) - CUT, paula: A(10, 0.25), siva: A(10, 0.68), deudas: L(11) - CUT, misma: L(12) - CUT, knock: A(12, 0.5), end: TT,
@@ -33,9 +33,9 @@ export type ShotDef = { id: number; a: number; b: number; light: Light; place: P
 const MOON: [number, number] = [40, 55];
 const mk = (id: number, a: number, b: number, place: Place, x: Partial<ShotDef> = {}): ShotDef => ({ id, a, b, place, light: "night", sun: place === "stadium" ? undefined : MOON, ...x });
 export const SHOTS: ShotDef[] = [
-  mk(1, 0, B.tres, "stadium"),                       // one of the richest footballers asks for help on TV
-  mk(2, B.tres, B.burger, "stadium"),                // to find three women
-  mk(3, B.burger, B.antes, "street", { rain: 1 }),   // he owed them a burger
+  mk(1, 0, B.burger, "stadium"),                     // HOOK: the player lands his celebration
+  mk(2, B.burger, B.tv, "stadium"),                  // ...he owes a burger (it drops out of the sky) to three women
+  mk(3, B.tv, B.antes, "stadium"),                   // and he went on television to find them
   mk(4, B.antes, B.doce, "home"),                    // a boy from Madeira, one room, three siblings
   mk(5, B.doce, B.madre, "air"),                     // at twelve he left for Lisbon alone
   mk(6, B.madre, B.llama, "plane"),                  // a thousand kilometres from his mother
@@ -52,7 +52,7 @@ export const SHOTS: ShotDef[] = [
   mk(17, B.deudas, B.misma, "street"),               // some debts are not paid with money
   mk(18, B.misma, TT, "street"),                     // ...but by knocking on the same door again
 ];
-export const XFADE: Record<number, number> = { 3: 10, 4: 12, 5: 10, 7: 10, 12: 10, 13: 10, 14: 12, 15: 10, 18: 8 };
+export const XFADE: Record<number, number> = { 4: 12, 5: 10, 7: 10, 12: 10, 13: 10, 14: 12, 15: 10, 18: 8 };
 export const FLASH_AT = -100;
 export const FLASH2 = 100000;
 export const shotAt = (f: number) => SHOTS.find((s) => f >= s.a && f < s.b) ?? SHOTS[SHOTS.length - 1];
@@ -92,26 +92,27 @@ const path = (keys: Key[], f: number, creep = 0.0018): Cam => {
   pos = lerp3(look, pos, z);
   return { pos, look, fov, roll };
 };
-export const KICKS: number[] = [13, B.burger, B.puerta + 6, B.puerta + 14, B.knock, B.knock + 8];
+export const KICKS: number[] = [8, B.land, B.puerta + 6, B.puerta + 14, B.knock, B.knock + 8];
 const kick = (f: number) => { for (const k of KICKS) { const d = f - k; if (d >= 0 && d < 7) return (d % 2 ? -1 : 1) * 0.03 * (1 - d / 7); } return 0; };
 
 export const camAt = (id: number, f: number): Cam => {
   let cam: Cam; const S = SHOTS[id - 1], a = S.a;
   switch (id) {
-    case 1: cam = path([ // HOOK: the camera rushes in on the star lifting a cup -> close: he speaks into a microphone
-      { f: a, pos: [-2.2, 0.45, 8.6], look: [0, 1.9, 0], fov: 56, roll: 0.06 },
-      { f: a + 13, d: 13, pos: [-0.8, 0.6, 3.7], look: [0, 2.0, 0], fov: 54, roll: 0.03 },
-      { f: B.tv, e: "cut", pos: [0.55, 1.62, 2.7], look: [0, 1.55, 0], fov: 42, roll: -0.02 },
-    ], f, 0.0026); break;
-    case 2: cam = path([ // three women he cannot find
-      { f: a, pos: [0.3, 1.25, 4.2], look: [0, 2.1, 0], fov: 52, roll: 0.02 },
+    case 1: cam = path([ // HOOK: the camera rushes in low while he lands his celebration
+      { f: a, pos: [-1.0, 0.45, 4.7], look: [0, 1.9, 0], fov: 58, roll: 0.08 },
+      { f: a + 10, d: 10, pos: [-0.55, 0.55, 3.9], look: [0, 1.45, 0], fov: 54, roll: 0.02 },
+    ], f, 0.004); break;
+    case 2: cam = path([ // a giant burger lands in front of him -> tilt up: three women he cannot find
+      { f: a, pos: [0.9, 0.5, 4.9], look: [0, 1.5, 0.6], fov: 52, roll: -0.04 },
+      { f: B.land + 2, d: 10, pos: [0.75, 0.45, 4.5], look: [0, 0.95, 0.9], fov: 50, roll: -0.02 },
+      { f: B.tres + 10, d: 14, e: "s", pos: [0.35, 0.8, 4.7], look: [0, 1.75, 0.3], fov: 54, roll: 0.02 },
     ], f, 0.003); break;
-    case 3: cam = path([ // a burger on the stone bench, in the rain
-      { f: a, pos: c(4.35, 0.84, 2.55), look: c(3.5, 0.5, BENCH_MID), fov: 40, roll: -0.03 },
-      { f: S.b, d: S.b - a, e: "s", pos: c(4.05, 0.78, 2.15), look: c(3.5, 0.52, BENCH_MID), fov: 38, roll: 0 },
+    case 3: cam = path([ // close: he speaks into a microphone
+      { f: a, pos: [0.75, 1.62, 2.9], look: [0, 1.55, 0], fov: 42, roll: -0.03 },
+      { f: S.b, d: S.b - a, e: "s", pos: [-0.4, 1.6, 2.75], look: [0, 1.6, 0], fov: 40, roll: 0.02 },
     ], f); break;
     case 4: cam = path([ // the room in Madeira: sleeping siblings -> the boy at the window
-      { f: a, pos: h(0.9, 1.5, 0.4), look: h(-1.25, 1.25, -2.6), fov: 50, roll: 0.02 },
+      { f: a, pos: h(0.9, 1.5, 0.4), look: h(-0.95, 1.25, -2.6), fov: 50, roll: 0.02 },
       { f: S.b, d: S.b - a, e: "s", pos: h(0.15, 1.45, -0.9), look: h(-0.45, 1.42, -2.8), fov: 44, roll: -0.02 },
     ], f); break;
     case 5: cam = path([ // a small plane crosses the moon
@@ -129,6 +130,7 @@ export const camAt = (id: number, f: number): Cam => {
     case 9: cam = path([ // three boys in front of a closed door
       { f: a, pos: c(2.6, 1.5, 4.5), look: c(1.25, 1.35, 0.3), fov: 50 },
       { f: B.puerta + 4, d: 16, pos: c(2.5, 1.95, 3.9), look: c(1.2, 1.3, 0.3), fov: 46, roll: -0.03 },
+      { f: B.sobra + 6, d: 16, pos: c(1.3, 1.3, 4.0), look: c(1.0, 1.1, 1.1), fov: 50, roll: 0.02 },
     ], f); break;
     case 10: cam = path([ // the door opens: three employees -> Edna
       { f: a, pos: c(1.6, 2.15, 3.7), look: c(1.3, 1.45, -0.3), fov: 46 },
@@ -166,15 +168,16 @@ export const camAt = (id: number, f: number): Cam => {
       { f: S.b - 4, d: S.b - 4 - (B.knock + 12), e: "s", pos: c(5.4, 6.4, 4.0), look: c(1.0, 1.6, 0.9), fov: 56, roll: -0.02 },
     ], f); break;
   }
-  const k = kick(f);
-  return { ...cam, pos: [cam.pos[0], cam.pos[1] + k, cam.pos[2]], look: [cam.look[0], cam.look[1] + k * 0.6, cam.look[2]] };
+  // hand-held life: a slow sway on every shot, turbulence in the plane
+  const k = kick(f), sw = id === 5 ? 0 : 1, sx = sw * 0.014 * Math.sin(f * 0.11 + id), sy = sw * 0.009 * Math.sin(f * 0.17 + id * 2);
+  const roll = cam.roll + (id === 6 ? 0.014 * Math.sin(f * 0.33) + 0.008 * Math.sin(f * 0.71) : 0.004 * Math.sin(f * 0.09 + id));
+  return { ...cam, roll, pos: [cam.pos[0] + sx, cam.pos[1] + k + sy, cam.pos[2]], look: [cam.look[0], cam.look[1] + k * 0.6, cam.look[2]] };
 };
 
 /** lens blur per beat: cInf px at 1080 (0 = sharp), optional focus point (default: the camera's look point) */
 export const dofAt = (f: number): { cInf: number; focus?: (f: number) => V3 } => {
   const id = shotAt(f).id;
   if (id === 5) return { cInf: 0 };
-  if (id === 3) return { cInf: 14 };
   if (id === 18) return f < B.knock + 12 ? { cInf: 8 } : { cInf: 0 };
   if (id === 12) return { cInf: 5 };
   if (id === 4 || id === 7) return { cInf: 7 };
@@ -193,7 +196,6 @@ export const lampsAt = (id: number, f: number): Lamp[] => {
     const k = doorK(id, f);
     if (k > 0) Lm.push({ p: c(1.25, 1.7, 0.7), c: "#ffc070", i: 3.6 * k, d: 7 }, { p: c(0.9, 2.3, -2.2), c: "#ffc070", i: 2.6 * k, d: 8 });
     if (id === 7) Lm.push({ p: [BOOTH[0], 2.1, BOOTH[2]], c: "#e8f0ff", i: 2.6 * flick(f, 1), d: 5 });
-    if (id === 3) Lm.push({ p: c(3.6, 1.3, 1.7), c: "#ffd9a0", i: 1.6, d: 4 });
   } else if (s.place === "home") {
     Lm.push({ p: h(0, 1.95, -1.7), c: "#ffc070", i: 1.5 * flick(f, 2), d: 6 }, { p: h(-0.4, 1.5, -2.5), c: "#9fb8ff", i: 1.8, d: 5 });
   } else if (s.place === "plane") {
@@ -215,7 +217,7 @@ export const lightingAt = (id: number, f: number): Lighting => {
     if (id === 7) Lg.glows.push({ p: [BOOTH[0], 1.7, BOOTH[2]], r: 1.1, col: "#e8f0ff", a: 0.35 });
     if (id === 12 || id === 14) Lg.tint = { col: "#3a4a8a", a: 0.12 };
   }
-  if (id === 1 || id === 2) Lg.beams = 0.4;
+  if (id <= 3) Lg.beams = 0.4;
   if (id === 13) Lg.beams = 0.45;
   if (id === 4) Lg.glows.push({ p: h(-0.35, 1.4, -2.95), r: 0.9, col: "#9fb8ff", a: 0.35 }, { p: h(0, 2.0, -1.7), r: 0.5, col: "#ffcf80", a: 0.4 });
   if (id === 5) Lg.glows.push({ p: [AIR[0] + 5, AIR[1] + 9, AIR[2] - 30], r: 9, col: "#dfe8ff", a: 0.4 });

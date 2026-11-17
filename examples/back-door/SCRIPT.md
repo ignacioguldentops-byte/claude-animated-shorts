@@ -13,8 +13,9 @@ small true story.
 - After the interview one of the women, Paula, came forward on Portuguese radio and said she would accept the dinner.
 
 ## What is staged or simplified
-- The narration names the player (first words, as the hook). All characters are our own bean-head designs; nobody
-  is drawn as a likeness. No brand, logo or club crest appears.
+- The narration names the player (first words, as the hook). At the owner's request the player is drawn as a
+  bean-head caricature of the real footballer (gelled quiff with faded sides, heavy brows, studs, tanned skin, the
+  number 7, his jump celebration); everyone else is invented. No brand, logo or club crest appears.
 - The street, the phone booth, the stone bench, the shut door with a cobweb and the last scene (the two of them on
   the bench, the door opening again) are staging. The real restaurant closed years ago; whether the dinner took place is not known to us.
 
@@ -36,3 +37,11 @@ phone booth (`sets2.ts`, `paint4.ts`).
 - Held items stay visible over the head (`eat`, `ear`, `mic` arm poses in `toon.ts`): burgers, the phone, the microphone.
 - The cup is held with both hands; walk cycles advance one stride per cycle so feet do not slide.
 - `render_c2.sh <range>...` renders any frame ranges as separate pieces.
+
+## Third cut (likeness, more movement, harder hook)
+- New first line: "Cristiano Ronaldo le debe una hamburguesa a tres mujeres. Y salió en televisión para encontrarlas."
+- Hook: frame 0 is his jump celebration landing, team-mates running in; on "hamburguesa" a giant burger drops out of
+  the sky in front of him; three "?" silhouettes; then the microphone close-up.
+- `toon.ts`: hair kind `quiff`, `brows`, `studs`, pose `wide` (feet apart). `cast.ts`: shared `CR` look for the boy and the man.
+- More action: the boy keeps a ball up in the bedroom, the boys run to the door and fidget while they wait, they jump
+  when the bag comes out, the man walks in with the flower; every camera has a slow hand-held sway (turbulence in the plane).

@@ -8,7 +8,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ts = open(HERE + "/../src/c/timing.ts").read()
 LINES = json.loads(re.search(r"LINES[^=]*= (\[.*?\]);", ts, re.S).group(1)); FR = int(re.search(r"TOTAL = (\d+)", ts).group(1))
 L = lambda l: LINES[l - 1][0]; E = lambda l: LINES[l - 1][1]; A = lambda l, t=0.0: round(L(l) + (E(l) - L(l)) * t); CUT = 3
-B = dict(tv=A(1, 0.22), tres=A(1, 0.5), burger=A(1, 0.7), antes=L(2) - CUT, cuarto=A(2, 0.14), doce=A(2, 0.36), madre=A(2, 0.62), futb=A(2, 0.9),
+B = dict(burger=A(1, 0.17), land=A(1, 0.3), tres=A(1, 0.41), tv=A(1, 0.61), antes=L(2) - CUT, cuarto=A(2, 0.14), doce=A(2, 0.36), madre=A(2, 0.62), futb=A(2, 0.9),
          llama=L(3) - CUT, lloron=A(3, 0.12), hambre=A(3, 0.42), asi=L(4) - CUT, puerta=A(4, 0.36), sobra=A(4, 0.84), abren=L(5) - CUT, edna=A(5, 0.5),
          dan=L(6) - CUT, sinp=A(6, 0.55), espera=L(7) - CUT, porque=A(7, 0.25), veras=L(8) - CUT, todo=A(8, 0.36), nunca=A(8, 0.56),
          dijo=L(9) - CUT, devol=A(9, 0.45), una=L(10) - CUT, paula=A(10, 0.25), siva=A(10, 0.68), deudas=L(11) - CUT, misma=L(12) - CUT, knock=A(12, 0.5), end=FR)
@@ -81,7 +81,7 @@ for b in range(nb):
     t = 0.0
     for m, d in (melM if brt else melm)[b % 4]: at(pn, piano(Am(m), 2.6, 0.9), t0 + t * beat + 0.012, 1.0); t += d
     at(st, strings([Am(k - 12) for k in ch] + [Am(root - 24)], bar + 1.2), t0, 1.0)
-SEC = [(0, B["tres"], 0.6, 0.8), (B["tres"], B["burger"], 0.6, 0.8), (B["burger"], B["espera"], 0.85, 0.8), (B["espera"], B["veras"], 0.4, 0.6), (B["veras"], B["nunca"], 1.0, 1.25),
+SEC = [(0, B["burger"], 0.6, 0.8), (B["burger"], B["antes"], 0.6, 0.8), (B["antes"], B["espera"], 0.85, 0.8), (B["espera"], B["veras"], 0.4, 0.6), (B["veras"], B["nunca"], 1.0, 1.25),
        (B["nunca"], B["una"], 0.8, 0.8), (B["una"], FR - 30, 1.0, 1.0), (FR - 30, FR, 0.0, 0.5)]
 g1 = np.zeros(N); g2 = np.zeros(N)
 for a, b, x1, x2 in SEC: m_ = (tt >= F(a)) & (tt < F(b)); g1[m_] = x1; g2[m_] = x2
@@ -127,9 +127,9 @@ def bed(x, spans, g):
     for a, b in spans: gg[(tt >= F(a)) & (tt < F(b))] = 1
     return x * lp(gg, 2.5) * g
 rainn = hp(lp(rng.standard_normal(N), 9000), 1800) * 0.05 + bp(rng.standard_normal(N), 300, 900) * 0.02
-sfx += bed(rainn, [(B["burger"], B["antes"]), (B["llama"], B["hambre"]), (B["espera"], B["veras"]), (B["nunca"], B["dijo"])], 1.0)
+sfx += bed(rainn, [(B["llama"], B["hambre"]), (B["espera"], B["veras"]), (B["nunca"], B["dijo"])], 1.0)
 crowdn = bp(rng.standard_normal(N), 250, 1100) * (0.6 + 0.4 * lp(np.abs(rng.standard_normal(N)), 3) * 4) * 0.05
-sfx += bed(crowdn, [(0, B["burger"])], 2.6) + bed(crowdn, [(B["veras"], B["nunca"])], 4.0)
+sfx += bed(crowdn, [(0, B["antes"])], 2.6) + bed(crowdn, [(B["veras"], B["nunca"])], 4.0)
 cab = bp(rng.standard_normal(N), 70, 420) * 0.07 + bp(rng.standard_normal(N), 900, 2400) * 0.01
 sfx += bed(cab, [(B["doce"], B["llama"])], 2.2)
 wind = bp(rng.standard_normal(N), 200, 800) * (0.5 + 0.5 * np.sin(tt * 1.1)) * 0.04
@@ -139,9 +139,9 @@ roar(B["veras"] + 4, B["nunca"], 1.3)
 for k in ("tv", "burger", "madre", "edna", "sinp", "todo"): at(sfx, whoosh(0.5, 300, 1800), F(B[k] - 6), 0.3)
 for f0 in (6, 20, 44): at(sfx, shutter(), F(f0), 0.5)
 at(sfx, pop(), F(B["tv"]), 0.4)                                                    # microphone
-for i in range(3): at(sfx, pop(), F(B["tres"] + 2 + i * 7), 0.5)                 # three silhouettes
-at(sfx, sparkle(), F(B["burger"] + 6), 0.5); at(sfx, thud(70, 0.35), F(B["burger"]), 1.3)   # the burger lands on the cut
-at(sfx, thud(52, 0.7), F(0), 1.7); at(sfx, whoosh(0.5, 200, 3200), F(0), 0.9); at(sfx, sparkle(), F(12), 0.5)   # HOOK: the camera rushes in on the cup
+for i in range(3): at(sfx, pop(), F(B["tres"] + i * 6), 0.5)                 # three silhouettes
+at(sfx, sparkle(), F(B["land"] + 3), 0.5); at(sfx, thud(60, 0.5), F(B["land"]), 1.6); at(sfx, whoosh(0.3, 300, 2400), F(B["land"] - 9), 0.7)   # the burger lands on the cut
+at(sfx, thud(52, 0.7), F(8), 1.7); at(sfx, whoosh(0.3, 200, 3200), F(0), 0.9); at(sfx, sparkle(), F(12), 0.5); roar(0, B["burger"] + 6, 1.1)   # HOOK: the camera rushes in on the cup
 at(sfx, whoosh(2.4, 150, 900), F(B["doce"] + 4), 0.8)                              # the plane passes
 steps(B["hambre"] + 2, B["asi"], 8, 0.3)
 for k in (B["puerta"] + 6, B["puerta"] + 14, B["puerta"] + 22): at(sfx, thud(150, 0.1), F(k), 1.2)   # knock, knock, knock
