@@ -138,7 +138,7 @@ export const camAt = (id: number, f: number): Cam => {
     ], f, 0.0022); break;
     case 12: cam = path([ // the empty kerb, twenty years of rain
       { f: a, pos: c(3.7, 1.2, 5.2), look: c(3.55, 1.0, 1.2), fov: 50, roll: 0.02 },
-      { f: S.b, d: S.b - a, e: "s", pos: c(5.2, 3.0, 5.0), look: c(3.3, 0.6, 1.2), fov: 52, roll: -0.02 },
+      { f: S.b, d: S.b - a, e: "s", pos: c(3.1, 3.0, 5.0), look: c(3.3, 0.6, 1.2), fov: 52, roll: -0.02 },
     ], f); break;
     case 13: cam = path([ // the cup
       { f: a, pos: [1.0, 0.6, 4.2], look: [0, 2.1, 0], fov: 54, roll: 0.04 },
@@ -160,7 +160,7 @@ export const camAt = (id: number, f: number): Cam => {
       { f: a, pos: c(3.3, 1.35, 4.7), look: c(3.35, 1.2, 1.2), fov: 48, roll: -0.02 },
     ], f, 0.0024); break;
     default: cam = path([ // the same door again -> up over the street
-      { f: a, pos: c(2.1, 1.35, 3.9), look: c(1.3, 1.3, 0.3), fov: 46, roll: 0.02 },
+      { f: a, pos: c(1.75, 1.4, 4.4), look: c(1.5, 1.3, 0.3), fov: 46, roll: 0.02 },
       { f: S.b - 4, d: S.b - 4 - (B.knock + 12), e: "s", pos: c(5.4, 6.4, 4.5), look: c(1.0, 1.6, 0.9), fov: 56, roll: -0.02 },
     ], f); break;
   }
