@@ -207,8 +207,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - B.publico - 12, e: "s", pos: [FIN_X + 4.4, 4.4, -13.6], look: [FIN_X - 5, 2.4, -17.6], fov: 56, roll: -0.01 },
     ], f); break;
     case 20: cam = path([ // the results board
-      { f: a, pos: [80, 1.7, -12.4], look: [80, 10.4, -21.9], fov: 40, roll: 0.02 },
-      { f: b - 6, d: b - a - 8, e: "s", pos: [80, 1.7, -12.4], look: [80, 4.7, -21.9], fov: 40, roll: -0.01 },
+      { f: a, pos: [80, 1.7, -12.4], look: [80, 8.3, -21.9], fov: 64, roll: 0.02 },
+      { f: b - 8, d: b - a - 12, e: "s", pos: [79.6, 1.7, -12.4], look: [78.75, 4.9, -21.9], fov: 36, roll: -0.01 },
     ], f, 0); break;
     case 21: { // six years later: travelling ahead of the sled, which blasts past us at the line
       const st = sledOf(21, f)!, k = smooth(u / (b - a));
