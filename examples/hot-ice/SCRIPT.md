@@ -52,3 +52,8 @@ Same pipeline as `examples/back-door` (narration first; `src/j/timing.ts` drives
   grandstand, finish arch, results board, a square with chalets, a church and the T-shirt stall) and the island (beach
   with sea, foam, palms, a beach bar, a barracks; a village road running down a hill to the sea).
 - `src/j/story.ts`: 22 shots; `src/j/world.ts`: staging; `audio/mix_j.py`: score and effects.
+- Voice: the picture was timed on a guide narration (`voice/guide.py`); the delivered narration is the Spanish neural
+  voice `es-ES-AlvaroNeural`, laid on the same line slots by `voice/alvaro.py` (per-line speaking rate within +6..+16 %,
+  no stretching). `assemble_j.py` splices re-rendered ranges over the first render, adds the mix and encodes the reel.
+- Staging rule kept after review: nobody stands inside a prop or another character. Groups are spaced so each figure
+  reads on its own; spectators stand on the ground behind the track wall, the crew on the ice inside the channel.

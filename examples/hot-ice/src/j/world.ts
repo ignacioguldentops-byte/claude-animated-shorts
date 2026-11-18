@@ -12,7 +12,7 @@ import { fxConfetti, fxQ, fxFlash } from "./props";
 import { fxSnow, fxFlake, fxAurora, fxThought, fxIce, fxPuddle, fxBreath, fxCoinJ, fxBang, fxFire, fxSun, fxGull, fxSail, fxOuch } from "./gearj";
 import { SHOTS, B, V3, camAt, smooth, clamp01, lerp, ramp, lampsAt, sledOf, sledWorld, SledState, S0, SF, SK, SSTOP } from "./story";
 import { buildCalgary, buildIsland, buildSled, buildCart, Refs, LAMP_MATS, JX, RX, FIN_X, TOWN, ry } from "./setsj";
-import { trackAt, beside, terrain } from "./track";
+import { trackAt, beside, terrain, sNear } from "./track";
 import { racer, racerBare, soldier, SINGER, winter, BROTHER_FAN, BIZ1, BIZ2, TOURIST, sprinter, cartKid, islander, fan, rival } from "./cast";
 const CKEY = new WeakMap<Char, string>();
 const CC = new Map<string, Char>();
@@ -186,7 +186,7 @@ export class World {
           if (id === 6 && sd > 0 && z > -13 && z < -6) continue; if (id !== 4 && (z < -52)) continue;
           G(ISL(i), 100 + i, [RX + x, ry(z) + hop(i, 0.09, 2.6 + (i % 3) * 0.5), z], { facing: (id === 5 ? 0 : -sd) as 1 | 0 | -1, expr: i % 3 === 0 ? "laugh" : "grin", armL: i % 2 ? "up" : "wave", armR: i % 4 === 1 ? "hang" : "up", look: id === 5 ? -sd : 0 }); }
         if (id >= 5) { // the two businessmen
-          const p1 = id === 5 ? r(3.7, 0, -9.7) : r(4.13, 0, -9.75), p2 = id === 5 ? r(4.6, 0, -9.2) : r(3.67, 0, -9.05), idea = f >= B.idea, kb = pop(B.idea, 10), wow = f >= B.idea + 16;
+          const p1 = id === 5 ? r(3.7, 0, -9.7) : r(3.5, 0, -10.0), p2 = id === 5 ? r(4.6, 0, -9.2) : r(2.95, 0, -9.2), idea = f >= B.idea, kb = pop(B.idea, 10), wow = f >= B.idea + 16;
           G(BIZ1, 7, p1, id === 5 ? { facing: -1, expr: "grin", armR: "point", look: -1 } : { expr: wow ? "laugh" : "grin", armR: wow ? "up" : "point", armL: wow ? "up" : "hip", look: idea ? 1 : -1, headTilt: 4 * Math.sin(f * 0.2) }, { roll: wow ? 0.03 * Math.sin(f * 0.5) : 0 });
           G(BIZ2, 8, [p2[0], p2[1] + (wow ? hop(2, 0.08, 2.5) : 0), p2[2]], id === 5 ? { facing: -1, expr: "shock", armL: "chin" } : { expr: idea ? "laugh" : "neutral", armL: idea ? "up" : "chin", armR: idea ? "point" : "hip", look: idea ? 0 : -1, headTilt: idea ? -6 : 6 });
           if (id === 6 && kb > 0) { K("thought", 420, 360, fxThought, [p2[0] - 0.1, p2[1] + 2.9 + 0.03 * Math.sin(f * 0.15), p2[2] + 0.15], 1.3 * kb, 1.11 * kb); spark([p2[0] - 0.6, p2[1] + 3.5, p2[2] + 0.9], 0.16 * pop(B.idea + 4, 10)); }
@@ -196,12 +196,12 @@ export class World {
       }
       case 7: { // "no": the sprinters hear the plan and run for it
         const no = f >= B.no, run0 = B.no + 16, run = f >= run0, d = run ? 0.011 * (f - run0) ** 2 : 0;
-        G(BIZ1, 7, j(-3.1, 0, 4.4), { facing: 1, expr: run ? "pained" : "grin", armR: run ? "hang" : "reach", holdR: "paper", armL: run ? "chin" : "hip", look: 1 });
-        G(BIZ2, 8, j(-4.0, 0, 3.5), { facing: 1, expr: run ? "nervous" : "smile", armL: run ? "mouth" : "wave", look: 1 });
-        for (let i = 0; i < 3; i++) { const x = -1.3 + i * 1.15 + d * (1 + 0.15 * i), z = 4.2 + 0.25 * i;
+        G(BIZ1, 7, j(-3.1, 0, 6.8), { facing: 1, expr: run ? "pained" : "grin", armR: run ? "hang" : "reach", holdR: "paper", armL: run ? "chin" : "hip", look: 1 });
+        G(BIZ2, 8, j(-4.0, 0, 5.9), { facing: 1, expr: run ? "nervous" : "smile", armL: run ? "mouth" : "wave", look: 1 });
+        for (let i = 0; i < 3; i++) { const x = -1.3 + i * 1.15 + d * (1 + 0.15 * i), z = 6.6 + 0.25 * i;
           G(SPR(i), 20 + i, j(x, run ? 0 : 0, z), run ? { legs: "run", phase: d / 0.6 + i * 0.3, facing: 1, expr: "shock", armL: "up", armR: "front" } : { facing: -1, expr: no ? "stern" : "neutral", look: -1, headTilt: no ? 9 * Math.sin((f - B.no) * 0.9 + i) : 0, armL: no && i === 1 ? "hip" : "hang", armR: no ? "hip" : "hang" });
           if (run) for (let k = 0; k < 2; k++) { const kk = (f + k * 8 + i * 3) % 16; dust(JX + x - 0.5 - kk * 0.1, 0, z, kk, 0.75); } }
-        if (no && !run) [0, 1, 2].forEach((i) => { const kq = pop(B.no + i * 3, 8); K("bang", 120, 260, fxBang, j(-1.3 + i * 1.15, 2.45, 4.2 + 0.25 * i), 0.16 * kq, 0.34 * kq, { rot: -0.15 }); });
+        if (no && !run) [0, 1, 2].forEach((i) => { const kq = pop(B.no + i * 3, 8); K("bang", 120, 260, fxBang, j(-1.3 + i * 1.15, 2.45, 6.6 + 0.25 * i), 0.16 * kq, 0.34 * kq, { rot: -0.15 }); });
         K("sun", 256, 256, fxSun, j(700, 90, -260), 170, 170, { soft: true, glow: 1.4 }); K("sail", 200, 200, fxSail, j(60, 2.4, -90), 9, 9); gulls(j(10, 6, -4));
         break;
       }
@@ -214,7 +214,7 @@ export class World {
         break;
       }
       case 9: { // Calgary: the four of them, frozen, cross the square
-        for (let i = 0; i < 5; i++) { const k = [0, 1, 2, 3, 5][i], d = 0.034 * u, px = 2.5 - d + i * 0.7, pz = 6.3 + (i % 2) * 0.6;
+        for (let i = 0; i < 5; i++) { const k = [0, 1, 2, 3, 5][i], d = 0.034 * u, px = -0.6 - d + i * 0.95, pz = 6.6 + (i % 2) * 0.35;
           G(WINT(k), 5 + k, t(px, 0, pz), { legs: "walk", phase: d / STRIDE + i * 0.27, facing: -1, expr: i === 3 ? "dazed" : "nervous", armL: "front", armR: "front", headTilt: 4 }, { roll: 0.025 * Math.sin(f * 1.7 + i) });
           if ((Math.floor(f / 14) + i) % 3 === 0) K("breath", 120, 90, fxBreath, t(px - 0.45, 1.75, pz + 0.05), 0.42, 0.3, { soft: true }); }
         G(FAN(1), 40, t(-1.0, 0, -2.6), { back: true, armR: "point" }); G(FAN(4), 41, t(0.4, 0, -2.4), { back: true }); G(FAN(6), 42, t(-5.6, hop(0, 0.07, 3), 2.2), { facing: 1, expr: "laugh", armL: "up", armR: "up" });
@@ -244,12 +244,13 @@ export class World {
       }
       case 12: { // the grandstand: the brother cheering with his flag... and a helmet arrives
         const give = B.animar, up0 = give - 16, got = f >= give, late = f >= give + 24;
-        [30.7, 31.5, 32.3, 35.3, 36.1, 36.9, 37.7, 29.9].forEach((x, i) => G(FAN(i + 2), 40 + i, [x, 1.25 + (got ? 0 : hop(i, 0.1, 2.6 + (i % 3) * 0.4)), -19.78], got ? { facing: (x < 33.7 ? 1 : -1) as 1 | -1, expr: i % 2 ? "shock" : "grin", armL: i % 3 === 0 ? "chin" : "hang", look: x < 33.7 ? 1 : -1 } : { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: i % 3 ? "up" : "wave" }));
-        G(BROTHER_FAN, 9, [33.7, 1.25 + (got ? 0 : hop(0, 0.14, 2.5)), -19.76], got ? { expr: late ? "nervous" : "shock", armL: "front", holdL: "helm", armR: late ? "chin" : "hang", holdR: late ? undefined : "flagJM", look: late ? 0 : -1, headTilt: late ? 0 : 10, sweat: late ? 2 : 0 } : { expr: "laugh", armR: "wave", holdR: "flagJM", armL: "up", headTilt: 6 * Math.sin(f * 0.3) }, { roll: got ? 0 : 0.04 * Math.sin(f * 0.4) });
-        G(WINT(3), 8, [34.5, 1.25 + (got ? 0 : hop(3, 0.12, 2.8)), -19.77], got ? { facing: -1, expr: "laugh", armL: "point", look: -1 } : { expr: "laugh", armL: "up", armR: "wave" });
-        const py = lerp(-1.3, 0.12, smooth(ramp(f, up0, up0 + 10)));
-        if (f >= up0) G(RACER(0), 5, [33.2, py, -18.85], { back: true, armR: got ? "hang" : "up", holdR: got ? undefined : "helm" }, { shadow: false });
-        if (got) { const kb = pop(give + 2, 9); K("bang", 120, 260, fxBang, [33.72, 3.75, -19.7], 0.16 * kb, 0.35 * kb); }
+        const ZF = -17.98, icy = trackAt(sNear(33, -16)).p.y + 0.04;
+        [30.4, 31.35, 32.3, 36.3, 37.25, 38.2, 39.15, 29.45].forEach((x, i) => G(FAN(i + 2), 40 + i, [x, got ? 0 : hop(i, 0.1, 2.6 + (i % 3) * 0.4), ZF - 0.12 * (i % 2)], got ? { facing: (x < 33.9 ? 1 : -1) as 1 | -1, expr: i % 2 ? "shock" : "grin", armL: i % 3 === 0 ? "chin" : "hang", look: x < 33.9 ? 1 : -1 } : { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: i % 3 ? "up" : "wave" }));
+        G(BROTHER_FAN, 9, [33.9, got ? 0 : hop(0, 0.14, 2.5), ZF], got ? { expr: late ? "nervous" : "shock", armL: "front", holdL: "helm", armR: late ? "chin" : "hang", holdR: late ? undefined : "flagJM", look: late ? 0 : -1, headTilt: late ? 0 : 10, sweat: late ? 2 : 0 } : { expr: "laugh", armR: "wave", holdR: "flagJM", armL: "up", headTilt: 6 * Math.sin(f * 0.3) }, { roll: got ? 0 : 0.04 * Math.sin(f * 0.4) });
+        G(WINT(3), 8, [35.1, got ? 0 : hop(3, 0.12, 2.8), ZF], got ? { facing: -1, expr: "laugh", armL: "point", look: -1 } : { expr: "laugh", armL: "up", armR: "wave" });
+        const kin = smooth(ramp(f, up0 - 4, up0 + 10)), rx = lerp(31.8, 33.55, kin);
+        if (f >= up0 - 4) G(RACER(0), 5, [rx, icy, -16.72], kin < 1 ? { back: true, legs: "walk", phase: (rx - 31.8) / STRIDE, armR: "up", holdR: "helm" } : { back: true, armR: got ? "hang" : "up", holdR: got ? undefined : "helm" }, { shadow: false });
+        if (got) { const kb = pop(give + 2, 9); K("bang", 120, 260, fxBang, [33.92, 2.55, ZF], 0.16 * kb, 0.35 * kb); }
         flashes(0.12); snow(this.camPos(3.5), 0.8, 60, 7);
         break;
       }
@@ -270,7 +271,7 @@ export class World {
           else { const p = run.clone().lerp(seat, tin); G(CH[i], 5 + i, [p.x, p.y + 0.5 * Math.sin(Math.PI * tin), p.z], { legs: "run", phase: dist / 0.62 + i * 0.25, facing: fc, expr: "stern", armL: "reach", armR: "reach", sweat: u > 14 ? 1 : 0 }, { shadow: false }); } }
         if (u > 6 && u < 46) for (let k = 0; k < 2; k++) { const kk = (f + k * 8) % 16, p = w.pos.clone().addScaledVector(w.fwd, -2.6 - kk * 0.12); dust(p.x, p.y, p.z, kk, 0.7); }
         if (u > 44) iceSpray(w, 0.9);
-        for (let i = 0; i < 6; i++) { const p = beside(S0 + 2 + i * 2.6, -3.0 - (i % 2) * 0.7, 0); G(FAN(i + 1), 40 + i, [p[0], terrain(p[0], p[2]) + hop(i, 0.12, 2.4 + (i % 3) * 0.4), p[2]], { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: i % 3 ? "up" : "wave", look: -fc }); }
+        for (let i = 0; i < 6; i++) { const p = beside(S0 + 2 + i * 2.6, -4.7 - (i % 2) * 0.9, 0); G(FAN(i + 1), 40 + i, [p[0], terrain(p[0], p[2]) + hop(i, 0.12, 2.4 + (i % 3) * 0.4), p[2]], { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: i % 3 ? "up" : "wave", look: -fc }); }
         aurora(); snow(this.camPos(5), 0.6, 70, 9);
         break;
       }
@@ -289,9 +290,8 @@ export class World {
           if (stopped) this.stars(st, w.pos.x - F.sg * F.r.x * 1.2, w.pos.y + 1.2, w.pos.z - F.sg * F.r.z * 1.2, f);
         } else { // out of the sled, one by one, onto their feet
           this.setSled(0, w);
-          const ux = w.up.dot(this.right), uy = w.up.dot(this.camU) + 0.3, roll0 = Math.atan2(-ux, uy);
-          for (let i = 0; i < 4; i++) { const tt = smooth(ramp(f, a + 1 + i * 5, a + 11 + i * 5)), seat = w.pos.clone().addScaledVector(w.fwd, 0.25 - i * 0.55).addScaledVector(w.up, 0.06), std = new THREE.Vector3(...beside(SSTOP + 0.6 - i * 0.75, -F.sg * (1.15 + (i % 2) * 0.35), 0.03)), p = seat.clone().lerp(std, tt);
-            G(CH[i], 5 + i, [p.x, p.y + 0.35 * Math.sin(Math.PI * tt), p.z], tt < 0.5 ? { legs: "sit", expr: "dazed", armL: "front", armR: "front" } : { expr: i === 0 ? (f > a + 22 ? "relief" : "pained") : i === 3 ? "dazed" : "pained", armL: i % 2 ? "chin" : "hang", armR: i === 0 ? "hip" : "hang", headTilt: 6 * Math.sin(f * 0.15 + i) }, { roll: roll0 * (1 - tt), shadow: tt > 0.9 }); }
+          for (let i = 0; i < 4; i++) { const f0 = a + 3 + i * 5, upK = ramp(f, f0, f0 + 6), p = beside(SSTOP + 1.5 - i * 0.95, -F.sg * (0.62 + (i % 2) * 0.12), 0.03);
+            G(CH[i], 5 + i, [p[0], p[1] + 0.16 * Math.sin(Math.PI * upK), p[2]], upK < 0.5 ? { legs: "kneel", expr: "dazed", armL: "low", armR: "low", headTilt: 8 * Math.sin(f * 0.3 + i) } : { expr: i === 0 ? (f > a + 20 ? "relief" : "pained") : i === 3 ? "dazed" : "pained", armL: i % 2 ? "chin" : "hang", armR: i === 0 ? "hip" : "hang", headTilt: 5 * Math.sin(f * 0.15 + i) }, { shadow: false }); }
           this.stars(st, beside(SSTOP - 1.65, -F.sg * 1.5, 0)[0], w.pos.y + 2.0, beside(SSTOP - 1.65, -F.sg * 1.5, 0)[2], f);
         }
         aurora(); snow(this.camPos(4), 0.6, 60, 8);
@@ -300,8 +300,8 @@ export class World {
       case 19: { // they walk it to the line; everybody is standing
         const w = w0!, F = w.F as ReturnType<typeof trackAt>, d = sled0!.s - (SF - 9), cheer = f >= B.publico - 20;
         this.setSled(0, w);
-        ([[-0.78, 0.45], [0.78, -0.15], [-0.78, -0.95], [0.78, -1.55]] as number[][]).forEach(([lat, dz], i) => { const p = w.pos.clone().addScaledVector(w.fwd, dz).addScaledVector(F.r, lat);
-          G(CH[i], 5 + i, [p.x, F.p.y + 0.05, p.z], { legs: "walk", phase: d / STRIDE + i * 0.27, expr: cheer ? (i === 0 ? "smile" : i === 3 ? "grin" : "relief") : i === 3 ? "dazed" : "pained", armL: lat > 0 ? "low" : i === 0 && cheer ? "wave" : "hang", armR: lat < 0 ? "low" : i === 1 && cheer ? "wave" : "hang", headTilt: cheer ? 0 : 8 }, { shadow: false }); });
+        ([[0.86, 0.5], [-0.86, 0.5], [0.3, -2.4], [-0.3, -2.4]] as number[][]).forEach(([lat, dz], i) => { const p = w.pos.clone().addScaledVector(w.fwd, dz).addScaledVector(F.r, lat);
+          G(CH[i], 5 + i, [p.x, F.p.y + 0.05, p.z], { legs: "walk", phase: d / STRIDE + i * 0.27, expr: cheer ? (i === 0 ? "smile" : i === 3 ? "grin" : "relief") : i === 3 ? "dazed" : "pained", armL: i > 1 ? "front" : i === 1 ? "low" : cheer ? "wave" : "hang", armR: i > 1 ? "front" : i === 0 ? "low" : cheer ? "wave" : "hang", headTilt: cheer ? 0 : 8 }, { shadow: false }); });
         for (let i = 0; i < 9; i++) { const x = FIN_X - 9 + i * 1.05; G(FAN(i), 40 + i, [x, cheer ? hop(i, 0.12, 2.5 + (i % 3) * 0.4) : 0, -13.2], { facing: -1, expr: cheer ? (i % 2 ? "laugh" : "grin") : "nervous", armL: cheer ? "up" : "hang", armR: cheer ? (i % 3 ? "up" : "wave") : "chin" }); }
         for (let i = 0; i < 9; i++) { const x = FIN_X - 9.5 + i * 1.1; G(FAN(i + 9), 60 + i, [x, cheer ? hop(i + 4, 0.12, 2.7 + (i % 3) * 0.3) : 0, -18.75], { expr: cheer ? (i % 2 ? "grin" : "laugh") : "shock", armL: cheer ? (i % 3 ? "up" : "wave") : "chin", armR: cheer ? "up" : "hang" }); }
         if (cheer) flashes(0.2); snow(this.camPos(5), 0.8, 80, 10);

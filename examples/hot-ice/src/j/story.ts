@@ -154,12 +154,12 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - a, e: "s", pos: r(-0.9, ry(-6) + 0.7, -6), look: r(0.4, ry(-22) + 1.0, -22), fov: 56, roll: 0.03 },
     ], f); break;
     case 6: cam = path([ // the two businessmen at the roadside
-      { f: a, pos: r(-0.9, ry(-12.6) + 1.7, -12.6), look: r(3.9, ry(-9.4) + 1.45, -9.4), fov: 48, roll: 0.02 },
-      { f: B.idea + 6, d: 16, pos: r(-0.4, ry(-12.2) + 1.8, -12.2), look: r(3.85, ry(-9.4) + 2.0, -9.35), fov: 48, roll: -0.02 },
+      { f: a, pos: r(-0.9, ry(-12.6) + 1.7, -12.6), look: r(3.3, ry(-9.6) + 1.45, -9.6), fov: 48, roll: 0.02 },
+      { f: B.idea + 6, d: 16, pos: r(-0.4, ry(-12.2) + 1.8, -12.2), look: r(3.2, ry(-9.6) + 2.0, -9.55), fov: 50, roll: -0.02 },
     ], f); break;
     case 7: cam = path([ // along the beach: the sprinters hear the idea
-      { f: a, pos: j(-8.8, 1.5, 7.8), look: j(-1.9, 1.2, 4.2), fov: 46, roll: -0.02 },
-      { f: b, d: b - a, e: "s", pos: j(-8.0, 1.45, 7.5), look: j(0.2, 1.2, 4.2), fov: 44, roll: 0.02 },
+      { f: a, pos: j(-8.8, 1.5, 10.2), look: j(-2.3, 1.2, 6.5), fov: 52, roll: -0.02 },
+      { f: b, d: b - a, e: "s", pos: j(-8.0, 1.45, 9.9), look: j(0.2, 1.2, 6.6), fov: 44, roll: 0.02 },
     ], f); break;
     case 8: cam = path([ // sunset on the parade ground: along the line of soldiers, ending on the singer
       { f: a, pos: j(-4.6, 1.5, 13.8), look: j(-3.0, 1.4, 18.4), fov: 46, roll: -0.02 },
@@ -167,7 +167,7 @@ export const camAt = (id: number, f: number): Cam => {
     ], f); break;
     case 9: cam = path([ // Calgary: the square, the hill with the track, the mountains
       { f: a, pos: t(2.5, 3.4, 15), look: t(-2.5, 4.6, -20), fov: 54, roll: 0.02 },
-      { f: b, d: b - a, e: "s", pos: t(1.2, 1.9, 10.5), look: t(-1.2, 2.4, -6), fov: 50, roll: -0.02 },
+      { f: b, d: b - a, e: "s", pos: t(0.2, 2.2, 14.2), look: t(-0.9, 1.9, -6), fov: 54, roll: -0.02 },
     ], f); break;
     case 10: cam = path([ // the stall
       { f: a, pos: t(1.4, 1.75, 1.6), look: t(0.1, 1.55, -4.6), fov: 48, roll: 0.02 },
@@ -178,8 +178,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: B.slip + 14, d: 10, pos: t(5.2, 0.8, 9.0), look: t(4.6, 0.6, 3.6), fov: 50, roll: 0.03 },
     ], f); break;
     case 12: cam = path([ // the grandstand: the brother with his flag
-      { f: a, pos: [35.0, 2.6, -14.6], look: [33.7, 2.75, -19.8], fov: 52, roll: 0.02 },
-      { f: B.animar + 8, d: 18, pos: [34.3, 2.7, -15.6], look: [33.7, 2.85, -19.8], fov: 46, roll: -0.02 },
+      { f: a, pos: [34.95, 2.0, -12.7], look: [34.15, 1.25, -17.9], fov: 50, roll: 0.02 },
+      { f: B.animar + 8, d: 18, pos: [34.55, 1.9, -13.1], look: [34.05, 1.3, -17.9], fov: 48, roll: -0.02 },
     ], f); break;
     case 13: cam = path([ // the top of the track: from behind the four, up and over the drop
       { f: a, pos: [0.9, 26.3, -155.3], look: [0, 25.4, -148], fov: 52, roll: 0.03 },
@@ -195,16 +195,16 @@ export const camAt = (id: number, f: number): Cam => {
       const st = sledOf(16, f)!;
       cam = { pos: beside(st.s + 8.5 - 0.08 * u, inner(SK) * 0.6, 0.75), look: sledP(16, f, 0.4), fov: 52, roll: 0.07 }; break; }
     case 17: { // low in the channel, ahead of the sled sliding on its side
-      const s = sledOf(17, f)!.s, d = lerp(4.6, 3.3, smooth(u / (b - a)));
-      cam = { pos: beside(s + d, inner(SK) * 0.25, 0.42), look: sledP(17, f, 0.35), fov: 50, roll: -0.05 }; break; }
+      const st = sledOf(17, f)!, s = st.s, d = lerp(5.0, 4.0, smooth(u / (b - a))), w = sledWorld(st), lk = w.pos.clone().addScaledVector(w.up, 0.45);
+      cam = { pos: beside(s + d, inner(SK) * 0.95, 0.5), look: [lk.x, lk.y + 0.3, lk.z], fov: 50, roll: -0.05 }; break; }
     case 18: cam = path([ // it has stopped: they crawl out
-      { f: a, pos: beside(SSTOP + 0.4, inner(SK) * 7.4, 1.7), look: v3(sledAt(SSTOP - 0.4).pos, 0.9), fov: 50, roll: 0.03 },
-      { f: b, d: b - a, e: "s", pos: beside(SSTOP + 0.1, inner(SK) * 6.6, 1.6), look: v3(sledAt(SSTOP - 0.4).pos, 1.0), fov: 48, roll: 0 },
+      { f: a, pos: beside(SSTOP + 0.4, inner(SK) * 7.4, 1.9), look: v3(sledAt(SSTOP + 0.05).pos, 0.9), fov: 57, roll: 0.03 },
+      { f: b, d: b - a, e: "s", pos: beside(SSTOP + 0.1, inner(SK) * 6.9, 1.8), look: v3(sledAt(SSTOP + 0.05).pos, 1.0), fov: 56, roll: 0 },
     ], f); break;
     case 19: cam = path([ // walking to the line, the crowd on its feet
-      { f: a, pos: [FIN_X + 0.6, 1.9, -14.9], look: [FIN_X - 8.6, 1.5, -16.2], fov: 50, roll: -0.02 },
-      { f: B.publico + 10, d: 40, e: "s", pos: [FIN_X + 2.4, 2.3, -14.4], look: [FIN_X - 6.4, 1.7, -16.6], fov: 52, roll: 0.02 },
-      { f: b, d: b - B.publico - 12, e: "s", pos: [FIN_X + 4.4, 4.4, -13.6], look: [FIN_X - 5, 2.4, -17.6], fov: 56, roll: -0.01 },
+      { f: a, pos: [FIN_X + 0.6, 2.4, -15.4], look: [FIN_X - 8.6, 1.25, -16.05], fov: 50, roll: -0.02 },
+      { f: B.publico + 10, d: 40, e: "s", pos: [FIN_X + 2.4, 2.6, -15.0], look: [FIN_X - 6.4, 1.5, -16.3], fov: 52, roll: 0.02 },
+      { f: b, d: b - B.publico - 12, e: "s", pos: [FIN_X + 4.4, 4.4, -14.2], look: [FIN_X - 5, 2.4, -17.2], fov: 56, roll: -0.01 },
     ], f); break;
     case 20: cam = path([ // the results board
       { f: a, pos: [80, 1.7, -12.4], look: [80, 8.3, -21.9], fov: 64, roll: 0.02 },
