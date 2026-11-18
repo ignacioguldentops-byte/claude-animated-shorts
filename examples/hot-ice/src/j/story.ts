@@ -84,7 +84,7 @@ export const sledOf = (id: number, f: number): SledState | undefined => {
     case 1: { const s = SH - 40 + 1.2 * u; return { s, phi: ride(s) }; }
     case 3: { const s = SK - 10 + 0.5 * u - 0.0026 * u * u; return { s, phi: 0.95 + 0.72 * smooth(u / 70) + 0.04 * Math.sin(u * 0.9), shake: ramp(u, 40, 80) }; }
     case 13: return { s: S0 + 4.2, phi: 0 };
-    case 14: { const s = S0 + 0.2 + 0.0072 * u * u; return { s, phi: ride(s) }; }
+    case 14: { const s = S0 + 0.2 + 25 * Math.pow(u / (S(14).b - a), 1.6); return { s, phi: ride(s) }; }
     case 15: { const s = S15 + 1.15 * u; return { s, phi: ride(s) }; }
     case 16: case 17: case 18: { // one continuous crash: up the wall, over, sliding on its side to a stop
       const q = f - B.vuelcan, s = q <= 20 ? SK - 8 + 0.75 * q : SK + 7 + 0.75 * (q - 20) - (0.75 * (q - 20) ** 2) / 124, sEnd = SK + 7 + 0.75 * 62 - (0.75 * 62 * 62) / 124;
@@ -186,11 +186,11 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - a, e: "s", pos: [0.4, 29.4, -153.4], look: [-0.6, 15, -122], fov: 64, roll: -0.03 },
     ], f, 0); break;
     case 14: { // push start: travelling beside them, then it lets them go down the hill
-      const cs = S0 + 1.6 + 22 * (1 - Math.exp(-(u * u) / 3050));
-      cam = { pos: beside(cs, 3.9, 2.1), look: sledP(14, f, 0.6), fov: 50, roll: -0.02 + 0.04 * smooth(u / 80) }; break; }
+      const k = u / (b - a), cs = S0 + 1.6 + 0.8 * (sledOf(14, f)!.s - S0);
+      cam = { pos: beside(cs, lerp(3.9, 3.3, k), lerp(2.1, 2.7, k)), look: sledP(14, f, 0.6), fov: lerp(50, 54, k), roll: -0.02 + 0.04 * smooth(u / 80) }; break; }
     case 15: { // chase down the S-bends
-      const s = sledOf(15, f)!.s, p = v3(sledAt(s - 5.5).pos, 2.3), lk = v3(sledAt(s + 5).pos, 0.4), bank = trackAt(s).b * trackAt(s).sg;
-      cam = { pos: p, look: lk, fov: 60, roll: -0.16 * bank }; break; }
+      const s = sledOf(15, f)!.s, p = v3(sledAt(s - 6, 0.55 * ride(s - 6)).pos, 2.4), q = sledP(15, f, 0.5), ah = sledAt(s + 6, 0.5 * ride(s + 6)).pos, bank = trackAt(s).b * trackAt(s).sg;
+      cam = { pos: p, look: [lerp(q[0], ah.x, 0.3), lerp(q[1], ah.y + 0.4, 0.3), lerp(q[2], ah.z, 0.3)], fov: 60, roll: -0.16 * bank }; break; }
     case 16: { // the big curve again, from further back: this time it goes over
       const st = sledOf(16, f)!;
       cam = { pos: beside(st.s + 8.5 - 0.08 * u, inner(SK) * 0.6, 0.75), look: sledP(16, f, 0.4), fov: 52, roll: 0.07 }; break; }
