@@ -42,3 +42,8 @@ Same pipeline as `examples/hot-ice` (narration first; `src/k/timing.ts` drives p
   station with the train; today's floodlights and crowd for the last two shots.
 - `src/k/story.ts`: 24 shots and their cameras; `src/k/world.ts`: staging; `audio/mix_k.py`: score and effects.
 - Staging rule: nobody stands inside a prop or another character; groups are spaced so each figure reads on its own.
+- Render: `render_k.sh <range>...` writes `part_<range>.mp4`; `assemble_k.py <mix.wav> <out.mp4>` joins them (later
+  ranges override earlier ones), adds the mix and encodes under 30 MB.
+
+## Result
+`sin_limite_reel.mp4`: 1080x1920, 30 fps, 51.9 s, 28.6 MB, -14 LUFS. `preview.jpg`: six frames of the cut.

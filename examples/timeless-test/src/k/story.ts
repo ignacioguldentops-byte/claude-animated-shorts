@@ -181,7 +181,7 @@ export const camAt = (id: number, f: number): Cam => {
     case 18: { // they run: along the pitch with the striker, then the scoreboard, three lamps short
       const z = runZ(f), sb = a + 68;
       if (f < sb) cam = { pos: [6.4, 1.35, z * 0.72 + 1.2], look: [0, 1.0, z * 0.9], fov: 50, roll: 0.02 * Math.sin(u * 0.2) };
-      else cam = path([{ f: sb, pos: [3, 2.0, 16], look: [0.5, 8.6, -78], fov: 13, roll: 0 }, { f: b, d: b - sb, e: "s", pos: [3, 2.0, 16], look: [4.9, 9.75, -78], fov: 6.6, roll: 0.01 }], f, 0);
+      else cam = path([{ f: sb, pos: [3, 11, 16], look: [0.5, 8.6, -78], fov: 13, roll: 0 }, { f: b, d: b - sb, e: "s", pos: [3, 11, 16], look: [4.9, 9.75, -78], fov: 6.6, roll: 0.01 }], f, 0);
       break; }
     case 19: cam = path([ // the first drop on his nose, then all of it
       { f: a, pos: [3.0, 1.45, 11.6], look: [-0.3, 1.25, 8.9], fov: 40, roll: 0.02 },
