@@ -136,8 +136,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - a - 18, e: "s", pos: h(8, 3.0, 21.5), look: h(1, 13, -10), fov: 70, roll: -0.03 },
     ], f, 0); break;
     case 5: cam = path([ // Durban: the whole ground from the air
-      { f: a, pos: [52, 50, 104], look: [-12, 2, -4], fov: 50, roll: 0.03 },
-      { f: b, d: b - a, e: "s", pos: [26, 19, 62], look: [-8, 3, -8], fov: 52, roll: -0.02 },
+      { f: a, pos: [84, 52, 46], look: [-30, 4, 0], fov: 50, roll: 0.03 },
+      { f: b, d: b - a, e: "s", pos: [40, 17, 20], look: [-34, 5, 0], fov: 52, roll: -0.02 },
     ], f, 0); break;
     case 6: cam = path([ // the two captains shake on it
       { f: a, pos: [7.4, 1.6, 1.4], look: [0, 1.25, 0], fov: 46, roll: -0.02 },

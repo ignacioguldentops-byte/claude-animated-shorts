@@ -21,3 +21,6 @@ export const fxSteam = (p: Pen, dark = false) => { const g = p.g, gr = g.createR
 export const fxWatch = (p: Pen) => { p.stroke([[60, 20], [74, 4], [96, 10]], 5, "#c9a24a"); p.ell(60, 66, 40, 40, "#f2c64a", 8); p.ell(60, 66, 28, 28, "#fffdf6", 4); p.stroke([[60, 66], [60, 46]], 5, INK); p.stroke([[60, 66], [74, 72]], 5, INK); p.ell(60, 22, 8, 6, "#f2c64a", 4); };
 /** ripple ring of a drop in a puddle (128 x 64) */
 export const fxRipple = (p: Pen) => { const g = p.g; g.strokeStyle = "rgba(235,245,255,0.9)"; g.lineWidth = 5; g.beginPath(); g.ellipse(64, 32, 54, 22, 0, 0, 6.3); g.stroke(); };
+
+/** a gull far off: two wings, up or down */
+export const fxGull = (p: Pen, k: number) => { const y = k ? 26 : 50; p.stroke([[8, y], [34, 40 - (k ? -6 : 8)], [60, 40]], 9, INK); p.stroke([[60, 40], [86, 40 - (k ? -6 : 8)], [112, y]], 9, INK); p.stroke([[8, y], [34, 40 - (k ? -6 : 8)], [60, 40]], 4, "#fbfaf2"); p.stroke([[60, 40], [86, 40 - (k ? -6 : 8)], [112, y]], 4, "#fbfaf2"); };

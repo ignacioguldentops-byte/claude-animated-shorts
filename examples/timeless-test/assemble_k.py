@@ -4,7 +4,8 @@
 import subprocess, sys, os
 D = "/home/user/maradona/out/k"; TOTAL = 1558
 PARTS = ["0-259", "260-519", "520-779", "780-1039", "1040-1299", "1300-1557",   # first render
-         "1077-1112"]                                                           # scoreboard zoom from higher up
+         "1077-1112",                                                           # scoreboard zoom from higher up
+         "0-131", "196-455", "456-715", "716-975", "976-1159", "1296-1557"]     # v2: fuller field, crowd and town
 mix, out = sys.argv[1], sys.argv[2]; br = sys.argv[3] if len(sys.argv) > 3 else "4200k"
 src = [None] * TOTAL
 for k, p in enumerate(PARTS):

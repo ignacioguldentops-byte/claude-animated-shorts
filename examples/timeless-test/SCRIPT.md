@@ -42,6 +42,15 @@ Same pipeline as `examples/hot-ice` (narration first; `src/k/timing.ts` drives p
   station with the train; today's floodlights and crowd for the last two shots.
 - `src/k/story.ts`: 24 shots and their cameras; `src/k/world.ts`: staging; `audio/mix_k.py`: score and effects.
 - Staging rule: nobody stands inside a prop or another character; groups are spaced so each figure reads on its own.
+- Second pass on the playing shots: a full field in every shot (two slips, gully, short leg, square leg, mid-on, mid-off,
+  fine leg, third man, both umpires), spectators along the picket fence, members on the pavilion benches and balcony,
+  people at the marquees; the two elevens watch the toss. Each helper (`fielders`, `ring`, `pav`, `north`, `teams` in
+  `world.ts`) turns its figures towards the pitch as the shot's camera sees them, and per-shot overrides keep every
+  figure clear of the leads.
+- Second pass on the set: roofed stands with rails, bunting and pennants, a crowd texture with aisles (1939, today, and
+  the empty stand after the draw), boundary flags, the square beside the pitch, flower boxes and club flags at the
+  pavilion, marquees, a drinks stall and motor cars at the north end, the town behind the stands (street fronts, a
+  church, shade and flame trees), a lighthouse on the bluff, a steamer and sails at sea, gulls.
 - Render: `render_k.sh <range>...` writes `part_<range>.mp4`; `assemble_k.py <mix.wav> <out.mp4>` joins them (later
   ranges override earlier ones), adds the mix and encodes under 30 MB.
 

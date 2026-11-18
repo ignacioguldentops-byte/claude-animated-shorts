@@ -18,6 +18,8 @@ export const outfieldTex = () => ctex("kOut", 512, 512, (g, r) => {
   for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? "#63b84c" : "#52a640"; g.fillRect(i * 128, 0, 128, 512); }
   blot(g, r, 512, 512, 120, ["#4c9c3c", "#70c258", "#5aae46", "#7fca62"], 8, 40, 0.3);
   for (let i = 0; i < 1800; i++) { g.fillStyle = r() < 0.5 ? "rgba(30,90,30,0.22)" : "rgba(200,240,140,0.28)"; g.fillRect(r() * 512, r() * 512, 3, 7); }
+  for (let i = 0; i < 46; i++) { const x = r() * 512, y = r() * 512; g.fillStyle = "rgba(40,110,36,0.5)"; for (let b = -2; b <= 2; b++) g.fillRect(x + b * 2.2, y - 5 + Math.abs(b) * 1.5, 1.6, 8 - Math.abs(b) * 1.5); }
+  for (let i = 0; i < 34; i++) { const x = r() * 512, y = r() * 512; g.fillStyle = "rgba(255,255,255,0.9)"; g.beginPath(); g.arc(x, y, 2.3, 0, 6.3); g.fill(); g.fillStyle = "#f6c419"; g.beginPath(); g.arc(x, y, 0.9, 0, 6.3); g.fill(); }
 });
 /** the pitch: rolled straw-coloured strip, creases at both ends (u across 3.05 m, v along 24 m) */
 export const pitchTex = () => ctex("kPitch", 256, 1024, (g, r) => {
@@ -33,23 +35,85 @@ export const fenceTex = () => ctex("kFence", 256, 128, (g) => {
   for (let i = 0; i < 8; i++) { const x = i * 32 + 5; poly(g, [[x, 128], [x, 26], [x + 11, 8], [x + 22, 26], [x + 22, 128]], "#fbfaf2", 4); }
   rr(g, 0, 50, 256, 12, "#f1eee4", 3); rr(g, 0, 98, 256, 12, "#f1eee4", 3);
 });
-/** a summer crowd of the 1930s: hats, light suits and dresses, row after row */
-export const crowd39Tex = (k = 0) => ctex("kCrowd" + k, 2048, 768, (g, r) => {
-  const rows = 9, rh = 768 / rows;
-  const coats = k ? ["#e2453c", "#3f8fc9", "#f6c419", "#57a05a", "#f25c7a", "#f29a2e", "#7a5a9a", "#2fb0a0", "#f7f5ee"] : ["#e9dcc6", "#c9b79c", "#8a7a66", "#f4f1ea", "#a8b8c8", "#d9a8a0", "#7a8a9a", "#b9c9a0", "#5f6a7a", "#e8c9a0"];
-  const hats = k ? ["#e2453c", "#3f8fc9", "#f6c419", "#f7f5ee", "#57a05a"] : ["#e9d9a8", "#f4f1ea", "#6a5a4a", "#8a7f86", "#d9c9a0", "#3a3438"];
+/** a summer crowd, row after row (tile = 20 m across, 16 rows up the stand): k = 0 the 1930s (boaters, cloche hats, light suits,
+ *  pastel dresses, parasols), k = 1 today (caps, bright shirts, little flags). An aisle of steps every 10 m. */
+export const crowd39Tex = (k = 0) => ctex("kCrowd" + k, 2048, 1024, (g, r) => {
+  const now = k === 1, empty = k === 2;
+  const rows = 16, rh = 1024 / rows, pw = 62;
+  const coats = now ? ["#e2453c", "#3f8fc9", "#f6c419", "#57a05a", "#f25c7a", "#f29a2e", "#7a5a9a", "#2fb0a0", "#f7f5ee"] : ["#f4efe2", "#e9dcc6", "#d8c7a6", "#f7f5ee", "#a9bfd6", "#e7b3ae", "#8f9fb2", "#bcd2a4", "#5f6a7a", "#f0d2a0", "#c98b86", "#fbf3d0", "#7c8f6e", "#d0463c", "#3f6fb0", "#e8b83a", "#4f9a6a", "#f7f5ee", "#fbfaf2"];
+  const hats = now ? ["#e2453c", "#3f8fc9", "#f6c419", "#f7f5ee", "#57a05a"] : ["#f0dfa6", "#f7f3e6", "#6a5a4a", "#e9d9a8", "#d9c9a0", "#3a3438", "#f4c9c4", "#cfe0f0"];
+  const bands = ["#7a2630", "#1f2f5c", "#1f6b3a", "#23202a", "#b8362e"];
   const skins = ["#fde3cc", "#f1c9a2", "#e2b088", "#fff0e0", "#c99067", "#8f5d3e"];
+  const sun = now ? ["#e2453c", "#3f8fc9", "#f6c419", "#f7f5ee"] : ["#f6d7d2", "#fbf3c4", "#f7f5ee", "#cfe6f4", "#e9c9e6", "#d7ecc4"];
   for (let y = 0; y < rows; y++) {
-    g.fillStyle = y % 2 ? "#7a6a5a" : "#86755f"; g.fillRect(0, y * rh, 2048, rh); g.fillStyle = "#5a4c40"; g.fillRect(0, y * rh + rh * 0.86, 2048, rh * 0.14);
-    for (let x = 4; x < 2048; x += 38 + r() * 8) {
-      const c = pick(r, coats), cx = x + 17, by = y * rh + rh * 0.88, hy = by - rh * 0.56, hat = r() < (k ? 0.45 : 0.8);
-      g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, by - rh * 0.2, 18, rh * 0.31, 0, 0, 6.3); g.fill(); g.fillStyle = c; g.beginPath(); g.ellipse(cx, by - rh * 0.2, 15, rh * 0.28, 0, 0, 6.3); g.fill();
-      disc(g, cx, hy, 17, INKC); disc(g, cx, hy, 14, pick(r, skins));
-      if (hat) { const hc = pick(r, hats); g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, hy - 9, 25, 7, 0, 0, 6.3); g.fill(); g.fillStyle = hc; g.beginPath(); g.ellipse(cx, hy - 9, 22, 5, 0, 0, 6.3); g.fill(); rr(g, cx - 13, hy - 24, 26, 15, INKC, 0, 6); rr(g, cx - 10, hy - 22, 20, 12, hc, 0, 5); }
-      else { g.fillStyle = pick(r, ["#5a3b22", "#2a1d16", "#c9a24a", "#8a7f86"]); g.beginPath(); g.arc(cx, hy - 4, 14, Math.PI, 0); g.fill(); }
+    const y0 = y * rh;
+    g.fillStyle = y % 2 ? "#6b5a4b" : "#76634f"; g.fillRect(0, y0, 2048, rh); g.fillStyle = "#4a3d33"; g.fillRect(0, y0 + rh * 0.88, 2048, rh * 0.12);
+    for (let i = 0; i < 2048 / pw; i++) {
+      const x = i * pw + (y % 2 ? pw / 2 : 0), cx = x + pw / 2 + (r() - 0.5) * 8;
+      if (Math.abs(((cx + 1024) % 1024) - 512) < 44) continue;               // the aisle
+      if (r() < (empty ? 0.955 : 0.05)) { if (empty) { g.fillStyle = "#a98a62"; g.fillRect(x + 3, y0 + rh * 0.62, pw - 6, 7); g.fillStyle = "#8f7350"; g.fillRect(x + 3, y0 + rh * 0.3, pw - 6, 6); } continue; } // an empty seat now and then (k = 2: nearly all)
+      const c = pick(r, coats), by = y0 + rh * 0.9, hy = by - rh * 0.52, lady = r() < 0.34, up = r() < (now ? 0.16 : 0.07);
+      // shoulders
+      g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, by - rh * 0.12, 25, rh * 0.3, 0, 0, 6.3); g.fill(); g.fillStyle = c; g.beginPath(); g.ellipse(cx, by - rh * 0.12, 22, rh * 0.27, 0, 0, 6.3); g.fill();
+      if (!lady && !now && r() < 0.6) { g.fillStyle = "#fbfaf2"; g.beginPath(); g.moveTo(cx - 6, by - rh * 0.3); g.lineTo(cx + 6, by - rh * 0.3); g.lineTo(cx, by - rh * 0.1); g.fill(); g.fillStyle = pick(r, bands); g.fillRect(cx - 2, by - rh * 0.28, 4, rh * 0.2); }
+      if (up) { g.strokeStyle = INKC; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(cx + 18, by - rh * 0.3); g.lineTo(cx + 27, hy - 20); g.stroke(); g.strokeStyle = c; g.lineWidth = 5; g.stroke();
+        if (now) { rr(g, cx + 26, hy - 40, 20, 14, pick(r, sun), 2); } else disc(g, cx + 28, hy - 24, 6, "#fbfaf2", 2); }
+      // head
+      disc(g, cx, hy, 16, INKC); disc(g, cx, hy, 13.5, pick(r, skins));
+      const t = r();
+      if (empty || (lady && t < 0.32 && !now)) { // a parasol over her
+        const pc = pick(r, sun); g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, hy - 20, 36, 19, 0, Math.PI, 0); g.fill(); g.fillStyle = pc; g.beginPath(); g.ellipse(cx, hy - 20, 33, 16, 0, Math.PI, 0); g.fill();
+        g.strokeStyle = "rgba(60,30,40,0.35)"; g.lineWidth = 2; for (const dx of [-17, 0, 17]) { g.beginPath(); g.moveTo(cx, hy - 36); g.lineTo(cx + dx, hy - 20); g.stroke(); }
+      } else if (lady) { // cloche or a wide summer hat, hair showing
+        g.fillStyle = pick(r, ["#5a3b22", "#2a1d16", "#c9a24a", "#8a5a34", "#b9772e"]); g.beginPath(); g.arc(cx, hy + 1, 15, Math.PI * 0.9, Math.PI * 0.1); g.fill();
+        if (t < 0.75) { const hc = pick(r, hats); g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, hy - 7, t < 0.5 ? 27 : 19, 8, 0, 0, 6.3); g.fill(); g.fillStyle = hc; g.beginPath(); g.ellipse(cx, hy - 7, t < 0.5 ? 24 : 16, 6, 0, 0, 6.3); g.fill(); g.fillStyle = INKC; g.beginPath(); g.arc(cx, hy - 8, 14, Math.PI, 0); g.fill(); g.fillStyle = hc; g.beginPath(); g.arc(cx, hy - 8, 11.5, Math.PI, 0); g.fill(); disc(g, cx + 8, hy - 11, 3.5, pick(r, ["#e2453c", "#f6c419", "#f25c7a"])); }
+      } else if (t < (now ? 0.5 : 0.82)) { // boater / panama / cap
+        const hc = pick(r, hats);
+        if (now || t < 0.14) { g.fillStyle = INKC; g.beginPath(); g.arc(cx, hy - 5, 16, Math.PI, 0); g.fill(); g.fillStyle = hc; g.beginPath(); g.arc(cx, hy - 5, 13.5, Math.PI, 0); g.fill(); rr(g, cx - 2, hy - 9, 22, 6, hc, 2, 3); }
+        else { g.fillStyle = INKC; g.beginPath(); g.ellipse(cx, hy - 8, 25, 7, 0, 0, 6.3); g.fill(); g.fillStyle = hc; g.beginPath(); g.ellipse(cx, hy - 8, 22.5, 5, 0, 0, 6.3); g.fill(); rr(g, cx - 13, hy - 23, 26, 15, INKC, 0, 5); rr(g, cx - 10.5, hy - 21, 21, 12, hc, 0, 4); g.fillStyle = pick(r, bands); g.fillRect(cx - 10.5, hy - 13, 21, 4); }
+      } else { g.fillStyle = pick(r, ["#5a3b22", "#2a1d16", "#c9a24a", "#8a7f86", "#e9e6ee"]); g.beginPath(); g.arc(cx, hy - 3, 13.5, Math.PI, 0); g.fill(); }
     }
+    // the aisle: steps and a hand rail
+    for (const ax of [512, 1536]) { g.fillStyle = y % 2 ? "#cdbf9f" : "#b9aa88"; g.fillRect(ax - 34, y0, 68, rh); g.fillStyle = "rgba(60,40,30,0.4)"; g.fillRect(ax - 34, y0 + rh - 5, 68, 5); g.fillStyle = "#fbfaf2"; g.fillRect(ax - 3, y0, 6, rh); }
   }
 });
+/** bunting: a string of little pennants (alpha between them) */
+export const buntingTex = () => ctex("kBunting", 512, 64, (g) => {
+  g.clearRect(0, 0, 512, 64); const cols = ["#e2453c", "#fbfaf2", "#3f8fc9", "#f6c419", "#57a05a", "#fbfaf2", "#f29a2e", "#1f2f5c"];
+  g.fillStyle = "#3a3438"; g.fillRect(0, 2, 512, 5);
+  for (let i = 0; i < 8; i++) poly(g, [[i * 64 + 6, 6], [i * 64 + 58, 6], [i * 64 + 32, 60]], cols[i], 4);
+});
+/** a street front of the town: plastered walls, shuttered windows, a balcony, shop awnings on the ground floor (k = colour) */
+export const townTex = (k: number) => ctex("kTown" + k, 768, 512, (g, r) => {
+  const wallc = ["#f1e3c0", "#e7c9b0", "#dfe6ea", "#f4eeda", "#d9c7a0", "#e9b9a0"][k % 6], trim = ["#fbfaf2", "#fbfaf2", "#8f9fb2", "#c9453a", "#fbfaf2", "#fbfaf2"][k % 6], shut = ["#2f6a4a", "#3b5b9a", "#7a2630", "#2f6a4a", "#5a4c40", "#3b5b9a"][k % 6];
+  g.fillStyle = wallc; g.fillRect(0, 0, 768, 512); blot(g, r, 768, 512, 60, ["#ffffff", "#c9b28a"], 20, 80, 0.16);
+  const floors = 4, fh = 512 / floors;
+  for (let fl = 0; fl < floors; fl++) { const y = fl * fh;
+    rr(g, 0, y + fh - 10, 768, 10, trim, 3);
+    for (let i = 0; i < 6; i++) { const x = 20 + i * 126;
+      if (fl === floors - 1) { // shops: door or window under an awning
+        rr(g, x + 10, y + 34, 96, fh - 44, i % 3 === 1 ? "#5a3320" : "#27303d", 4); if (i % 3 !== 1) { g.fillStyle = "#9cc6ea"; g.fillRect(x + 16, y + 40, 84, fh - 60); g.fillStyle = "rgba(255,255,255,0.35)"; g.fillRect(x + 20, y + 44, 22, fh - 68); }
+        const ac = [["#e2453c", "#fbfaf2"], ["#3f8fc9", "#fbfaf2"], ["#57a05a", "#fbf3c4"]][(i + k) % 3]; for (let s = 0; s < 8; s++) { g.fillStyle = ac[s % 2]; g.fillRect(x + 2 + s * 14, y + 14, 14, 24); } rr(g, x + 2, y + 14, 112, 24, null, 3);
+      } else { // arched window with shutters, sometimes a balcony rail
+        g.fillStyle = INKC; g.beginPath(); g.moveTo(x + 22, y + fh - 26); g.lineTo(x + 22, y + 44); g.arc(x + 58, y + 44, 36, Math.PI, 0); g.lineTo(x + 94, y + fh - 26); g.closePath(); g.fill();
+        g.fillStyle = r() < 0.25 ? "#ffe9a0" : "#8fb8d8"; g.beginPath(); g.moveTo(x + 27, y + fh - 30); g.lineTo(x + 27, y + 44); g.arc(x + 58, y + 44, 31, Math.PI, 0); g.lineTo(x + 89, y + fh - 30); g.closePath(); g.fill();
+        g.fillStyle = trim; g.fillRect(x + 56, y + 14, 4, fh - 44); g.fillRect(x + 27, y + 62, 62, 4);
+        for (const sx of [2, 96]) rr(g, x + sx, y + 30, 20, fh - 56, shut, 3);
+        if ((i + fl) % 3 === 0) { rr(g, x + 4, y + fh - 40, 110, 6, "#2c2a38", 0); for (let b = 0; b < 9; b++) g.fillRect(x + 6 + b * 13, y + fh - 40, 3, 26); rr(g, x, y + fh - 16, 118, 7, "#2c2a38", 0); }
+      }
+    }
+  }
+  rr(g, 0, 0, 768, 16, trim, 4);
+});
+/** the square: the strips either side of the match pitch, cut shorter and paler, old pitches showing (20 x 26 m) */
+export const squareTex = () => ctex("kSquare", 512, 640, (g, r) => {
+  for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? "#86c860" : "#79bd55"; g.fillRect(i * 64, 0, 64, 640); }
+  blot(g, r, 512, 640, 80, ["#93d06a", "#6fb24e", "#a4d67a"], 8, 34, 0.3);
+  for (const x of [96, 416]) { g.globalAlpha = 0.5; g.fillStyle = "#c9c684"; g.fillRect(x - 36, 40, 72, 560); g.globalAlpha = 1; g.fillStyle = "rgba(251,250,242,0.55)"; for (const y of [84, 556]) g.fillRect(x - 30, y, 60, 3); }
+  for (let i = 0; i < 900; i++) { g.fillStyle = r() < 0.5 ? "rgba(40,100,30,0.2)" : "rgba(220,250,170,0.3)"; g.fillRect(r() * 512, r() * 640, 2, 6); }
+});
+/** a marquee roof: broad stripes */
+export const tentTex = (c: string) => ctex("kTent" + c, 256, 64, (g) => { for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? "#fbfaf2" : c; g.fillRect(i * 32, 0, 32, 64); } g.fillStyle = "rgba(0,0,0,0.08)"; g.fillRect(0, 44, 256, 20); });
 /** the pavilion front: cream boards, tall windows and doors, a veranda rail; k = 0 ground floor, 1 upper floor */
 export const pavilionTex = (k: number) => ctex("kPav" + k, 1024, 256, (g, r) => {
   g.fillStyle = "#f3e7c9"; g.fillRect(0, 0, 1024, 256); for (let y = 0; y < 256; y += 22) { g.fillStyle = "rgba(150,120,70,0.18)"; g.fillRect(0, y, 1024, 2); }

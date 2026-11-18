@@ -23,8 +23,8 @@ const sph = (r: number, x: number, y: number, z: number, sx = 1, sy = 1, sz = 1,
 const tiled = (t: THREE.Texture, x: number, y: number) => { const c = t.clone(); c.wrapS = c.wrapT = THREE.RepeatWrapping; c.repeat.set(x, y); c.anisotropy = 8; c.needsUpdate = true; return c; };
 const col = (key: string, c: string, x: THREE.MeshLambertMaterialParameters = {}) => lam("k_" + key + c, () => ({ color: c, ...x }));
 const rbox = (w: number, h: number, d: number, rx: number, ry2: number, rz: number, x: number, y: number, z: number) => { const g = new THREE.BoxGeometry(w, h, d); g.rotateX(rx); g.rotateZ(rz); g.rotateY(ry2); g.translate(x, y, z); return g; };
-const quad = (a: number[], b: number[], c: number[], d: number[], tu = 1, tv = 1) => {
-  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute([...a, ...b, ...c, ...d], 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute([0, 0, tu, 0, tu, tv, 0, tv], 2)); g.setIndex([0, 1, 2, 0, 2, 3]); g.computeVertexNormals(); return g;
+const quad = (a: number[], b: number[], c: number[], d: number[], tu = 1, tv = 1, u0 = 0) => {
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute([...a, ...b, ...c, ...d], 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute([u0, 0, u0 + tu, 0, u0 + tu, tv, u0, tv], 2)); g.setIndex([0, 1, 2, 0, 2, 3]); g.computeVertexNormals(); return g;
 };
 /** vertical ribbon along a plan polyline (closed or open), u in metres / tile */
 const ribbon = (pts: [number, number][], y0: number, y1: number, tile: number, closed = true) => {
@@ -33,6 +33,10 @@ const ribbon = (pts: [number, number][], y0: number, y1: number, tile: number, c
   for (let i = 0; i < n - 1; i++) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); return g;
 };
+const tri = (a: number[], b: number[], c: number[]) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute([...a, ...b, ...c], 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute([0, 0, 1, 0, 0.5, 1], 2)); g.setIndex([0, 1, 2]); g.computeVertexNormals(); return g; };
+/** a round rod from p to q */
+const rod = (p: number[], q: number[], rad: number, seg = 6) => { const a = new THREE.Vector3(p[0], p[1], p[2]), b = new THREE.Vector3(q[0], q[1], q[2]), d = b.clone().sub(a), g = new THREE.CylinderGeometry(rad, rad, d.length(), seg, 1);
+  g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize())); g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2); return g; };
 const flat = (pts: [number, number][], y: number) => { const s = new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z))); const g = new THREE.ShapeGeometry(s); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; };
 
 export type Tint = { m: THREE.MeshBasicMaterial; day: [number, number, number]; golden: [number, number, number]; night: [number, number, number] };
@@ -40,10 +44,10 @@ export type Refs = {
   tints: Tint[]; waves: THREE.Texture[]; foams: THREE.Mesh[]; crowns: THREE.Object3D[]; crowds: THREE.Texture[];
   ground: THREE.Group; harbour: THREE.Group; station: THREE.Group; train: THREE.Group; ship: THREE.Group;
   hands: THREE.Object3D[]; bails: THREE.Object3D[]; cover: THREE.Object3D; floods: THREE.Group; tea: THREE.Group; sunday: THREE.Group;
-  stands: THREE.Mesh[]; crowdMats: THREE.Material[];
+  stands: THREE.Mesh[]; crowdMats: THREE.Material[]; flags: THREE.Object3D[]; vintage: THREE.Group;
 };
 export const newRefs = (): Refs => ({ tints: [], waves: [], foams: [], crowns: [], crowds: [], ground: new THREE.Group(), harbour: new THREE.Group(), station: new THREE.Group(), train: new THREE.Group(), ship: new THREE.Group(),
-  hands: [], bails: [], cover: new THREE.Group(), floods: new THREE.Group(), tea: new THREE.Group(), sunday: new THREE.Group(), stands: [], crowdMats: [] });
+  hands: [], bails: [], cover: new THREE.Group(), floods: new THREE.Group(), tea: new THREE.Group(), sunday: new THREE.Group(), stands: [], crowdMats: [], flags: [], vintage: new THREE.Group() });
 
 /** the gangway, in the ship's own coordinates: centre, slope and length (its low end is on the quay) */
 export const GANG = { x: -10, y: 4.6, z: 13.3, a: 0.639, len: 15.44 };
@@ -81,7 +85,7 @@ export function buildGround(R: THREE.Object3D, refs: Refs) {
   const W = white(), I = iron(), wood = lam("kWood", () => ({ map: repT(P.plankTex("k", "#b0733a")) }));
   // turf, pitch, creases, rope
   A(ground(-420, 420, -135, 420, 0, 840 / 16, 555 / 16), lam("kOut", () => ({ map: repT(Q.outfieldTex()) })));
-  A(ground(-1.52, 1.52, -12, 12, 0.012), lam("kPitch", () => ({ map: Q.pitchTex() })));
+  A(ground(-1.52, 1.52, -12, 12, 0.012), lam("kPitch", () => ({ map: Q.pitchTex(), polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })));
   { const t = new THREE.TorusGeometry(63, 0.09, 6, 160); t.rotateX(Math.PI / 2); t.translate(0, 0.08, 0); A(t, W); }
   // wickets: three stumps and two bails at each end
   for (const sd of [-1, 1]) {
@@ -91,21 +95,36 @@ export function buildGround(R: THREE.Object3D, refs: Refs) {
   // picket fence and the stands behind it
   { const f = new THREE.Mesh(new THREE.CylinderGeometry(66, 66, 1.0, 120, 1, true), lam("kFence", () => ({ map: tiled(Q.fenceTex(), 200, 1), alphaTest: 0.5, side: THREE.DoubleSide }))); f.position.y = 0.5; f.castShadow = true; f.receiveShadow = true; Gp.add(f); }
   const crowd = tiled(Q.crowd39Tex(0), 1, 1), crowdNow = tiled(Q.crowd39Tex(1), 1, 1); refs.crowds.push(crowd, crowdNow);
-  const cm = lam("kCrowd", () => ({ map: crowd, side: THREE.DoubleSide })), cmNow = lam("kCrowdNow", () => ({ map: crowdNow, side: THREE.DoubleSide })); refs.crowdMats.push(cm, cmNow);
+  const cm = lam("kCrowd", () => ({ map: crowd, side: THREE.DoubleSide })), cmNow = lam("kCrowdNow", () => ({ map: crowdNow, side: THREE.DoubleSide })); const crowdGone = tiled(Q.crowd39Tex(2), 1, 1); refs.crowds.push(crowdGone); refs.crowdMats.push(cm, cmNow, lam("kCrowdGone", () => ({ map: crowdGone, side: THREE.DoubleSide })));
   const fascia = lam("kFascia", () => ({ map: repT(P.plankTex("f", "#efe6d0")), side: THREE.DoubleSide })), back = col("standBack", "#8a7a66", { side: THREE.DoubleSide }), roofM = lam("kRoof", () => ({ map: repT(Q.roofTex()), side: THREE.DoubleSide }));
-  const seg = (a0: number, a1: number, roof: boolean) => { // angles in degrees, atan2(z, x)
-    const p = (r: number, a: number, y: number) => [r * Math.cos((a * Math.PI) / 180), y, r * Math.sin((a * Math.PI) / 180)];
-    const r0 = 69.5, r1 = 82;
-    for (let j = 0; j < 4; j++) { const b0 = a0 + ((a1 - a0) * j) / 4, b1 = a0 + ((a1 - a0) * (j + 1)) / 4; // four facets: the front follows the curve of the fence
-      const m = A(quad(p(r0, b1, 1.5), p(r0, b0, 1.5), p(r1, b0, 8.2), p(r1, b1, 8.2), 0.4, 1), cm); refs.stands.push(m);
-      A(quad(p(r0, b1, 0), p(r0, b0, 0), p(r0, b0, 1.5), p(r0, b1, 1.5), 1.5, 0.4), fascia, true);
-      A(quad(p(r1, b0, 0), p(r1, b1, 0), p(r1, b1, 9.4), p(r1, b0, 9.4)), back, true); }
-    for (const a of [a0, a1]) A(quad(p(r0, a, 0), p(r1, a, 0), p(r1, a, 8.2), p(r0, a, 1.5)), back, true);
-    if (roof) { A(quad(p(r0 + 2, a1, 11.2), p(r0 + 2, a0, 11.2), p(r1 + 0.6, a0, 12.6), p(r1 + 0.6, a1, 12.6), 6, 3), roofM, true);
-      for (const a of [a0 + 1, (a0 + a1) / 2, a1 - 1]) { const q = p(r0 + 2.4, a, 0); A(cyl(0.09, 0.09, 9.8, q[0], 6.3, q[2], 6), W, true); } }
+  const tinM = lam("kRoofTin", () => ({ map: repT(P.tinTex()), side: THREE.DoubleSide })), buntM = lam("kBunting", () => ({ map: tiled(Q.buntingTex(), 1, 1), alphaTest: 0.5, side: THREE.DoubleSide }));
+  const PEN = ["#e2453c", "#f6c419", "#3f8fc9", "#fbfaf2", "#57a05a", "#f29a2e"];
+  /** a pennant on a pole; it sways (refs.flags) */
+  const pennant = (x: number, y: number, z: number, h: number, w: number, c: string, c2?: string) => {
+    A(cyl(0.06, 0.08, h, x, y + h / 2, z, 6), W, false);
+    const F = new THREE.Group(); F.position.set(x, y + h - w * 0.36, z); Gp.add(F); refs.flags.push(F);
+    if (c2) { const g = new THREE.PlaneGeometry(w, w * 0.62, 6, 1); g.translate(w / 2, 0, 0); const pa = g.getAttribute("position") as THREE.BufferAttribute; for (let i = 0; i < pa.count; i++) pa.setZ(i, 0.12 * w * Math.sin(pa.getX(i) / w * 5)); g.computeVertexNormals();
+      add(F, g, col("flagA", c, { side: THREE.DoubleSide }), false); const st = new THREE.PlaneGeometry(w, w * 0.2, 6, 1); st.translate(w / 2, 0, 0); const pb = st.getAttribute("position") as THREE.BufferAttribute; for (let i = 0; i < pb.count; i++) pb.setZ(i, 0.12 * w * Math.sin(pb.getX(i) / w * 5) + 0.02); add(F, st, col("flagB", c2, { side: THREE.DoubleSide }), false); }
+    else add(F, tri([0, w * 0.3, 0], [0, -w * 0.3, 0], [w, 0, 0]), col("pen", c, { side: THREE.DoubleSide }), false);
+    return F;
   };
-  for (let a = -64; a < 160; a += 25) seg(a, a + 23, Math.round((a + 64) / 25) % 2 === 0);
-  for (let a = 197; a < 245; a += 25) seg(a, a + 23, a === 197);
+  const seg = (a0: number, a1: number, si: number) => { // angles in degrees, atan2(z, x)
+    const p = (r: number, a: number, y: number) => [r * Math.cos((a * Math.PI) / 180), y, r * Math.sin((a * Math.PI) / 180)];
+    const r0 = 69.5, r1 = 82, du = 0.38;
+    for (let j = 0; j < 4; j++) { const b0 = a0 + ((a1 - a0) * j) / 4, b1 = a0 + ((a1 - a0) * (j + 1)) / 4; // four facets: the front follows the curve of the fence
+      const m = A(quad(p(r0, b1, 1.5), p(r0, b0, 1.5), p(r1, b0, 8.2), p(r1, b1, 8.2), du, 1, si * 0.29 + (3 - j) * du), cm); refs.stands.push(m);
+      A(quad(p(r0, b1, 0), p(r0, b0, 0), p(r0, b0, 1.5), p(r0, b1, 1.5), 1.5, 0.4), fascia, true);
+      A(quad(p(r1, b0, 0), p(r1, b1, 0), p(r1, b1, 9.4), p(r1, b0, 9.4)), back, true);
+      A(rod(p(r0 - 0.05, b0, 2.25), p(r0 - 0.05, b1, 2.25), 0.04), W, false); A(rod(p(r0 - 0.05, b0, 1.9), p(r0 - 0.05, b1, 1.9), 0.03), W, false);
+      for (const bb of [b0, (b0 + b1) / 2]) A(rod(p(r0 - 0.05, bb, 1.5), p(r0 - 0.05, bb, 2.25), 0.04), W, false); }
+    for (const a of [a0, a1]) A(quad(p(r0, a, 0), p(r1, a, 0), p(r1, a, 8.2), p(r0, a, 1.5)), back, true);
+    A(quad(p(r0 + 2, a1, 11.2), p(r0 + 2, a0, 11.2), p(r1 + 0.6, a0, 12.6), p(r1 + 0.6, a1, 12.6), 6, 3), si % 2 ? tinM : roofM, true);
+    A(quad(p(r0 + 2, a1, 10.5), p(r0 + 2, a0, 10.5), p(r0 + 2, a0, 11.2), p(r0 + 2, a1, 11.2), 4.75, 1), buntM, false);
+    A(quad(p(r0 + 2, a1, 11.2), p(r0 + 2, a0, 11.2), p(r0 + 2, a0, 11.5), p(r0 + 2, a1, 11.5)), W, false);
+    for (const a of [a0 + 1, (a0 + a1) / 2, a1 - 1]) { const q = p(r0 + 2.4, a, 0); A(cyl(0.09, 0.09, 9.8, q[0], 6.3, q[2], 6), W, true); }
+    [a0 + 4, a1 - 4].forEach((a, k) => { const q = p(r1 + 0.2, a, 12.5); pennant(q[0], q[1], q[2], 4.6, 2.4, PEN[(si * 2 + k) % 6]).rotation.y = -((a + 90) * Math.PI) / 180; });
+  };
+  { let si = 0; for (let a = -64; a < 160; a += 25) seg(a, a + 23, si++); for (let a = 197; a < 245; a += 25) seg(a, a + 23, si++); }
   // the bench on the walkway
   { const [bx, , bz] = BENCH; A(box(bx - 1.5, 0.4, bz - 0.25, bx + 1.5, 0.46, bz + 0.25, 1), wood, true); A(box(bx - 1.5, 0.52, bz + 0.25, bx + 1.5, 1.0, bz + 0.31, 1), wood, true); for (const dx of [-1.4, 1.4]) { A(box(bx + dx - 0.04, 0, bz - 0.22, bx + dx + 0.04, 0.4, bz - 0.14), I); A(box(bx + dx - 0.04, 0, bz + 0.24, bx + dx + 0.04, 1.0, bz + 0.32), I); } }
   // sight screens
@@ -158,6 +177,72 @@ export function buildGround(R: THREE.Object3D, refs: Refs) {
   A(ground(-420, 420, -135, -128, 0.004, 120, 1), lam("jSand", () => ({ map: repT(P.sandTex()) })));
   seaKit(Gp, refs)(0, -134); hillsKit(Gp, refs)(0, 0, -Math.PI / 2);
   A(sph(1, 300, -4, -330, 150, 40, 80, 24), col("headland", "#4aa058"));
+
+  // ---- dressing: the square, boundary flags, the pavilion front, the north end, the town ----
+  A(ground(-10, 10, -13, 13, 0.006), lam("kSquare", () => ({ map: Q.squareTex(), polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 })));
+  for (let i = 0; i < 36; i++) { const a = ((i * 10 + 5) * Math.PI) / 180, x = 63.7 * Math.cos(a), z = 63.7 * Math.sin(a); A(cyl(0.025, 0.025, 1.3, x, 0.65, z, 5), W, false);
+    A(tri([x, 1.3, z], [x, 0.95, z], [x - 0.5 * Math.sin(a), 1.12, z + 0.5 * Math.cos(a)]), col("pen", PEN[i % 3], { side: THREE.DoubleSide }), false); }
+  { // the pavilion front: bunting under the balcony, flower boxes, members' benches, the two club flags, a pennant on the tower
+    const x1 = PAV_X;
+    A(wall(x1 + 3.3, 17, x1 + 3.3, -17, 3.55, 4.2, 5.6, 1), buntM, false);
+    A(wall(x1 + 3.3, 17, x1 + 3.3, -17, 7.55, 8.2, 5.6, 1), buntM, false);
+    const bloom = ["#e2453c", "#f6c419", "#f25c7a", "#fbfaf2", "#f29a2e"];
+    for (const sz of [-1, 1]) { A(box(x1 + 3.6, 0, sz * 3.6, x1 + 4.2, 0.45, sz * 16.6), col("planter", "#b0733a"), true);
+      for (let z = 4; z < 16.4; z += 0.62) { A(sph(0.3, x1 + 3.9, 0.56, sz * z, 1, 0.75, 1, 8), col("leaf", "#3f8a3a"), false); A(sph(0.15, x1 + 3.9 + 0.1 * Math.sin(z * 7), 0.78, sz * z + 0.1, 1, 1, 1, 6), col("bloom", bloom[Math.round(z * 3) % 5]), false); A(sph(0.13, x1 + 4.05, 0.7, sz * z - 0.16, 1, 1, 1, 6), col("bloom", bloom[Math.round(z * 5 + 2) % 5]), false); }
+      // benches for the members, facing the field
+      A(box(x1 + 5.2, 0.4, sz * 4.6, x1 + 5.7, 0.46, sz * 16.2, 1), wood, true); A(box(x1 + 5.14, 0.52, sz * 4.6, x1 + 5.2, 1.0, sz * 16.2, 1), wood, true);
+      for (let z = 4.7; z < 16.3; z += 2.85) { A(box(x1 + 5.22, 0, sz * z - 0.04, x1 + 5.3, 0.4, sz * z + 0.04), I); A(box(x1 + 5.6, 0, sz * z - 0.04, x1 + 5.68, 0.4, sz * z + 0.04), I); }
+      pennant(x1 + 4.6, 0, sz * 19.4, 13.5, 3.4, sz < 0 ? "#1f2f5c" : "#1f6b3a", "#e8c45a").rotation.y = 0.5; }
+    pennant(x1 - 6, 17.6, 0, 3.6, 1.7, "#e2453c").rotation.y = 0.4;
+  }
+  { // the north end, either side of the scoreboard: two marquees for lunch, a drinks stall, the motor cars of 1939
+    const tentR = (c: string) => lam("kTent" + c, () => ({ map: tiled(Q.tentTex(c), 4, 1), side: THREE.DoubleSide })), canvas = col("canvas", "#fbf6e6", { side: THREE.DoubleSide });
+    for (const [tx, c] of [[-27, "#e2453c"], [27, "#3f8fc9"]] as [number, string][]) { const tz = -80, hw = 6.5, hd = 4.2;
+      const cone = new THREE.ConeGeometry(1, 3.2, 4, 1, true); cone.rotateY(Math.PI / 4); cone.scale(hw * 1.5, 1, hd * 1.5); cone.translate(tx, 4.8, tz); A(cone, tentR(c), true);
+      A(wall(tx - hw, tz + hd, tx + hw, tz + hd, 2.6, 3.25, 6, 1), buntM, false); A(wall(tx - hw, tz - hd, tx + hw, tz - hd, 0, 3.2), canvas, true); A(wall(tx - hw, tz - hd, tx - hw, tz + hd, 0, 3.2), canvas, true); A(wall(tx + hw, tz + hd, tx + hw, tz - hd, 0, 3.2), canvas, true);
+      for (const dx of [-hw, 0, hw]) A(cyl(0.07, 0.07, 3.2, tx + dx, 1.6, tz + hd, 6), W, true);
+      A(cyl(0.05, 0.05, 1.4, tx, 7.0, tz, 5), W, false); A(tri([tx, 7.7, tz], [tx, 7.2, tz], [tx + 0.9, 7.45, tz]), col("pen", c, { side: THREE.DoubleSide }), false);
+      for (const dx of [-3.4, 0, 3.4]) { A(box(tx + dx - 1.3, 0.7, tz + 0.6, tx + dx + 1.3, 0.76, tz + 1.8, 1), lam("kCloth", () => ({ map: repT(Q.clothTex()) })), true); A(box(tx + dx - 1.25, 0, tz + 0.65, tx + dx + 1.25, 0.7, tz + 1.75), col("tableSkirt", "#f1ece0"), false); A(sph(0.2, tx + dx - 0.5, 0.95, tz + 1.2, 1, 0.85, 1, 8), W, false); A(cyl(0.3, 0.3, 0.06, tx + dx + 0.5, 0.8, tz + 1.2, 10), col("cake", "#f25c7a"), false); } }
+    // drinks stall with a striped awning
+    A(box(-13.5, 0, -74.6, -10.5, 1.0, -73.4, 1), wood, true); A(rbox(3.6, 0.08, 2.2, 0.3, 0, 0, -12, 2.5, -73.6), tentR("#f6c419"), true); for (const dx of [-1.6, 1.6]) A(cyl(0.05, 0.05, 2.5, -12 + dx, 1.25, -74.5, 5), W, false);
+    for (let i = 0; i < 6; i++) A(cyl(0.06, 0.06, 0.26, -13.1 + i * 0.44, 1.13, -74, 6), col("bottle", ["#57a05a", "#e2453c", "#f6c419"][i % 3]), false);
+    const V = refs.vintage; Gp.add(V); const CARC = ["#23202a", "#7a2630", "#f1e3c0", "#1f4a3a", "#1f2f5c", "#8a8f9a"], tyre = col("tyre", "#23202a"), chrome = col("chrome", "#dfe4ea");
+    let ci = 0;
+    for (const cx of [-58, -52, -46, -40, 40, 46, 52, 58]) { const cz = -88.5 + (ci % 2) * 0.8, cc = col("car", CARC[ci % 6]); ci++;
+      add(V, box(cx - 0.8, 0.45, cz - 2.0, cx + 0.8, 1.05, cz + 2.0), cc, true); add(V, box(cx - 0.74, 1.05, cz - 1.2, cx + 0.74, 1.72, cz + 0.7), cc, true); add(V, box(cx - 0.6, 1.72, cz - 1.25, cx + 0.6, 1.8, cz + 0.75), col("carTop", "#3a3438"), false);
+      add(V, box(cx - 0.76, 1.15, cz - 1.0, cx + 0.76, 1.6, cz + 0.5), col("carGlass", "#b9d8ea"), false); add(V, box(cx - 0.55, 0.5, cz + 2.0, cx + 0.55, 1.0, cz + 2.08), chrome, false);
+      for (const sx of [-1, 1]) { for (const dz of [-1.3, 1.35]) { add(V, cylX(0.38, 0.22, cx + sx * 0.82, 0.38, cz + dz, 12), tyre, true); add(V, rbox(0.3, 0.08, 1.1, 0, 0, 0, cx + sx * 0.86, 0.82, cz + dz), cc, false); } add(V, sph(0.14, cx + sx * 0.5, 0.95, cz + 2.08, 1, 1, 0.6, 8), col("lamp", "#fff3c0"), false); add(V, box(cx + sx * 0.82, 0.4, cz - 0.9, cx + sx * 1.0, 0.46, cz + 0.9), tyre, false); } }
+  }
+  { // the town beyond the stands: street fronts under hipped roofs, a church, big shade trees, flame trees; a lighthouse on the bluff; ships
+    const roofs = [roofM, tinM, col("roofSlate", "#5f6f86"), roofM];
+    const house = (cx: number, cz: number, w: number, d: number, h: number, k: number, turn = false) => { const hw = (turn ? d : w) / 2, hd = (turn ? w : d) / 2, m = lam("kTown" + (k % 6), () => ({ map: repT(Q.townTex(k % 6)), side: THREE.DoubleSide }));
+      A(box(cx - hw + 0.05, 0, cz - hd + 0.05, cx + hw - 0.05, h - 0.05, cz + hd - 0.05), col("houseCore", "#e9dcc0"), true);
+      const tu = (len: number) => Math.max(1, Math.round(len / 4)) / 6;
+      A(wall(cx - hw, cz + hd, cx + hw, cz + hd, 0, h, tu(2 * hw), 1), m); A(wall(cx + hw, cz - hd, cx - hw, cz - hd, 0, h, tu(2 * hw), 1), m); A(wall(cx + hw, cz + hd, cx + hw, cz - hd, 0, h, tu(2 * hd), 1), m); A(wall(cx - hw, cz - hd, cx - hw, cz + hd, 0, h, tu(2 * hd), 1), m);
+      const r = new THREE.ConeGeometry(1, h * 0.28, 4); r.rotateY(Math.PI / 4); r.scale(hw * 1.5, 1, hd * 1.5); r.translate(cx, h + h * 0.14, cz); A(r, roofs[k % 4], true); };
+    house(-34, 128, 26, 12, 17, 0); house(2, 134, 30, 13, 22, 1); house(38, 126, 24, 12, 16, 2); house(72, 112, 22, 12, 19, 3, true); house(-70, 116, 22, 12, 20, 4, true);
+    house(-118, -34, 28, 12, 19, 5, true); house(-122, 6, 30, 13, 24, 2, true); house(-114, 44, 24, 12, 17, 3, true); house(-104, 78, 22, 12, 18, 1, true); house(-110, -70, 24, 12, 16, 0, true);
+    house(116, 24, 26, 12, 18, 4, true); house(112, -26, 24, 12, 21, 5, true); house(104, 66, 22, 12, 16, 0, true); house(98, -64, 20, 12, 15, 2, true);
+    // the church: nave, tower and spire
+    { const cx = -96, cz = 108, stone = col("church", "#f4eeda"); A(box(cx - 6, 0, cz - 4, cx + 14, 15, cz + 4), stone, true); const nr = new THREE.CylinderGeometry(5.7, 5.7, 20.4, 3, 1); nr.rotateZ(Math.PI / 2); nr.rotateX(Math.PI); nr.scale(1, 0.75, 1); nr.translate(cx + 4, 16.6, cz); A(nr, roofM, true);
+      A(box(cx - 11, 0, cz - 3, cx - 5, 27, cz + 3), stone, true); const sp = new THREE.ConeGeometry(4.4, 13, 4); sp.rotateY(Math.PI / 4); sp.translate(cx - 8, 33.5, cz); A(sp, col("roofSlate", "#5f6f86"), true); A(cyl(0.08, 0.08, 2.4, cx - 8, 41, cz, 5), I, false); A(box(cx - 8.7, 41.2, cz - 0.06, cx - 7.3, 41.4, cz + 0.06), I, false);
+      for (const y of [8, 20]) for (const dz of [-3.05, 3.05]) A(box(cx - 9, y, cz + dz - 0.02, cx - 7, y + 3.4, cz + dz + 0.02), col("churchWin", "#27303d"), false);
+      for (const y of [8, 20]) for (const dx of [-11.05, -4.95]) A(box(cx + dx - 0.02, y, cz - 1, cx + dx + 0.02, y + 3.4, cz + 1), col("churchWin", "#27303d"), false); }
+    // shade trees and flame trees between the stands and the streets
+    const leaf = [col("tree0", "#3f8a3a"), col("tree1", "#57a05a"), col("tree2", "#2f7a4a"), col("flame", "#e8552e"), col("tree3", "#6fb24e")], bark = col("bark", "#6a4a32");
+    const tree = (x: number, z: number, h: number, k: number) => { A(cyl(h * 0.035, h * 0.05, h * 0.5, x, h * 0.25, z, 7), bark, false); const m = leaf[k % 5];
+      A(sph(h * 0.3, x, h * 0.66, z, 1.15, 0.9, 1.15, 10), m, true); A(sph(h * 0.22, x + h * 0.2, h * 0.56, z + h * 0.08, 1, 0.9, 1, 9), m, false); A(sph(h * 0.2, x - h * 0.18, h * 0.6, z - h * 0.1, 1, 0.9, 1, 9), m, false); A(sph(h * 0.17, x + h * 0.04, h * 0.84, z - h * 0.03, 1, 0.9, 1, 9), m, false); };
+    for (let i = 0; i < 40; i++) { const deg = i * 9 + 3, a = (deg * Math.PI) / 180; if (deg > 238 && deg < 302) continue; if (deg > 168 && deg < 192) continue; const r = 96 + ((i * 7) % 5) * 3.2; tree(Math.cos(a) * r, Math.sin(a) * r, 17 + ((i * 5) % 7) * 1.4, i % 9 === 4 ? 3 : i); }
+    for (const z of [-27, -13, 13, 27]) tree(-93, z, 15 + (z > 0 ? 1 : 0), 1 + (z > 0 ? 1 : 0));
+    // the lighthouse on the bluff
+    { const lx = 262, lz = -318, y0 = 31; A(cyl(2.6, 4.2, 26, lx, y0 + 13, lz, 12), W, false); for (const y of [y0 + 7, y0 + 17]) A(cyl(3.5 - (y - y0) * 0.055, 3.7 - (y - y0) * 0.055, 4, lx, y, lz, 12), col("lhRed", "#d0342e"), false);
+      A(cyl(3.3, 3.3, 0.6, lx, y0 + 26.3, lz, 12), I, false); A(cyl(2.0, 2.0, 3.4, lx, y0 + 28.3, lz, 10), col("lhGlass", "#fff3c0"), false); const cp = new THREE.ConeGeometry(2.8, 2.6, 10); cp.translate(lx, y0 + 31.3, lz); A(cp, col("lhRed", "#d0342e"), false); }
+    // a steamer out at sea and three sails
+    { const sx = -120, sz = -470, hull = col("seaHull", "#2c2a38"); A(box(sx - 34, 0, sz - 4.5, sx + 34, 7, sz + 4.5), hull, false); A(box(sx - 22, 7, sz - 3.6, sx + 20, 12, sz + 3.6), W, false); A(box(sx - 30, 0.2, sz - 4.6, sx + 30, 1.6, sz + 4.6), col("lhRed", "#d0342e"), false);
+      for (const dx of [-8, 6]) { A(cyl(2.3, 2.3, 9, sx + dx, 16.5, sz, 10), col("funnel", "#e8c45a"), false); A(cyl(2.35, 2.35, 2, sx + dx, 20.5, sz, 10), I, false); } for (const dx of [-28, 28]) A(cyl(0.25, 0.25, 16, sx + dx, 15, sz, 5), I, false); }
+    for (const [bx, bz, bs] of [[70, -250, 1], [-30, -215, 0.8], [150, -330, 1.2], [-200, -300, 1]]) { A(box(bx - 5 * bs, 0, bz - 1.4 * bs, bx + 5 * bs, 1.8 * bs, bz + 1.4 * bs), col("boat", "#fbfaf2"), false); A(cyl(0.12 * bs, 0.12 * bs, 13 * bs, bx, 8 * bs, bz, 5), bark, false);
+      A(tri([bx + 0.4 * bs, 2.4 * bs, bz], [bx + 5.4 * bs, 2.4 * bs, bz], [bx + 0.4 * bs, 14 * bs, bz]), col("sail", "#fbfaf2", { side: THREE.DoubleSide }), false); A(tri([bx - 0.4 * bs, 2.8 * bs, bz], [bx - 4.2 * bs, 2.8 * bs, bz], [bx - 0.4 * bs, 11 * bs, bz]), col("sail2", "#f6d7c0", { side: THREE.DoubleSide }), false); }
+  }
 }
 
 // ---------------- the quay and the liner ----------------
