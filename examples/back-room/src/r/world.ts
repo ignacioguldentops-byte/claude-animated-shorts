@@ -300,7 +300,7 @@ export class World {
         ([[-1.2, -6.0, 0], [0, -6.1, 1], [1.2, -6.0, 2]] as number[][]).forEach(([x, z, i]) => G(GENT(i), 10 + i, [LX + x, 0, z], { facing: 0, expr: after ? (i === 1 ? "dazed" : "nervous") : "stern", armL: i === 1 ? "front" : "hip", holdL: i === 1 ? "cup" : undefined, armR: "hip", headTilt: after ? 6 : 0 }));
         ([[-0.6, -4.9, 3], [0.6, -4.9, 4]] as number[][]).forEach(([x, z, i]) => G(GENT(i), 10 + i, [LX + x, 0, z], { legs: "kneel", facing: 0, expr: after ? "dazed" : "stern", armL: "hip", armR: "hip" }));
         oldBall([LX, 0.14, -4.3], 0.3, 0.25);
-        if (f >= fl - 1 && f < fl + 12) { const t = clamp01((f - fl + 1) / 13); K(`poof|${Math.round(t * 12)}`, 256, 256, (p) => fxPoof(p, t), [LX + 0.62, 1.05 + 0.4 * t, -1.3], 0.9, 0.9, { soft: true, glow: 2 }); }
+        if (f >= fl - 1 && f < fl + 12) { const t = clamp01((f - fl + 1) / 13); K(`poof|${Math.round(t * 12)}`, 256, 256, (p) => fxPoof(p, t), [LX + 0.75, 0.75 + 0.4 * t, -1.6], 0.8, 0.8, { soft: true, glow: 2 }); }
         break;
       }
       case 16: { // the fan who cannot believe it

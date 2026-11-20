@@ -177,21 +177,21 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - a - 14, e: "s", pos: b3(0.1, 1.6, 3.8), look: b3(0, 1.45, -1.9), fov: 54, roll: -0.01 },
     ], f); break;
     case 14: cam = path([ // the white cloth runs out along the counter; then the fitting stand
-      { f: a, pos: i3(-0.5, 1.55, 1.7), look: i3(-1.9, 1.12, -1.7), fov: 50, roll: 0.03 },
-      { f: B.blanco - 9, d: 1, pos: i3(-0.6, 1.5, 1.5), look: i3(-1.8, 1.12, -1.7), fov: 50, roll: 0.02 },
+      { f: a, pos: i3(-0.5, 2.45, 1.0), look: i3(-1.55, 1.05, -1.8), fov: 50, roll: 0.03 },
+      { f: B.blanco - 9, d: 1, pos: i3(-0.6, 2.35, 0.9), look: i3(-1.45, 1.05, -1.8), fov: 50, roll: 0.02 },
       { f: B.blanco, d: 9, pos: i3(1.5, 1.4, 4.0), look: i3(2.95, 1.3, 0.3), fov: 50, roll: -0.02 },
     ], f); break;
     case 15: cam = path([ // London: the team sits for its photograph
-      { f: a, pos: [LX + 0.9, 1.5, 3.2], look: [LX, 1.15, -5.6], fov: 46, roll: 0.02 },
-      { f: b, d: b - a, e: "s", pos: [LX + 0.2, 1.4, 2.2], look: [LX, 1.2, -5.6], fov: 44, roll: -0.02 },
+      { f: a, pos: [LX + 0.8, 1.25, 1.4], look: [LX, 1.1, -5.6], fov: 46, roll: 0.02 },
+      { f: b, d: b - a, e: "s", pos: [LX + 0.2, 1.2, 0.7], look: [LX, 1.12, -5.6], fov: 46, roll: -0.02 },
     ], f); break;
     case 16: { const p = seat(0, 0); cam = path([ // the fan who cannot believe it
       { f: a, pos: [2.4, p[1] + 1.3, 37.5], look: [1.3, p[1] + 0.95, p[2]], fov: 46, roll: -0.02 },
       { f: a + 22, d: 12, pos: [1.8, p[1] + 1.2, 38.5], look: [1.3, p[1] + 1.05, p[2]], fov: 40, roll: 0.02 },
     ], f); break; }
     case 17: cam = path([ // the racecourse dressed for the coronation
-      { f: a, pos: h3(66, 27, 64), look: h3(-6, 3, -34), fov: 52, roll: 0.03 },
-      { f: b, d: b - a, e: "s", pos: h3(34, 9.5, 46), look: h3(-6, 5, -38), fov: 52, roll: -0.02 },
+      { f: a, pos: h3(40, 17, 34), look: h3(-4, 4, -40), fov: 52, roll: 0.03 },
+      { f: b, d: b - a, e: "s", pos: h3(15, 5.2, 4), look: h3(-3, 5.2, -42), fov: 52, roll: -0.02 },
     ], f, 0); break;
     case 18: cam = path([ // the king in his box, the brothers and their cup below
       { f: a, pos: h3(0.5, 1.45, -29.4), look: h3(-0.05, 2.5, -38.8), fov: 54, roll: 0.02 },
