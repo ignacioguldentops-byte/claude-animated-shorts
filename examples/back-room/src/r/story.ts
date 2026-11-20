@@ -126,9 +126,9 @@ export const camAt = (id: number, f: number): Cam => {
   const i3 = (x: number, y: number, z: number): V3 => [IX + x, y, z], b3 = (x: number, y: number, z: number): V3 => [BX + x, y, z], s3 = (x: number, y: number, z: number): V3 => [SX + x, y, z];
   const f3 = (x: number, y: number, z: number): V3 => [FX + x, y, z], h3 = (x: number, y: number, z: number): V3 => [HPX + x, y, z];
   switch (id) {
-    case 1: { // HOOK: beside the striker as he runs on to it, then round with the ball into the top corner
-      const xs = strikerX(u), k = smooth(ramp(u, HIT - 2, HIT + NET - 2)), bl = hookBall(u);
-      cam = { pos: [lerp(xs + 2.7, 44.5, k), lerp(0.42, 1.15, k), lerp(4.5, 5.2, k)], look: [lerp(xs + 0.5, Math.min(bl[0], 53), k), lerp(1.2, 1.7, k), lerp(1.4, bl[2], k)], fov: lerp(52, 46, k), roll: -0.05 + 0.08 * k }; break; }
+    case 1: { // HOOK: low in front of the striker as he comes at us, then round with the ball into the top corner
+      const xs = strikerX(u), k = smooth(ramp(u, HIT - 1, HIT + NET - 2)), bl = hookBall(u), cx = lerp(26.8, 32.0, ramp(u, 0, HIT));
+      cam = { pos: [lerp(cx, 44.5, k), lerp(0.42, 1.15, k), lerp(4.3, 5.2, k)], look: [lerp(xs + 0.4 + 0.5 * ramp(u, HIT - 8, HIT), Math.min(bl[0], 53), k), lerp(1.1, 1.7, k), lerp(1.45, bl[2], k)], fov: lerp(54, 46, k), roll: -0.05 + 0.08 * k }; break; }
     case 2: cam = path([ // the old ball drops into their hands: tight on the two brothers, then back to show the room full of cloth
       { f: a, pos: b3(0.15, 1.5, 2.1), look: b3(0.02, 1.38, -1.95), fov: 38, roll: 0.03 },
       { f: B.tras - 6, d: 1, pos: b3(0.15, 1.5, 2.1), look: b3(0.02, 1.38, -1.95), fov: 38, roll: 0.03 },
@@ -150,8 +150,8 @@ export const camAt = (id: number, f: number): Cam => {
       const x = dribX(f);
       cam = { pos: f3(x - FX + 2.6, 0.85, 7.6), look: f3(x - FX + 0.4, 1.3, 0.4), fov: 52, roll: 0.02 * Math.sin(u * 0.2) }; break; }
     case 7: cam = path([ // out of the tavern door, one after another
-      { f: a, pos: f3(30.6, 1.55, -15.2), look: f3(31.2, 1.6, -27), fov: 52, roll: 0.02 },
-      { f: b, d: b - a, e: "s", pos: f3(31.5, 1.45, -16.2), look: f3(31.2, 1.55, -27), fov: 50, roll: -0.02 },
+      { f: a, pos: f3(30.8, 1.5, -18.6), look: f3(31.0, 1.5, -27), fov: 50, roll: 0.02 },
+      { f: b, d: b - a, e: "s", pos: f3(31.1, 1.45, -19.3), look: f3(31.0, 1.5, -27), fov: 50, roll: -0.02 },
     ], f); break;
     case 8: cam = path([ // the ball gives up
       { f: a, pos: f3(1.0, 2.7, 5.6), look: f3(0, 0.8, -0.4), fov: 46, roll: -0.02 },
@@ -164,8 +164,8 @@ export const camAt = (id: number, f: number): Cam => {
       const m = routeAt(0.5), k = smooth(u / (b - a));
       cam = { pos: [MX + 0.12, 0.8 + lerp(5.7, 5.1, k), 0.7], look: [MX + lerp(0.1, 0.16, k), 0.8, -0.04], fov: 44, roll: 0.2 - 0.05 * k }; void m; break; }
     case 11: cam = path([ // the shop front, from across the street and in to the door
-      { f: a, pos: s3(2.4, 1.9, 2.6), look: s3(0, 2.7, -12), fov: 56, roll: 0.03 },
-      { f: b, d: b - a, e: "s", pos: s3(0.5, 1.6, -5.2), look: s3(0, 2.0, -12), fov: 52, roll: -0.02 },
+      { f: a, pos: s3(1.8, 1.8, 0.4), look: s3(0, 2.5, -12), fov: 54, roll: 0.03 },
+      { f: b, d: b - a, e: "s", pos: s3(0.3, 1.6, -3.4), look: s3(0, 1.95, -12), fov: 50, roll: -0.02 },
     ], f, 0); break;
     case 12: cam = path([ // the back room: past the piles of cloth to the table
       { f: a, pos: b3(-3.0, 1.15, 2.9), look: b3(-0.6, 1.0, -1.2), fov: 50, roll: 0.03 },

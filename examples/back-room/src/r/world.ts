@@ -176,11 +176,12 @@ export class World {
     switch (id) {
       case 1: { // HOOK: he runs on to it, hits it, and it is in the top corner
         const xs = strikerX(u), hit = u >= HIT, in_ = u >= HIT + NET;
-        G(STAR(0), 5, [xs + (hit ? 0.03 * (u - HIT) : 0), hit ? 0 : hop(0, 0.05, 2), 1.5], in_ ? { ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "laugh", armL: "up", armR: "up" } : hit ? { ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "stern", armL: "up", armR: "low", tilt: 8 } : { legs: "run", phase: xs / 0.55, ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "stern", armL: "front", armR: "front" }, { roll: hit && !in_ ? -0.12 : 0 });
-        ball(hookBall(u), 0.26); burst(a + HIT, [32.4, 0.4, 1.2], 1.4); if (u >= HIT - 2 && u < HIT + 6) dust(31.6, 0, 1.4, (u - HIT + 2) * 2, 0.6);
+        G(STAR(0), 5, [xs + (hit ? 0.03 * (u - HIT) : 0), hit ? 0 : hop(0, 0.11, 2), 1.5], in_ ? { ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "laugh", armL: "up", armR: "up" } : hit ? { ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "stern", armL: "up", armR: "low", tilt: 8 } : { legs: "run", phase: u * 0.27, ...turn([xs, 1.5], [xs + 9, 1.5]), expr: "stern", armL: u % 6 < 3 ? "front" : "low", armR: u % 6 < 3 ? "low" : "front", sweat: 1 }, { roll: hit && !in_ ? -0.14 : -0.08 });
+        if (!hit) for (const s of [0, 5]) dust(xs - 0.7 - s * 0.12, 0, 1.6, u * 2 + s, 0.55);
+        ball(hookBall(u), 0.26); burst(a + HIT, [32.4, 0.4, 1.2], 1.4); if (u >= HIT && u < HIT + 8) dust(31.9, 0, 1.3, (u - HIT) * 2, 0.6);
         const kd = smooth(ramp(u, HIT + 1, HIT + NET));
         G(GOALIE, 6, [51.7, 0.55 * Math.sin(Math.PI * kd), -0.3 - 1.5 * kd], kd > 0 ? { ...turn([51.7, 0], [40, 0]), expr: "shock", armL: "up", armR: "up" } : { ...turn([51.7, 0], [40, 0]), armL: "low", armR: "low" }, { roll: -1.1 * kd, shadow: kd < 0.3 });
-        G(RIV(0), 7, [xs - 1.9, 0, 3.3], { legs: "run", phase: xs / 0.55 + 0.4, ...turn([xs - 1.9, 3.3], [xs + 9, 3.3]), expr: "pained", armL: "reach", armR: "front" });
+        G(RIV(0), 7, [xs - 2.3, hop(1, 0.08, 2), 0.2], { legs: "run", phase: u * 0.27 + 0.4, ...turn([xs - 1.9, 3.3], [xs + 9, 3.3]), expr: "pained", armL: "reach", armR: "front" });
         G(RIV(1), 8, [42.5, 0, -4.6], { ...turn([42.5, -4.6], [32, 1]), expr: hit ? "shock" : "stern", armL: "low", armR: "low" }); G(RIV(2), 9, [47.6, 0, -5.4], { ...turn([47.6, -5.4], [32, 1]), expr: hit ? "shock" : "stern", armL: hit ? "up" : "low", armR: "low" });
         G(STAR(1), 10, [38, 0, -7.5], { ...turn([38, -7.5], [50, 0]), expr: in_ ? "laugh" : "grin", armL: in_ ? "up" : "front", armR: in_ ? "up" : "front" }); G(STAR(2), 11, [45, 0, -9], { ...turn([45, -9], [52, 0]), expr: in_ ? "laugh" : "smile", armL: in_ ? "up" : "hang", armR: in_ ? "up" : "hang" });
         for (let r = 0; r < 2; r++) for (let i = 0; i < 30; i++) { const z = -17 + i * 1.17 + r * 0.5, j = r * 31 + i, up = in_ && (j + Math.floor(f / 3)) % 3 !== 0; crowdFig(FAN(j % 37), 100 + j, [63.4 + r * 1.3 - 0.012 * z * z, 1.25 + r * 0.7 + (up ? 0.1 * Math.abs(Math.sin(f / 2 + j)) : 0), z], { ...turn([63.4, z], [50, z]), ...(up ? { armL: "up", armR: "up", expr: "laugh" } : { armL: j % 3 ? "hang" : "chin", expr: "nervous" }) }); }
@@ -232,12 +233,12 @@ export class World {
         }
         break;
       }
-      case 7: { // out of the tavern, pulling on their shirts
-        const tx = FX + 31, tz = -27, T: number[][] = [[-1.25, 3.3], [1.15, 3.5], [0, 2.0]];
+      case 7: { // out of the tavern, pulling on their shirts; the landlord in his doorway
+        const tx = FX + 31, tz = -27, T: number[][] = [[-0.85, 3.2], [0.85, 3.4]];
         T.forEach(([dx, dz], i) => { const t0 = a + 2 + i * 13, k = smooth(ramp(f, t0, t0 + 15)); if (f < t0) return; const x = tx + dx * k, z = tz - 0.2 + (dz + 0.2) * k, done = f >= t0 + 17;
-          G(done ? MAD(i) : STU(i + 1), 10 + i, [x, done ? 0 : hop(i, 0.09, 2), z], done ? { facing: 0, expr: i === 1 ? "laugh" : "grin", armL: i === 0 ? "hip" : "up", armR: i === 2 ? "hip" : "up" } : { legs: "run", phase: u * 0.4 + i, facing: 0, expr: "pained", armL: "up", armR: "up", holdR: "shirt" });
+          G(done ? MAD(i) : STU(i + 1), 10 + i, [x, done ? 0 : hop(i, 0.09, 2), z], done ? { facing: 0, expr: i === 1 ? "laugh" : "grin", armL: i === 0 ? "hip" : "up", armR: i === 0 ? "up" : "hip" } : { legs: "run", phase: u * 0.3 + i, facing: 0, expr: "pained", armL: "up", armR: "up", holdR: "shirt" });
           burst(t0 + 17, [x, 1.3, z + 0.1], 1.0); if (!done) dust(x, 0, z - 0.3, f - t0, 0.5); });
-        G(KEEP, 40, [tx + 2.5, 0, tz + 0.45], { facing: -1, expr: f > a + 20 ? "pained" : "stern", armR: "front", holdR: "cup", armL: "hip", headTilt: 6 * Math.sin(f * 0.3) });
+        if (f >= a + 24) { const kk = smooth(ramp(f, a + 24, a + 32)); G(KEEP, 40, [tx, 0, tz - 0.5 + 0.9 * kk], { facing: 0, expr: f > a + 34 ? "pained" : "stern", armR: "front", holdR: "cup", armL: "hip", headTilt: 6 * Math.sin(f * 0.3) }); }
         steam([tx + 3, 8.3, tz - 3.8], 5, 6, [3, 0, 0.5], 0.8, 3.2, true, 0.2);
         break;
       }
@@ -345,8 +346,8 @@ export class World {
       }
       case 21: case 22: { // the scorer: fair moustache, arms wide... and something Swiss about him
         const p = founderAt(id === 21 ? f : SHOTS[20].b), run = id === 21 && f < a + 58, sw = id === 22 && f >= a + 6;
-        G(FOUNDER, 89, [p[0], run ? hop(0, 0.07, 2) : 0, p[2]], run ? { legs: "run", phase: (p[2] + 10) / 0.55, facing: 0, expr: "laugh", armL: "reach", armR: "reach" } : { facing: 0, expr: sw ? "laugh" : "grin", armL: "hip", armR: sw ? "up" : "hip", headTilt: sw ? -8 : 0 });
-        (id === 21 ? [[-2.3, -2.6, 6], [2.2, -3.1, 7]] : [[-1.05, -2.0, 6], [1.05, -2.2, 7]] as number[][]).forEach(([dx, dz, i], n) => G(BAR(i), 80 + i, [p[0] + dx, hop(n + 1, 0.07, 2), p[2] + dz], run ? { legs: "run", phase: (p[2] + 10) / 0.55 + n * 0.4, facing: 0, expr: "laugh", armL: "up", armR: "up" } : { facing: 0, expr: "laugh", armL: "up", armR: n % 2 ? "up" : "wave" }));
+        G(FOUNDER, 89, [p[0], run ? hop(0, 0.07, 2) : 0, p[2]], run ? { legs: "run", phase: u * 0.3, facing: 0, expr: "laugh", armL: "reach", armR: "reach" } : { facing: 0, expr: sw ? "laugh" : "grin", armL: "hip", armR: sw ? "up" : "hip", headTilt: sw ? -8 : 0 });
+        (id === 21 ? [[-2.3, -2.6, 6], [2.2, -3.1, 7]] : [[-1.05, -2.0, 6], [1.05, -2.2, 7]] as number[][]).forEach(([dx, dz, i], n) => G(BAR(i), 80 + i, [p[0] + dx, hop(n + 1, 0.07, 2), p[2] + dz], run ? { legs: "run", phase: u * 0.3 + n * 0.4, facing: 0, expr: "laugh", armL: "up", armR: "up" } : { facing: 0, expr: "laugh", armL: "up", armR: n % 2 ? "up" : "wave" }));
         G(MAD(1), 61, [HPX - 37, 0, -15], { facing: 0, expr: "pained", armL: "hip", armR: "hip", headTilt: 14 }); G(MAD(3), 63, [HPX - 25, 0, -17], { facing: 0, expr: "dazed", armL: "chin", armR: "hang", headTilt: 12 }); G(MAD(4), 64, [HPX - 33, 0, -22], { legs: "kneel", facing: 0, expr: "pained", armL: "up", armR: "up" });
         rails({ cheer: true, south: false }); royal(false);
         if (sw) { const k = pop(a + 6, 9); K("alps", 512, 300, fxAlps, [p[0], 1.4 + 1.5 * k, p[2] - 6.5], 9 * k, 5.3 * k); K("cheese", 160, 130, fxCheese, [p[0] + 0.44, 1.7, p[2] + 0.05], 0.34 * k, 0.28 * k, { rot: 0.2 * Math.sin(f * 0.3) }); K("bell", 120, 150, fxBell, [p[0] + 0.02, 1.02, p[2] + 0.06], 0.2 * k, 0.25 * k, { rot: 0.25 * Math.sin(f * 0.5) });

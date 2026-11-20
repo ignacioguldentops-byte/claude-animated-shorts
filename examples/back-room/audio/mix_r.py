@@ -190,7 +190,7 @@ for k in range(3): at(sfx, bark(), F(B["rareza"] + 36 + k * 7), 0.8)
 # the waste ground: boots on a leather ball, running, a dog; the tavern; the ball goes flat
 for f in np.arange(B["est"] + 6, B["taberna"], 13.0): at(sfx, thud(140, 0.06), F(f), 0.9); at(sfx, knock(0.5), F(f), 0.5)
 steps(B["toros"], B["taberna"], 2.4, 0.4, 230); at(sfx, bark(), F(B["est"] + 30), 0.6); at(sfx, bark(), F(B["est"] + 36), 0.5)
-for i in range(3): at(sfx, whoosh(0.3, 300, 2600), F(B["taberna"] + 2 + i * 13), 0.6); at(sfx, pop(600 + 160 * i), F(B["taberna"] + 19 + i * 13), 0.7); at(sfx, clink((2200 + 300 * i, 3500), 0.04), F(B["taberna"] + 20 + i * 13), 0.4)
+for i in range(2): at(sfx, whoosh(0.3, 300, 2600), F(B["taberna"] + 2 + i * 13), 0.6); at(sfx, pop(600 + 160 * i), F(B["taberna"] + 19 + i * 13), 0.7); at(sfx, clink((2200 + 300 * i, 3500), 0.04), F(B["taberna"] + 20 + i * 13), 0.4)
 at(sfx, thud(170, 0.05), F(B["falta"] + 4), 0.8); at(sfx, slidew(0.7, 900, 240), F(B["falta"] + 9), 0.6); hiss(B["falta"] + 9, B["falta"] + 28, 1.0, 1500, 6000)
 # the brothers: steps, the tram behind, a chime for each name; the little train on the map; the shop bell
 steps(B["llegan"] + 2, B["bcn"], 6.0, 0.5, 190); at(sfx, bell(1750, 0.5), F(B["llegan"] + 20), 0.5); at(sfx, bell(1750, 0.5), F(B["llegan"] + 27), 0.5)
