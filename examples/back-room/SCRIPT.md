@@ -60,3 +60,9 @@ Same pipeline as `examples/timeless-test` (narration first; `src/r/timing.ts` dr
   normalised to -14 LUFS.
 - Render: `render_rb.sh <bundle> <range>...` renders `part_<range>.mp4` from a prebuilt bundle (`npx remotion bundle
   src/index_r.tsx`); `assemble_r.py <mix.wav> <out.mp4>` joins them, adds the mix and encodes under 30 MB.
+
+## Result
+`la_trastienda_reel.mp4`: 1080x1920, 30 fps, 49.4 s, 28.1 MB, -14 LUFS. `preview.jpg`: six frames of the cut.
+Every shot was reviewed in motion on contact sheets; the ranges listed in the second line of `PARTS` in `assemble_r.py`
+were re-framed and rendered again (the hook, the tavern, the shop front, the counter, London, the racecourse, the cups
+and the two shots in today's stand). The sound was measured, not listened to.

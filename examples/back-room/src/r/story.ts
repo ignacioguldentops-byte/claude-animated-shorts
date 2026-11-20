@@ -177,8 +177,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: b, d: b - a - 14, e: "s", pos: b3(0.1, 1.6, 3.8), look: b3(0, 1.45, -1.9), fov: 54, roll: -0.01 },
     ], f); break;
     case 14: cam = path([ // the white cloth runs out along the counter; then the fitting stand
-      { f: a, pos: i3(-0.5, 2.45, 1.0), look: i3(-1.55, 1.05, -1.8), fov: 50, roll: 0.03 },
-      { f: B.blanco - 9, d: 1, pos: i3(-0.6, 2.35, 0.9), look: i3(-1.45, 1.05, -1.8), fov: 50, roll: 0.02 },
+      { f: a, pos: i3(-1.2, 2.45, 1.1), look: i3(-2.2, 1.1, -1.9), fov: 52, roll: 0.03 },
+      { f: B.blanco - 9, d: 1, pos: i3(-1.3, 2.35, 1.0), look: i3(-2.1, 1.1, -1.9), fov: 52, roll: 0.02 },
       { f: B.blanco, d: 9, pos: i3(1.5, 1.4, 4.0), look: i3(2.95, 1.3, 0.3), fov: 50, roll: -0.02 },
     ], f); break;
     case 15: cam = path([ // London: the team sits for its photograph
@@ -215,7 +215,7 @@ export const camAt = (id: number, f: number): Cam => {
     ], f); break; }
     case 23: { // along the table of cups
       const k = smooth(u / (b - a)) * 0.5 + (u / (b - a)) * 0.5, x = lerp(-9.2, 5.6, k);
-      cam = { pos: [x, lerp(1.55, 1.95, k), 3.2], look: [x + 3.4, 1.2, -0.3], fov: 50, roll: 0.02 - 0.04 * k }; break; }
+      cam = { pos: [x, lerp(1.3, 1.6, k), 3.0], look: [x + 3.4, lerp(1.9, 2.1, k), -0.3], fov: 52, roll: 0.02 - 0.04 * k }; break; }
     default: { const p = seat(0, 0); cam = path([ // the two founders in the stand, among the grandchildren of their club
       { f: a, pos: [-0.9, p[1] + 1.3, 37.9], look: [0.4, p[1] + 0.95, p[2]], fov: 44, roll: 0.02 },
       { f: B.clasico + 16, d: B.clasico + 16 - a, e: "s", pos: [0.5, p[1] + 1.2, 38.6], look: [0.4, p[1] + 1.0, p[2]], fov: 42, roll: -0.01 },

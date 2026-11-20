@@ -268,8 +268,8 @@ export class World {
         break;
       }
       case 11: { // the shop front: the brothers at their door
-        G(JUAN, 5, [SX - 1.55, 0.16, -11.1], { facing: 0, expr: "grin", armL: "hip", armR: "hip" });
-        G(CARLOS, 6, [SX + 1.55, 0.16, -11.1], { facing: 0, expr: "smile", armR: Math.sin(f * 0.3) > 0 ? "wave" : "up", armL: "hip" });
+        G(JUAN, 5, [SX - 1.2, 0.16, -11.0], { facing: 0, expr: "grin", armL: "hip", armR: "hip" });
+        G(CARLOS, 6, [SX + 1.2, 0.16, -11.0], { facing: 0, expr: "smile", armR: Math.sin(f * 0.3) > 0 ? "wave" : "up", armL: "hip" });
         { const lx = SX - 2.9 - 0.04 * u; G(TOWN(4), 7, [lx, 0.16, -10.2 + 0.006 * u], { legs: "walk", phase: u * 0.1, ...turn([lx, -10.2], [lx - 3, -10.2]), expr: "smile", armR: "hang", holdR: "bag", armL: "up", holdL: "brolly" }); }
         G(TOWN(14), 8, [SX + 4.6, 0.16, -10.2], { back: true, armL: "chin" }); G(TOWN(13), 9, [SX - 4.6, 0.16, -10.0], { back: true, armR: "point" });
         walkers(SX - 30, SX + 30, (x, z) => z > 0 || Math.abs(x - SX) < 6.5);

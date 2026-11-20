@@ -4,7 +4,8 @@
 import subprocess, sys, os
 D = "/home/user/maradona/out/r"; TOTAL = 1483
 PARTS = ["0-249", "250-499", "500-749", "750-874", "875-999", "1000-1124", "1125-1249", "1250-1374", "1375-1482",   # first render
-         "0-36", "369-415", "562-635", "745-798", "799-873", "924-994"]   # second pass: livelier hook, closer tavern, shop front, counter, London, racecourse
+         "0-36", "369-415", "562-635", "745-798", "799-873", "924-994",
+         "1265-1364", "874-923", "1365-1482"]   # second pass: livelier hook, closer tavern, shop front, counter, London, racecourse
 mix, out = sys.argv[1], sys.argv[2]; br = sys.argv[3] if len(sys.argv) > 3 else "4200k"
 src = [None] * TOTAL
 for k, p in enumerate(PARTS):
