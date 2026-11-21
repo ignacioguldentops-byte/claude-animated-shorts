@@ -66,3 +66,21 @@ Same pipeline as `examples/timeless-test` (narration first; `src/r/timing.ts` dr
 Every shot was reviewed in motion on contact sheets; the ranges listed in the second line of `PARTS` in `assemble_r.py`
 were re-framed and rendered again (the hook, the tavern, the shop front, the counter, London, the racecourse, the cups
 and the two shots in today's stand). The sound was measured, not listened to.
+
+## Realistic pass (`src/q`)
+After comparing the first cut with a reference short (flat doodle characters in a physically lit, realistic 3D world),
+the world was rebuilt; story, timing, cameras and cast are unchanged.
+- **Look**: no ink lines on the set; every surface is a physically based material (`pbr.ts`: albedo, normal and
+  roughness computed from tileable noise: setts, flags, stucco, brick, pantiles, slate, boards, cloth, felt, earth, turf,
+  concrete, leather, brushed metal); the sky is an equirectangular dome that also lights the scene (PMREM); soft sun
+  shadows from a 4096 map; ambient occlusion (N8AO); the cards of the cast cast real shadows instead of painted blobs.
+- **Building blocks** (`real.ts`): materials textured in world metres (one seamless surface across thousands of
+  instanced boxes), a batcher of instanced boxes / cylinders / spheres, grass of instanced blades that follows the camera,
+  trees of leaf cards, stands filled with instanced flat people drawn by the cast painter, 3D footballs and a
+  lathe-turned silver cup.
+- **Sets** (`setsq.ts`, `setsq2.ts`): the stadium (real terraces with ~30 000 spectators, roof trusses, floodlight
+  ribbon, tip-up seats, glass balustrade), calle de Alcalá (window reveals, French windows, iron balconies, shutters,
+  cornices, mansards with dormers, shop fronts with plate glass and awnings, the tram, the stone gate), the cloth shop
+  and its back room (timber shelving full of 3D bolts, panelled counter, brass till, cheval mirror), the bullring
+  (38 extruded bays of horseshoe arches), the tavern (openings in the wall, pantiled roof), London and the racecourse.
+- Cost: about 6-10 s per frame at 1080x1920 with `--gl swangle` (4 tabs).
