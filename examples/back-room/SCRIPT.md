@@ -95,3 +95,8 @@ neutral Latin American register ("concreto", "Un momento.", "Verás,"), about 3 
   Gonzalo (CO), Andrew multilingual, Alonso (US Spanish).
 - `fit.py <tag>`: lays every line into its slot of the existing picture (`src/r/timing.ts`), time-stretching with
   rubberband only where needed (max 4 % for Jorge), so the render did not have to be redone.
+
+## Result v2
+`la_trastienda_reel_v2.mp4`: realistic world + Latin American narration (es-MX-JorgeNeural), 1080x1920, 30 fps, 49.4 s,
+28.3 MB, -14 LUFS. `preview_v2.jpg`: six frames. Every chunk was reviewed in motion on contact sheets.
+The sound was measured, not listened to. The first cut stays as `la_trastienda_reel.mp4`.
