@@ -440,7 +440,7 @@ export class World {
     for (const ct of R.crowds) ct.offset.y = roar ? 0.012 * Math.sin(f * 1.1) : 0.004 * Math.sin(f * 0.4);
     this.starPts.visible = night; this.starPts.position.copy(cam.position);
     const lamps = lampsAt(id, f);
-    this.lamps.forEach((l, i) => { const d = lamps[i]; if (d) { l.position.set(...d.p); l.color.set(d.c); l.intensity = d.i * 5; l.distance = d.d * 1.5; l.decay = 2; } else l.intensity = 0; });
+    this.lamps.forEach((l, i) => { const d = lamps[i]; if (d) { l.position.set(...d.p); l.color.set(d.c); l.intensity = d.i * 1.6; l.distance = d.d * 1.5; l.decay = 2; } else l.intensity = 0; });
     scene.fog = this.fog; scene.background = null;
     this.sunDisc.visible = false;
     this.sunDisc.position.copy(cam.position).addScaledVector(this.sunDir, 900); this.sunDisc.scale.setScalar(2 * 900 * Math.tan(THREE.MathUtils.degToRad(1.7)));

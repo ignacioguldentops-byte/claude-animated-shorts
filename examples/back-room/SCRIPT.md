@@ -84,3 +84,14 @@ the world was rebuilt; story, timing, cameras and cast are unchanged.
   and its back room (timber shelving full of 3D bolts, panelled counter, brass till, cheval mirror), the bullring
   (38 extruded bays of horseshoe arches), the tavern (openings in the wall, pantiled roof), London and the racecourse.
 - Cost: about 6-10 s per frame at 1080x1920 with `--gl swangle` (4 tabs).
+
+## New voice (`voice_q/`)
+Modelled on a second reference short (Spanish narration, 60 s). From its automatic captions with word timings:
+neutral Latin American register ("concreto", "Un momento.", "Verás,"), about 3 words per second, sentences of about
+12 words chained with "y", characters' lines said quickly, "Un momento." and "Verás," slow with a pause after them.
+- `lines.py`: the narration rewritten in that register (same story and order, so the picture beats still match).
+- `gen.py <voice> <tag> [rate offset]`: one Microsoft neural voice per line (pieces split by "|" are joined with a
+  0.22 s pause). Used: `es-MX-JorgeNeural` +10 %. Candidates compared in `voces_comparadas.mp3`: Jorge (MX),
+  Gonzalo (CO), Andrew multilingual, Alonso (US Spanish).
+- `fit.py <tag>`: lays every line into its slot of the existing picture (`src/r/timing.ts`), time-stretching with
+  rubberband only where needed (max 4 % for Jorge), so the render did not have to be redone.
