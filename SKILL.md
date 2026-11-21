@@ -5,6 +5,41 @@ description: Make a ~55-70 s vertical cartoon story short in the "2D characters 
 
 # Cartoon 3D story short (three.js + Remotion)
 
+## QUALITY STANDARD — mandatory for every reel from 2026-11-21 (user's order: "todos deben ser así a partir de ahora o incluso mejor")
+The bar is `examples/back-room/la_trastienda_reel_v2.mp4` ("La trastienda" v2). Every new reel must match it or beat it.
+Start from `templates/realistic/` (full source), not from `templates/bridge/`. Compare with
+`templates/realistic/lookdev_antes_despues.jpg`: the top row (painted toon world with ink lines) is the OLD look and is
+no longer acceptable.
+- **Characters stay doodles**: flat bean-head cards, plum ink, stick limbs (`toon.ts`). Only the world becomes real.
+- **World = realistic 3D, physically lit**: MeshStandardMaterial everywhere with albedo + normal + roughness
+  (`pbr.ts`), textures laid in world metres (`wmat`), sky dome that is also the image-based light (PMREM), soft sun
+  shadows (4096 map), N8AO ambient occlusion, bloom on emissives, NEUTRAL tone map + grade. NO world ink lines.
+- **Detail is real geometry, not painted on**: window reveals with frames and glass, balconies with balusters,
+  cornices, shutters, roof tiles, chimneys, shop fronts with goods behind glass, shelving with 3D objects, furniture with
+  turned legs, extruded arches. Instanced (`Batch`) so thousands of pieces stay cheap.
+- **Ground is never flat colour**: grass of instanced blades around the camera (`makeGrass`), setts, flags, earth with
+  pebbles; trees made of leaf cards (`makeTrees`).
+- **Crowds are full**: every stand filled with instanced flat people (`makeCrowd`), cheering on cue.
+- **Props in 3D**: balls are spheres with leather / panel textures, trophies are lathe-turned metal; painted cards only
+  for gags (stars, notes, question marks, flashes).
+- **Cast casts real shadows**; no painted contact blobs.
+- **Process**: test stills of every shot (`stills_q.mjs`, scale 0.5), fix framing so nobody is cut or hidden, then a
+  chunked render from a prebuilt bundle (`render_qb.sh`, chunks ≤125 frames, ≤ ~3 chunks per background task), review
+  every chunk in motion on contact sheets, re-render only what is wrong, assemble under 30 MB (`assemble_q.py`).
+- Cost: ~6-10 s per frame at 1080x1920 with `--gl swangle`; plan ~3-4 h of render for 50 s.
+
+## Standing user rules (override older rules below where they differ)
+- Narration in **Spanish**, Latin American neutral storytelling register, modelled on the user's reference: ~3 words/s,
+  sentences of ~12 words chained with "y", "Un momento." and "Verás," slower with a pause after them, ironic payoff.
+  Default voice `es-MX-JorgeNeural` via edge-tts at about +10 % (`templates/realistic/voice/`); offer the comparison
+  of candidates (Jorge MX, Gonzalo CO, Andrew multilingual, Alonso US) if the user asks for a different voice.
+- Length ~49-52 s, strong hook with movement in the first second, lots of movement, true facts with sources.
+- Deliver 1080x1920, 30 fps, **under 30 MB**, -14 LUFS (music +3 dB, SFX -6 dB). No captions, labels, logos, crests or
+  real likenesses; all characters invented.
+- Characters never stand inside props or each other, and nobody the shot is about is cut by the frame.
+- Reply to the user in Spanish.
+
+
 Proven example: **The Bridge That Fell for a Song**. It is an original 67 s short about the 1831 Broughton bridge and 74 soldiers marching in step.
 - Code: `src/videos/bridge/` of your Remotion project (composition `BridgeShort`, 1080x1920, 30 fps).
 - Script, voice and sound: `~/bridge-short/`.
@@ -17,11 +52,11 @@ The style reference is a channel studied privately (`references/`: STYLE_BIBLE.m
 
 User rules that apply:
 - No captions or labels in the video.
-- English only.
+- (Old) English only — superseded: narration is now Spanish, see Standing user rules above.
 - Voice: one steady tone.
 - Jokes are researched real facts.
 - Standard mix: music +3 dB, SFX -6 dB, voice unchanged.
-- Final export 2K vertical: 1440x2560, `--scale 1.3333`.
+- (Old) Final export 2K vertical — superseded: deliver 1080x1920 under 30 MB.
 - Opus max verifies every check.
 - Save after every step.
 - "Just do it" once the script is approved.
