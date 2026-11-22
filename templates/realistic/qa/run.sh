@@ -1,0 +1,1 @@
+cd /home/user/maradona && node_modules/.bin/esbuild qa/qa_o.ts --bundle --platform=node --format=esm --outfile=qa/qa_o.mjs --log-level=error --define:process.env.NODE_ENV='"production"' --external:canvas --alias:remotion=./qa/remotion_stub.ts && node qa/qa_o.mjs "$@"

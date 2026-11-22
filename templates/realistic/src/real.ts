@@ -70,16 +70,18 @@ export class Batch {
 export type Grass = { mesh: THREE.InstancedMesh; follow: (x: number, z: number) => void };
 /** n blades over a disc of radius R that follows a point (snapped to whole metres so the lawn never swims); blades
  *  shrink to nothing at the rim. h0..h1 blade height, w width at the base, cols = base and tip colours to pick from */
-export const makeGrass = (n: number, R: number, o: { h0: number; h1: number; w: number; base: string[]; tip: string[]; flowers?: number; stripe?: number; lean?: number }): Grass => {
+/** mask: GLSL expression of `wp` (world xz of the blade) giving 0..1 (blades shrink to nothing where it is 0) */
+export const makeGrass = (n: number, R: number, o: { h0: number; h1: number; w: number; base: string[]; tip: string[]; flowers?: number; stripe?: number; lean?: number; mask?: string; rough?: number }): Grass => {
   const seg = 3, pos: number[] = [], col: number[] = [], idx: number[] = [], nor: number[] = [];
   for (let i = 0; i <= seg; i++) { const t = i / seg, w = 0.5 * (1 - t * 0.85), bend = 0.22 * t * t; pos.push(-w, t, bend, w, t, bend); col.push(t, t, t, t, t, t); nor.push(0, 1, 0.25, 0, 1, 0.25); if (i < seg) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } }
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("aT", new THREE.Float32BufferAttribute(col.filter((_v, i) => i % 3 === 0), 1)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); g.setIndex(idx);
   const cen = { value: new THREE.Vector2() }, rad = { value: R }, stripe = { value: o.stripe ?? 0 };
-  const m = new THREE.MeshStandardMaterial({ roughness: 0.62, metalness: 0, side: THREE.DoubleSide });
+  const m = new THREE.MeshStandardMaterial({ roughness: o.rough ?? 0.62, metalness: 0, side: THREE.DoubleSide });
+  m.customProgramCacheKey = () => "grass" + (o.mask ?? "");
   m.onBeforeCompile = (sh) => { sh.uniforms.uCen = cen; sh.uniforms.uRad = rad; sh.uniforms.uStripe = stripe;
     sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nattribute float aT; attribute vec3 aBase; attribute vec3 aTip; uniform vec2 uCen; uniform float uRad; uniform float uStripe; varying vec3 vGC;")
       .replace("#include <begin_vertex>", `#include <begin_vertex>
-      { vec3 ip = instanceMatrix[3].xyz; float d = length( ip.xz - uCen ); float k = 1.0 - smoothstep( uRad * 0.55, uRad, d ); transformed.y *= k; transformed.z *= k; vGC = mix( aBase, aTip, aT * aT ) * ( 0.55 + 0.45 * aT );
+      { vec3 ip = instanceMatrix[3].xyz; float d = length( ip.xz - uCen ); float k = 1.0 - smoothstep( uRad * 0.55, uRad, d ); vec2 wp = ( modelMatrix * vec4( ip, 1.0 ) ).xz; k *= clamp( ${o.mask ?? "1.0"}, 0.0, 1.0 ); transformed.y *= k; transformed.x *= step( 0.02, k ); transformed.z *= k; vGC = mix( aBase, aTip, aT * aT ) * ( 0.55 + 0.45 * aT );
         if ( uStripe > 0.0 ) { float wx = ( modelMatrix * vec4( ip, 1.0 ) ).x - floor( cameraPosition.x / 3000.0 + 0.5 ) * 3000.0; float bd = smoothstep( 0.47, 0.53, abs( fract( wx / uStripe ) - 0.5 ) * 2.0 ); vGC *= mix( 0.8, 1.12, bd ); } }`);
     sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vGC;").replace("#include <color_fragment>", "#include <color_fragment>\n diffuseColor.rgb *= vGC;").replace("#include <normal_fragment_maps>", "normal = normalize( vNormal );"); };
   const im = new THREE.InstancedMesh(g, m, n), M = new THREE.Matrix4(), base = new Float32Array(n * 3), tip = new Float32Array(n * 3), cb = new THREE.Color(), ct = new THREE.Color();
@@ -169,3 +171,35 @@ export const makeCup = (silver: THREE.Material) => { const G = new THREE.Group()
   const body = new THREE.Mesh(new THREE.LatheGeometry(pts, 28), silver); body.castShadow = true; body.receiveShadow = true; G.add(body);
   for (const s of [-1, 1]) { const h = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.028, 8, 22, Math.PI * 1.25), silver); h.scale.set(0.8, 1.15, 1); h.rotation.z = s > 0 ? -Math.PI * 0.62 : Math.PI * 0.62 - Math.PI * 1.25 + Math.PI; h.position.set(s * 0.25, 0.74, 0); if (s < 0) h.rotation.z = Math.PI * 0.37; h.castShadow = true; G.add(h); }
   return G; };
+
+// ---------------- crops in rows (corn) ----------------
+let CORN: THREE.CanvasTexture | null = null;
+const cornTex = () => { if (CORN) return CORN; const cv = document.createElement("canvas"); cv.width = 256; cv.height = 512; const g = cv.getContext("2d")!;
+  g.strokeStyle = "#5f8a34"; g.lineWidth = 9; g.beginPath(); g.moveTo(128, 512); g.lineTo(130, 40); g.stroke();
+  for (let i = 0; i < 11; i++) { const y = 470 - i * 40, s = i % 2 ? 1 : -1, l = 100 - i * 4; g.strokeStyle = ["#6a9a3a", "#7aa846", "#5a8a32", "#8ab050"][i % 4]; g.lineWidth = 14 - i * 0.6; g.beginPath(); g.moveTo(129, y); g.quadraticCurveTo(129 + s * l * 0.6, y - 60, 129 + s * l, y + 10 + i * 2); g.stroke(); }
+  for (let i = 0; i < 2; i++) { g.fillStyle = "#c9b45a"; g.beginPath(); g.ellipse(140 - i * 22, 250 + i * 50, 12, 38, 0.25 - i * 0.5, 0, 6.3); g.fill(); g.strokeStyle = "#8aa850"; g.lineWidth = 3; g.stroke(); }
+  g.strokeStyle = "#d8c070"; g.lineWidth = 4; for (let i = 0; i < 7; i++) { g.beginPath(); g.moveTo(130, 44); g.lineTo(130 + (i - 3) * 14, 4 + Math.abs(i - 3) * 6); g.stroke(); }
+  CORN = new THREE.CanvasTexture(cv); CORN.colorSpace = THREE.SRGBColorSpace; CORN.anisotropy = 4; return CORN; };
+/** corn plants on a grid (rows `dz` apart, plants `dx` apart) inside a disc of radius R that follows the camera, snapped to
+ *  the grid so the rows never swim; mask = GLSL expression of wp (world xz) */
+export const makeCorn = (R: number, dx: number, dz: number, h: number, mask: string): Grass => {
+  const pts: number[][] = []; for (let x = -R; x <= R; x += dx) for (let z = -R; z <= R; z += dz) if (x * x + z * z < R * R) pts.push([x, z]);
+  const g = new THREE.PlaneGeometry(1, 1); g.translate(0, 0.5, 0); const g2 = g.clone().rotateY(Math.PI / 2); const geo = mergeTwo(g, g2);
+  const cen = { value: new THREE.Vector2() }, rad = { value: R };
+  const m = new THREE.MeshStandardMaterial({ map: cornTex(), alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.7 }); m.customProgramCacheKey = () => "corn" + mask;
+  m.onBeforeCompile = (sh) => { sh.uniforms.uCen = cen; sh.uniforms.uRad = rad;
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nuniform vec2 uCen; uniform float uRad;").replace("#include <beginnormal_vertex>", "vec3 objectNormal = normalize( vec3( position.x * 0.5, 0.9, 0.4 ) );")
+      .replace("#include <begin_vertex>", `#include <begin_vertex>
+      { vec3 ip = instanceMatrix[3].xyz; float d = length( ip.xz - uCen ); vec2 wp = ( modelMatrix * vec4( ip, 1.0 ) ).xz; float k = ( 1.0 - smoothstep( uRad * 0.7, uRad, d ) ) * clamp( ${mask}, 0.0, 1.0 ); transformed *= step( 0.05, k ) * ( 0.6 + 0.4 * k ); }`); };
+  const im = new THREE.InstancedMesh(geo, m, pts.length), Mx = new THREE.Matrix4();
+  pts.forEach(([x, z], i) => { const hh = h * (0.85 + 0.3 * hash(i, 1, 9)); _p.set(x + 0.08 * (hash(i, 2, 9) - 0.5), 0, z + 0.08 * (hash(i, 3, 9) - 0.5)); _q.setFromEuler(_e.set(0, hash(i, 4, 9) * 3, (hash(i, 5, 9) - 0.5) * 0.12)); _s.set(hh * 0.5, hh, hh * 0.5); Mx.compose(_p, _q, _s); im.setMatrixAt(i, Mx); });
+  im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; im.layers.set(NOINK);
+  return { mesh: im, follow: (x, z) => { const sx = Math.round(x / dx) * dx, sz = Math.round(z / dz) * dz; im.position.set(sx, 0, sz); cen.value.set(x - sx, z - sz); } };
+};
+const mergeTwo = (a: THREE.BufferGeometry, b: THREE.BufferGeometry) => { const g = new THREE.BufferGeometry(); for (const k of ["position", "normal", "uv"]) { const A = a.getAttribute(k) as THREE.BufferAttribute, Bb = b.getAttribute(k) as THREE.BufferAttribute; const arr = new Float32Array(A.array.length + Bb.array.length); arr.set(A.array as Float32Array); arr.set(Bb.array as Float32Array, A.array.length); g.setAttribute(k, new THREE.BufferAttribute(arr, A.itemSize)); }
+  const ia = Array.from(a.getIndex()!.array), ib = Array.from(b.getIndex()!.array).map((v) => v + (a.getAttribute("position") as THREE.BufferAttribute).count); g.setIndex([...ia, ...ib]); return g; };
+
+// ---------------- solids: what characters and the camera must never pass through ----------------
+export type Solid = { x0: number; z0: number; x1: number; z1: number; y0: number; y1: number; name: string };
+export const SOLIDS: Solid[] = [];
+export const solid = (name: string, x0: number, z0: number, x1: number, z1: number, y1: number, y0 = 0) => { SOLIDS.push({ name, x0: Math.min(x0, x1), x1: Math.max(x0, x1), z0: Math.min(z0, z1), z1: Math.max(z0, z1), y0, y1 }); };

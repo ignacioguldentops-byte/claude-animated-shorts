@@ -23,6 +23,10 @@ no longer acceptable.
 - **Props in 3D**: balls are spheres with leather / panel textures, trophies are lathe-turned metal; painted cards only
   for gags (stars, notes, question marks, flashes).
 - **Cast casts real shadows**; no painted contact blobs.
+- **No cuts, no clipping (user's order 2026-11-22)**: one continuous camera (rigs handed over with blended flights,
+  see `examples/marathon-1904/src/o/story.ts`); every frame must pass the frame checker (`templates/realistic/qa/`,
+  `bash qa/run.sh 1`): no feet or heads cut by the frame, no figures overlapping or inside solids (register every
+  solid with `solid()` in `real.ts`), camera never inside a solid or a car. Fix every report before rendering.
 - **Process**: test stills of every shot (`stills_q.mjs`, scale 0.5), fix framing so nobody is cut or hidden, then a
   chunked render from a prebuilt bundle (`render_qb.sh`, chunks ≤125 frames, ≤ ~3 chunks per background task), review
   every chunk in motion on contact sheets, re-render only what is wrong, assemble under 30 MB (`assemble_q.py`).

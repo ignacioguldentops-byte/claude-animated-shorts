@@ -23,7 +23,7 @@ export type Surf = { map: THREE.Texture; normalMap: THREE.Texture; roughnessMap:
 const cache = new Map<string, Surf>();
 /** f(u, v, o): o[0] height 0..1, o[1..3] albedo RGB 0..255, o[4] roughness 0..1. bump = normal strength. */
 export const surf = (key: string, n: number, bump: number, f: (u: number, v: number, o: Float32Array) => void): Surf => {
-  const hit = cache.get(key); if (hit) return hit;
+  const hit = cache.get(key); if (hit) return hit; if ((globalThis as { QA_FAST?: boolean }).QA_FAST) n = 8;
   const H = new Float32Array(n * n), A = new Uint8Array(n * n * 4), R = new Uint8Array(n * n * 4), N = new Uint8Array(n * n * 4), o = new Float32Array(5);
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const i = y * n + x; o[0] = 0.5; o[4] = 0.8; f((x + 0.5) / n, (y + 0.5) / n, o); H[i] = o[0];
     A[i * 4] = clamp(o[1], 0, 255); A[i * 4 + 1] = clamp(o[2], 0, 255); A[i * 4 + 2] = clamp(o[3], 0, 255); A[i * 4 + 3] = 255;
@@ -102,8 +102,8 @@ export const felt = () => surf("felt", 256, 1.4, (u, v, o) => { const g = vn(u *
 export const earth = () => surf("earth", 1024, 4, (u, v, o) => {
   const g = fbm(u, v, 160, 4, 1), m = fbm(u, v, 5, 5, 3), cr = Math.abs(fbm(u, v, 14, 4, 20) - 0.5), crack = 1 - sst(0.0, 0.018, cr), cx = Math.floor(u * 36), cy = Math.floor(v * 36), px = hash(cx, cy, 2), py = hash(cx, cy, 3), pr = 0.1 + 0.3 * hash(cx, cy, 4), has = hash(cx, cy, 5) > 0.93 ? 1 : 0;
   const d = Math.hypot(u * 36 - cx - 0.2 - 0.6 * px, v * 36 - cy - 0.2 - 0.6 * py) / pr, peb = has * Math.sqrt(Math.max(0, 1 - d * d));
-  o[0] = 0.4 + 0.25 * (g - 0.5) + 0.3 * (m - 0.5) + 0.45 * peb - 0.25 * crack * sst(0.45, 0.6, m);
-  const k = 0.8 + 0.3 * (g - 0.5) + 0.3 * (m - 0.5) - 0.25 * crack * sst(0.45, 0.6, m), s = peb > 0 ? 1 : 0, pc = 120 + 50 * hash(cx, cy, 6);
+  o[0] = 0.4 + 0.25 * (g - 0.5) + 0.15 * (m - 0.5) + 0.45 * peb - 0.08 * crack * sst(0.5, 0.62, m);
+  const k = 0.84 + 0.28 * (g - 0.5) + 0.14 * (m - 0.5) - 0.07 * crack * sst(0.5, 0.62, m), s = peb > 0 ? 1 : 0, pc = 120 + 50 * hash(cx, cy, 6);
   o[1] = (204 * k) * (1 - s) + pc * s * (0.7 + 0.3 * peb); o[2] = (170 * k) * (1 - s) + pc * 0.97 * s * (0.7 + 0.3 * peb); o[3] = (118 * k) * (1 - s) + pc * 0.9 * s * (0.7 + 0.3 * peb); o[4] = 0.95 - 0.25 * s;
 });
 /** soil and thatch under the grass blades; stripe = mown bands across u (2 bands per tile) */
@@ -150,3 +150,7 @@ export const skyTex = (k: SkyK): THREE.CanvasTexture => {
   t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.mapping = THREE.EquirectangularReflectionMapping; t.wrapS = THREE.RepeatWrapping; t.needsUpdate = true; skies.set(k, t); return t;
 };
 export { hex, clamp, sst, hash };
+
+/** cinder of a running track: fine dark grit and tiny white specks (near white albedo: tint per use) */
+export const cinder = () => surf("cinder", 512, 2.0, (u, v, o) => { const g = vn(u * 220, v * 220, 256, 3), m = fbm(u, v, 6, 3, 5), sp = hash(Math.floor(u * 400), Math.floor(v * 400), 9) > 0.985 ? 1 : 0;
+  o[0] = 0.5 + 0.35 * (g - 0.5); const k = 0.82 + 0.25 * (g - 0.5) + 0.1 * (m - 0.5) + 0.35 * sp; o[1] = 255 * k; o[2] = 250 * k; o[3] = 246 * k; o[4] = 0.95; });
