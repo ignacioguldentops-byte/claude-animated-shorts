@@ -16,4 +16,4 @@ export const LANE = (k: number) => -(TR.r0 + 1 + k * 1.2); // z of lane k on the
 export const P = { orchard: 118, breakdown: 175, well: 232, cartero: 285, dogs: 318, quit: 350, farmX: 420, farmZ: -105 };
 /** fields: wheat south of the road (x 150..700), corn north (x 240..420); orchard south (x 100..140) */
 export const WHEAT_GLSL = `( step( 150.0, wp.x ) * smoothstep( 4.5, 6.0, wp.y - ( -26.0 + 12.0 * sin( ( wp.x - 80.0 ) / 60.0 ) ) ) * ( 1.0 - smoothstep( 80.0, 82.0, wp.y + 26.0 ) ) )`;
-export const CORN_GLSL = `( step( 240.0, wp.x ) * ( 1.0 - step( 420.0, wp.x ) ) * smoothstep( 5.0, 6.0, ( -26.0 + 12.0 * sin( ( wp.x - 80.0 ) / 60.0 ) ) - wp.y ) * ( 1.0 - smoothstep( 70.0, 72.0, -26.0 - wp.y ) ) )`;
+export const CORN_GLSL = `( step( 240.0, wp.x ) * ( 1.0 - step( 420.0, wp.x ) ) * smoothstep( 5.0, 6.0, ( -26.0 + 12.0 * sin( ( wp.x - 80.0 ) / 60.0 ) ) - wp.y ) * ( 1.0 - smoothstep( 70.0, 72.0, -26.0 - wp.y ) ) * ( 1.0 - ( 1.0 - smoothstep( 2.4, 3.0, abs( wp.x - 318.0 ) ) ) * step( wp.y, -36.0 ) ) )`; // a mown track through the corn where the dogs chase the runner

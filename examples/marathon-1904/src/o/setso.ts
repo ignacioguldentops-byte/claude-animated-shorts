@@ -175,7 +175,7 @@ export function buildWorld(R: THREE.Object3D, refs: ORefs) {
   }
   // lone trees and hedges along the far edges of the fields; distant farms
   { const tr: TreeSpec[] = []; for (let i = 0; i < 26; i++) { const x = 160 + i * 22 + 7 * S.hash(i, 1, 50), side = i % 2 ? 1 : -1, z = roadZ(x) + side * (side > 0 ? 86 : 78) + 8 * S.hash(i, 2, 50); tr.push({ x, z, h: 10 + 6 * S.hash(i, 3, 50), k: i, slim: i % 5 === 0 }); } trees(tr); }
-  { const tr: TreeSpec[] = []; for (let i = 0; i < 10; i++) { const x = 300 + i * 40 + 10 * S.hash(i, 9, 51); tr.push({ x, z: roadZ(x) - 11 - 3 * S.hash(i, 7, 51), h: 12 + 5 * S.hash(i, 8, 51), k: i + 2 }); } trees(tr); tr.forEach((t) => solid("roadside tree", t.x - 0.4, t.z - 0.4, t.x + 0.4, t.z + 0.4, t.h)); }
+  { const tr: TreeSpec[] = []; for (let i = 0; i < 10; i++) { const x = 300 + i * 40 + 10 * S.hash(i, 9, 51); tr.push({ x, z: roadZ(x) - 11 - 3 * S.hash(i, 7, 51), h: 12 + 5 * S.hash(i, 8, 51), k: i + 2 }); } trees(tr); tr.forEach((t) => { solid("roadside tree", t.x - 0.4, t.z - 0.4, t.x + 0.4, t.z + 0.4, t.h); const r = t.h * 0.36; solid("tree canopy", t.x - r, t.z - r, t.x + r, t.z + r, t.h * 1.0, t.h * 0.3); }); }
   B.build(Gp);
   // the photographer's camera on its tripod at the finish
   { const T = refs.tripod; Gp.add(T); const tb = new Batch(), w2 = M.wood("#8a5a34", 0.5); for (const [a, b] of [[0.45, 0], [-0.25, 0.4], [-0.25, -0.4]]) tb.rod(w2, [0, 1.3, 0], [a, 0, b], 0.025); tb.box(M.wood("#5a3622", 0.4), -0.22, 1.3, -0.2, 0.22, 1.62, 0.2).box(pmat("#16161a", 0.6), 0.22, 1.35, -0.16, 0.5, 1.58, 0.16).cyl(M.brass(), 0.55, 1.46, 0, 0.09, 0.12, undefined, [0, 0, Math.PI / 2]).cyl(pmat("#0a0a10", 0.05, 0.6), 0.62, 1.46, 0, 0.07, 0.02, undefined, [0, 0, Math.PI / 2]); tb.build(T); }
