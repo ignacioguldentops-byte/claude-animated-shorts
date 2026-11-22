@@ -31,6 +31,14 @@ no longer acceptable.
   chunked render from a prebuilt bundle (`render_qb.sh`, chunks ≤125 frames, ≤ ~3 chunks per background task), review
   every chunk in motion on contact sheets, re-render only what is wrong, assemble under 30 MB (`assemble_q.py`).
 - Cost: ~6-10 s per frame at 1080x1920 with `--gl swangle`; plan ~3-4 h of render for 50 s.
+- **Lessons from the marathon short (2026-11-22)**: register tree canopies as solids too (the camera once flew
+  through an apple tree), and check the camera against fences/rails (`camera at the fence line` in
+  `examples/marathon-1904/qa/qa_o.ts`); keep subjects visible (cut a path through tall crops, have figures face the
+  camera when the angle changes); no shot may hold the same framing for more than ~2 s, so orbit, pull back or rise;
+  flights between far places need an `arc` so they never skim the ground; a stage change between beats must happen
+  while the camera looks away. Run render queues detached (`setsid nohup bash queue_o.sh`) because background
+  tasks are killed at their time limit, and after assembly measure the frame-to-frame difference at every seam
+  between renders made from different bundles: any jump means re-rendering that range with the latest bundle.
 
 ## Standing user rules (override older rules below where they differ)
 - Narration in **Spanish**, Latin American neutral storytelling register, modelled on the user's reference: ~3 words/s,
