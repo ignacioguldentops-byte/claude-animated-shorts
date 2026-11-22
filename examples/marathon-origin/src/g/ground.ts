@@ -14,7 +14,7 @@ export const dryMeadow = () => surf("dryMeadow", 1024, 3, (u, v, o) => { const g
   const k = 0.78 + 0.45 * (st - 0.5) + 0.3 * (g - 0.5); o[1] *= k; o[2] *= k; o[3] *= k; o[0] = 0.45 + 0.4 * (st - 0.5) + 0.2 * (g - 0.5); o[4] = 0.92; });
 export const limestone = () => surf("limestone", 1024, 6, (u, v, o) => { const g = fbm(u, v, 64, 4, 3), m = fbm(u, v, 5, 4, 8), cr = Math.abs(fbm(u, v, 12, 4, 21) - 0.5), crack = 1 - sst(0.0, 0.02, cr), lich = sst(0.6, 0.75, fbm(u, v, 18, 3, 33));
   o[0] = 0.5 + 0.35 * (g - 0.5) + 0.2 * (m - 0.5) - 0.35 * crack; const k = 0.82 + 0.3 * (g - 0.5) + 0.12 * (m - 0.5) - 0.3 * crack;
-  o[1] = (206 * (1 - lich) + 150 * lich) * k; o[2] = (196 * (1 - lich) + 150 * lich) * k; o[3] = (176 * (1 - lich) + 112 * lich) * k; o[4] = 0.8; });
+  o[1] = (172 * (1 - lich) + 130 * lich) * k; o[2] = (164 * (1 - lich) + 132 * lich) * k; o[3] = (150 * (1 - lich) + 100 * lich) * k; o[4] = 0.8; });
 export const sand = () => surf("sand", 1024, 2, (u, v, o) => { const g = fbm(u, v, 300, 3, 4), rip = Math.sin((v * 46 + 2.5 * fbm(u, v, 4, 3, 7)) * 6.283) * 0.5 + 0.5, m = fbm(u, v, 6, 3, 9);
   o[0] = 0.4 + 0.25 * rip + 0.2 * (g - 0.5); const k = 0.9 + 0.12 * (g - 0.5) + 0.08 * rip + 0.1 * (m - 0.5); o[1] = 226 * k; o[2] = 204 * k; o[3] = 160 * k; o[4] = 0.95; });
 /** a pine forest seen from above: dark round crowns, sunlit tops, gaps of dry ground */
@@ -24,9 +24,9 @@ export const canopyOld = () => surf("canopyOld", 1024, 9, (u, v, o) => { let bes
   o[0] = crown * (0.4 + 0.6 * Math.sqrt(top)) + 0.1 * g; const k = 0.55 + 0.55 * top + 0.2 * (g - 0.5), tone = 0.85 + 0.3 * id;
   o[1] = (62 * k * tone) * crown + 118 * (1 - crown); o[2] = (84 * k * tone) * crown + 104 * (1 - crown); o[3] = (44 * k * tone) * crown + 66 * (1 - crown); o[4] = 0.9; });
 export const canopy = () => surf("scrub", 1024, 6, (u, v, o) => { const b = fbm(u, v, 22, 4, 3), b2 = fbm(u, v, 60, 3, 7), g = fbm(u, v, 200, 3, 5), m = fbm(u, v, 4, 4, 9);
-  const bush = sst(0.5, 0.6, b * 0.75 + b2 * 0.25), top = sst(0.5, 0.75, b * 0.75 + b2 * 0.25), soil = sst(0.55, 0.7, m);
+  const bush = sst(0.38, 0.5, b * 0.75 + b2 * 0.25), top = sst(0.45, 0.72, b * 0.75 + b2 * 0.25), soil = sst(0.55, 0.7, m);
   o[0] = 0.3 + 0.55 * bush * (0.6 + 0.4 * top) + 0.1 * g; const k = 0.75 + 0.35 * top + 0.25 * (g - 0.5);
-  const gC = [62, 80, 40], dC = [170 - 30 * soil, 150 - 30 * soil, 98 - 20 * soil];
+  const gC = [54, 72, 36], dC = [150 - 30 * soil, 132 - 28 * soil, 92 - 20 * soil];
   o[1] = (gC[0] * k) * bush + dC[0] * (0.85 + 0.2 * g) * (1 - bush); o[2] = (gC[1] * k) * bush + dC[1] * (0.85 + 0.2 * g) * (1 - bush); o[3] = (gC[2] * k) * bush + dC[2] * (0.85 + 0.2 * g) * (1 - bush); o[4] = 0.92; });
 export const lushTurf = () => turf("lushTurf", 0, [66, 120, 46], [92, 148, 58]);
 // ---------------- terrain material: 5 surfaces mixed by per-vertex weights ----------------
@@ -69,13 +69,14 @@ export const terrain = (x0: number, z0: number, x1: number, z1: number, step: nu
 export const greekW: WFn = (x, z, h, sl) => {
   const dr = fromRoad(x, z), n = fbm2(x / 30, z / 30, 3, 41), n2 = fbm2(x / 90, z / 90, 3, 43);
   let earthW = 0.25 * sst(0.55, 0.8, n) + 0.55 * (1 - sst(5, 9, dr)) * (x > GATE_X - 4 && x < CAMP_X + 30 ? 1 : 0) + 0.2 * sst(0.6, 0.8, n2) * (1 - sst(60, 110, dr));
-  const city = (1 - sst(GATE_X - 2, GATE_X + 6, x)) * (1 - sst(110, 160, Math.abs(z))) * (1 - sst(60, 90, Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6))); earthW = Math.max(earthW, 0.85 * city);
+  const city = (1 - sst(GATE_X - 2, GATE_X + 6, x)) * (1 - sst(110, 160, Math.abs(z))) * (1 - sst(60, 90, Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6))); earthW = Math.max(earthW, 0.85 * city * (1 - sst(3, 9, h)));
   { const pd = Math.abs(x - pathX(z)); if (z < -10 && z > -260) earthW = Math.max(earthW, 0.85 * (1 - sst(1.0, 2.2, pd))); }
   const rock = Math.min(1, sst(1.0, 1.7, sl) + 0.45 * sst(0.66, 0.78, fbm2(x / 50, z / 50, 3, 51)) * sst(60, 120, dr) + 0.95 * sst(60, 30, Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6)) * sst(0.3, 0.6, sl));
   earthW = Math.max(earthW, 0.7 * sst(CAMP_X - 30, CAMP_X - 12, x) * (x < 3000 ? 1 : 0) * (1 - sst(200, 260, Math.abs(z))));
   const sandW = sst(BEACH_X - 8, BEACH_X + 4, x) * (x < 3000 ? 1 : 0) * (1 - sst(0.25, 0.45, sl));
   const forest = Math.min(1, sst(70, 170, dr) * (0.75 + 0.6 * fbm2(x / 70, z / 70, 3, 61)) + 0.8 * sst(0.3, 0.9, fbm2(x / 30, z / 30, 2, 63)) * sst(40, 90, dr)) * (1 - 0.7 * rock) * (1 - sandW) * (x < 3000 ? 1 : 0);
-  return [Math.min(1, earthW) * (1 - sandW), rock * (1 - sandW), sandW, forest];
+  const far = sst(450, 800, Math.hypot(x - 250, z * 1.4)) * (x < 3000 ? 1 : 0);
+  return [Math.min(1, earthW) * (1 - sandW) * (1 - far), Math.min(rock, 1 - 0.6 * far) * (1 - sandW), sandW, Math.max(forest, 0.85 * far)];
 };
 export const engW: WFn = (x, z, _h, sl) => { const n = fbm2(x / 30, z / 30, 3, 71); return [0.15 * sst(0.6, 0.8, n), sst(0.6, 0.9, sl) * 0.5, 0, 0]; };
 // ---------------- roads, paths, walls ----------------

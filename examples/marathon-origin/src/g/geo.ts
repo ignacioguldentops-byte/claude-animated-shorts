@@ -32,10 +32,10 @@ export const H = (x: number, z: number): number => {
   // Athens: the city plain is flat, the Acropolis rock stands up out of it, Ardettos hill behind the stadium
   const city = (1 - sst(-40, 60, x - 0)) * (1 - sst(120, 220, Math.abs(z)));
   h *= 1 - 0.85 * city;
-  { const d = Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6); h += 72 * sst(78, 44, d) * (0.92 + 0.16 * fbm2(x / 20, z / 20, 3, 5)) + 14 * sst(140, 60, d); }
-  { const d = Math.hypot(x - ARDET[0], z - ARDET[1]); h += 34 * sst(110, 20, d) * (0.85 + 0.3 * fbm2(x / 40, z / 40, 3, 9)); }
+  { const a = Math.atan2(z - ACRO[1], x - ACRO[0]), rn = 1 + 0.16 * (fbm2(Math.cos(a) * 2 + 7, Math.sin(a) * 2 + 3, 3, 23) - 0.5) * 2, d = Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6) / rn; h += 58 * sst(76, 40, d) * (0.94 + 0.12 * fbm2(x / 14, z / 14, 3, 5)) + 16 * sst(150, 60, d) * (0.8 + 0.4 * fbm2(x / 30, z / 30, 3, 25)); }
+  { const d = Math.hypot(x - ARDET[0], z - ARDET[1]); h += 22 * sst(120, 20, d) * (0.85 + 0.3 * fbm2(x / 40, z / 40, 3, 9)); }
   // the stadium hollow and the agora are level
-  { const inS = (1 - sst(0, 30, Math.max(STAD.x0 - x, x - STAD.x1 - 20, 0))) * (1 - sst(STAD.w / 2 + 16, STAD.w / 2 + 40, Math.abs(z - STAD.z))); h *= 1 - inS; }
+  { const inS = (1 - sst(0, 40, Math.max(STAD.x0 - x, x - STAD.x1 - 20, 0))) * (1 - sst(STAD.w / 2 + 30, STAD.w / 2 + 90, Math.abs(z - STAD.z))); h *= 1 - inS; h += 16 * inS * sst(STAD.w / 2 + 20, STAD.w / 2 + 34, Math.abs(z - STAD.z)) * (1 - sst(0, 40, Math.max(STAD.x0 - 30 - x, 0))); }
   // the mountain at the north end of the plain and the long cape that closes the bay; the beach and the sea
   { const d = Math.hypot((x - 560) * 0.8, z + 300); h += 150 * sst(260, 60, d) * (0.8 + 0.4 * fbm2(x / 60, z / 60, 3, 13)); }
   const cape = x > 640 ? sst(70, 20, Math.abs(z + 300 + 0.12 * (x - 700))) * sst(1500, 1100, x) : 0;
@@ -44,6 +44,6 @@ export const H = (x: number, z: number): number => {
   return h;
 };
 /** England: a gentle park, the castle on its mound */
-export const HE = (x: number, z: number) => { const d = Math.hypot(x - CASTLE[0], z - CASTLE[1]); return 1.6 * (fbm2(x / 60, z / 60, 3, 21) - 0.5) + 9 * sst(70, 26, d) + 0.004 * Math.hypot(x - ENG - 200, z) * sst(300, 900, Math.hypot(x - ENG - 200, z)) * 20; };
+export const HE = (x: number, z: number) => { const d = Math.hypot(x - CASTLE[0], z - CASTLE[1]), st = (1 - sst(70, 90, Math.abs(z - WCITY.z))) * (1 - sst(140, 160, Math.abs(x - WCITY.x))); return 1.6 * (fbm2(x / 60, z / 60, 3, 21) - 0.5) * (1 - st) + 9 * sst(70, 26, d) + 0.004 * Math.hypot(x - ENG - 200, z) * sst(300, 900, Math.hypot(x - ENG - 200, z)) * 20; };
 export const onRoad = (x: number, off = 0, y = 0): [number, number, number] => { const [dx, dz] = roadDir(x), px = x - dz * off, pz = roadZ(x) + dx * off; return [px, H(px, pz) + y, pz]; };
 export const ground = (x: number, z: number, y = 0): [number, number, number] => [x, H(x, z) + y, z];

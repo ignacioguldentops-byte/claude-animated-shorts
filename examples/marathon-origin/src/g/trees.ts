@@ -145,10 +145,10 @@ export const makeTreesV2 = (parent: THREE.Object3D, specs: TSpec[]) => {
 /** a vine over a pergola: leaf sprays lying across the beams, a few hanging down at the edges */
 export const vine = (parent: THREE.Object3D, x0: number, z0: number, x1: number, z1: number, y: number) => {
   const r = mkR(4242), cards: Card[] = [], E = new THREE.Euler();
-  const n = Math.round((x1 - x0) * (z1 - z0) * 5);
+  const n = Math.round((x1 - x0) * (z1 - z0) * 12);
   for (let i = 0; i < n; i++) { const p = V(x0 + r() * (x1 - x0), y + 0.05 + 0.25 * r(), z0 + r() * (z1 - z0)), edge = Math.min(p.x - x0, x1 - p.x, p.z - z0, z1 - p.z) < 0.5 && r() < 0.5;
     if (edge) { p.y -= 0.3 + 0.5 * r(); E.set((r() - 0.5) * 0.6, r() * 6.283, (r() - 0.5) * 0.4, "YXZ"); } else E.set(-Math.PI / 2 + (r() - 0.5) * 1.0, r() * 6.283, (r() - 0.5) * 0.6, "YXZ");
-    cards.push({ p, s: 0.55 + 0.35 * r(), q: new THREE.Quaternion().setFromEuler(E), n: V((r() - 0.5) * 0.3, 1, (r() - 0.5) * 0.3).normalize(), ao: 0.4 + 0.6 * r(), tone: r() }); }
+    cards.push({ p, s: 0.32 + 0.22 * r(), q: new THREE.Quaternion().setFromEuler(E), n: V((r() - 0.5) * 0.3, 1, (r() - 0.5) * 0.3).normalize(), ao: 0.4 + 0.6 * r(), tone: r() }); }
   const geo = new THREE.PlaneGeometry(1, 1), aN = new Float32Array(n * 3), aW = new Float32Array(n * 3), im = new THREE.InstancedMesh(geo, leafMat("plane", false), n), M = new THREE.Matrix4(), S = V(), col = new THREE.Color();
   cards.forEach((c, i) => { S.set(c.s, c.s, c.s); M.compose(c.p, c.q, S); im.setMatrixAt(i, M); const ln = c.n.clone().applyQuaternion(c.q.clone().invert()); aN.set([ln.x, ln.y, ln.z], i * 3); aW.set([0.015, hash(i, 3, 9) * 30, Math.floor(hash(i, 7, 9) * 4)], i * 3); col.setScalar(0.75 + 0.4 * c.tone); im.setColorAt(i, col); });
   geo.setAttribute("aN", new THREE.InstancedBufferAttribute(aN, 3)); geo.setAttribute("aW", new THREE.InstancedBufferAttribute(aW, 3));

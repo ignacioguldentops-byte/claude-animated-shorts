@@ -9,7 +9,7 @@ import { NOINK } from "./ink";
 import { makeTreesV2, TSpec, TREE_T, vine, makeShrubs, Species } from "./trees";
 import { terrain, greekW, strip, roadMat, stoneWall, limestone, heightTex, makeGrassH, GrassH } from "./ground";
 import { H, roadZ, roadDir, onRoad, fromRoad, pathX, sst, fbm2, GATE_X, TAV_X, VILLAGE_X, CAMP_X, BEACH_X, SEA_X, ACRO, STAD, ARDET } from "./geo";
-import { hoplite, athenian, greek, persian } from "./castg";
+import { hoplite, athenian, greek, persian, gent08, lady08 } from "./castg";
 import { camAt, TOTAL } from "./story";
 /** the camera's whole path: no tree or bush is planted where the lens would pass through its crown */
 const CAMP: [number, number, number][] = []; for (let f = 0; f < TOTAL; f++) CAMP.push(camAt(0, f).pos);
@@ -122,9 +122,11 @@ export const buildGreece = (root: THREE.Object3D, refs: GRefs) => {
     for (let i = 0; i < 60; i++) { const x = -200 + R(i, 31) * 190, z = (R(i, 32) < 0.5 ? -1 : 1) * (38 + R(i, 33) * 110); if (Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6) < 95) continue; house(BA, m, x, z, 6 + 5 * R(i, 34), 6 + 4 * R(i, 35), 3 + 2 * R(i, 36), R(i, 37) < 0.5 ? 0 : Math.PI / 2, i + 7, R(i, 38) < 0.5); }
     for (let i = 0; i < 26; i++) { const x = -70 + R(i, 41) * 80, z = (R(i, 42) < 0.5 ? -1 : 1) * (28 + R(i, 43) * 12); if (z < 0 && z > -32) continue; house(BA, m, x, z, 5 + 3 * R(i, 44), 5 + 2 * R(i, 45), 3 + R(i, 46), 0, i + 2, R(i, 47) < 0.6); } }
   solidTag("");
+  { let n = 0; for (let i = 0; i < 900 && n < 170; i++) { const x = -330 + R(i, 151) * 370, z = (R(i, 152) < 0.5 ? -1 : 1) * (66 + R(i, 153) * 160); if (Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6) < 92) continue; if (x > STAD.x0 - 40 && Math.abs(z) < STAD.w / 2 + 40) continue; if (x > GATE_X - 8) continue;
+      const tooClose = houses.some(([hx, hz]) => Math.abs(hx - x) < 9 && Math.abs(hz - z) < 9); if (tooClose) continue; house(B, m, x, z, 6 + 4 * R(i, 154), 6 + 3 * R(i, 155), 3 + 2.4 * R(i, 156), R(i, 157) < 0.5 ? 0 : Math.PI / 2, i + 31, R(i, 158) < 0.35); houses.push([x, z]); n++; } }
   // the Acropolis: walls along its rim, a temple on top (painted and whole in 490 BC, the Parthenon in ruins in 1896)
   { const top = H(ACRO[0], ACRO[1]); for (let a = 0; a < 6.283; a += 0.08) { const x = ACRO[0] + 46 * Math.cos(a), z = ACRO[1] + 28 * Math.sin(a), y = H(x, z); B.box(m.stone, x - 2, y - 1.5, z - 2, x + 2, y + 3.4, z + 2); }
-    temple(BA, m, ACRO[0] + 6, top - 0.3, ACRO[1], [6, 13], false); temple(BB, m, ACRO[0] + 6, top - 0.3, ACRO[1], [8, 17], true); }
+    temple(BA, m, ACRO[0] + 16, top - 0.3, ACRO[1] + 2, [6, 13], false); temple(BB, m, ACRO[0] + 16, top - 0.3, ACRO[1] + 2, [8, 17], true); }
   // 1896: the Panathenaic stadium in marble, packed; neoclassical houses round it
   const stadSpots: Spot[] = []; solidTag("B");
   { const R0 = STAD.w / 2, xc = STAD.x0 + R0, z0 = STAD.z, rows = 34, step = 1.4;
@@ -134,10 +136,14 @@ export const buildGreece = (root: THREE.Object3D, refs: GRefs) => {
         for (let q = 0; q < 2; q++) { const t = (q + 0.5) / 2, px = x + (x2 - x) * t, pz = z + (z2 - z) * t; stadSpots.push({ x: px + (Math.random() - 0.5) * 0.1, y: y + 0.02, z: pz, k: Math.floor(R(Math.round(s * 10), k, 5) * 12), ph: R(Math.round(s * 7), k, 6) }); } } }
     { const off = 2.4 + rows * 0.82, tot = 2 * (STAD.x1 - xc) + Math.PI * (R0 + off); for (let s = 0; s < tot; s += 2) { const [x, z] = along(s, off), [x2, z2] = along(Math.min(tot, s + 2), off); BB.slab(m.marble, (x + x2) / 2, rows * 0.46 + 0.6, (z + z2) / 2, 2.05, 1.2, 0.7, [0, -Math.atan2(z2 - z, x2 - x), 0]); } }
     for (const s of [-1, 1]) { const z = z0 + s * (R0 + 0.6); for (let x = xc; x < STAD.x1; x += 2) BB.box(m.marble, x, 0, z - 0.3, x + 2, 1.1, z + 0.3); solid("stadium parapet", xc - R0, z - 0.35, STAD.x1, z + 0.35, 1.1); }
+    { const sh = new THREE.Shape(), L1 = STAD.x1 + 2; sh.moveTo(L1, -(z0 - R0 - 0.2)); sh.lineTo(xc, -(z0 - R0 - 0.2)); for (let a = 0; a <= 32; a++) { const t = Math.PI * a / 32; sh.lineTo(xc - (R0 + 0.2) * Math.sin(t), -(z0 - (R0 + 0.2) * Math.cos(t))); } sh.lineTo(L1, -(z0 + R0 + 0.2));
+      const g2 = new THREE.ShapeGeometry(sh, 4); g2.rotateX(-Math.PI / 2); const sm2 = new THREE.MeshStandardMaterial({ color: "#d9b98a", roughness: 0.95, map: (surf("arenaSand", 512, 2, (u, v, o) => { const g = fbm(u, v, 160, 3, 4); o[0] = 0.5 + 0.3 * (g - 0.5); const k = 0.9 + 0.15 * (g - 0.5); o[1] = 230 * k; o[2] = 200 * k; o[3] = 150 * k; o[4] = 0.95; })).map });
+      sm2.map!.repeat.set(30, 8); sm2.map!.wrapS = sm2.map!.wrapT = THREE.RepeatWrapping; const am = new THREE.Mesh(g2, sm2); am.position.y = 0.035; am.receiveShadow = true; am.layers.set(NOINK); Bn.add(am);
+      for (const zz of [-1, 1]) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(STAD.x1 - xc, 0.12), pmat("#f4efe6", 0.8)); ln.rotation.x = -Math.PI / 2; ln.position.set((STAD.x1 + xc) / 2, 0.045, z0 + zz * 8); ln.layers.set(NOINK); Bn.add(ln); } }
     // the entrance: two pylons with flags, a crowd on the hillsides above
     for (const s of [-1, 1]) { BB.box(m.marble, STAD.x1 - 1, 0, z0 + s * (R0 + 1) - 2, STAD.x1 + 3, 9, z0 + s * (R0 + 1) + 2); flag(Bn, refs, STAD.x1 + 1, 9, z0 + s * (R0 + 1), "gr", 1.2); }
     for (let i = 0; i < 40; i++) { const x = -180 + R(i, 51) * 260, z = (R(i, 52) < 0.5 ? -1 : 1) * (70 + R(i, 53) * 90); if (x > -20 && Math.abs(z) < 90) continue; if (Math.hypot(x - ACRO[0], (z - ACRO[1]) * 1.6) < 100) continue; house(BB, m, x, z, 8 + 6 * R(i, 54), 7 + 4 * R(i, 55), 5 + 3 * R(i, 56), R(i, 57) < 0.5 ? 0 : Math.PI / 2, i + 11, R(i, 58) < 0.5); } }
-  const stadCast: Char[] = []; for (let i = 0; i < 12; i++) stadCast.push(greek(i)); const crB = makeCrowd(stadCast, [{ expr: "smile" }, { expr: "laugh", armL: "up", armR: "up", holdR: "hatW" }], stadSpots, 3); Bn.add(crB.mesh); refs.crowds.push({ c: crB, era: "B" });
+  const stadCast: Char[] = []; for (let i = 0; i < 12; i++) stadCast.push(i % 3 === 0 ? gent08(i) : i % 3 === 1 ? lady08(i) : greek(i)); const crB = makeCrowd(stadCast, [{ expr: "smile" }, { expr: "laugh", armL: "up", armR: "up", holdR: "hatW" }], stadSpots, 3); Bn.add(crB.mesh); refs.crowds.push({ c: crB, era: "B" });
   // the camp of the Greeks at Marathon (490 BC): leather tents, shields on stands, spears, fires; the army on the beach
   const campSpots: Spot[] = []; solidTag("A");
   { for (let i = 0; i < 26; i++) { const x = CAMP_X - 18 + R(i, 61) * 40, z = roadZ(CAMP_X) + (R(i, 62) - 0.5) * 120; if (Math.abs(z - roadZ(CAMP_X)) < 7) continue; const y = H(x, z); prism(BA, m.leather, x, y - 0.1, z, 3.4, 2.2, 3.0, R(i, 63) * 3); solid("tent", x - 1.8, z - 1.8, x + 1.8, z + 1.8, y + 2.2); }

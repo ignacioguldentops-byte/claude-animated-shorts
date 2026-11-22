@@ -42,7 +42,7 @@ export const messAt = (f: number): { p: V3; mode: "run" | "stand" | "fall" | "li
   const t1 = t0 + 26; if (f < t1) { const x = lerp(STOP[0], GATE_X + 14, ramp(f, t0, t1)), z = lerp(STOP[2], -6, ramp(f, t0, t1)); return { p: [x, H(x, z), z], mode: "run", k: 0, facing: 1 }; }
   const z = lerp(-8, -150, ramp(f, t1, B.veras + 20) * 0.75 + ease(ramp(f, t1, B.veras + 20)) * 0.25), x = pathX(z); return { p: [x, H(x, z), z], mode: "path", k: 0, facing: 1 };
 };
-export const HIST0: V3 = [-14, 0, -16], HIST1: V3 = [12, 0, -5];
+export const HIST0: V3 = [4, 0, 12], HIST1: V3 = [17.6, 0, 6.6];
 export const histAt = (f: number): V3 => { const t = ease(ramp(f, B.herodoto - 20, B.herodoto + 50)); const x = lerp(HIST0[0], HIST1[0], t), z = lerp(HIST0[2], HIST1[2], t); return [x, H(x, z), z]; };
 // 1896: the runners at the start, the winner on the road, at the taverna, into the stadium
 export const START_X = VILLAGE_X - 3;
@@ -100,30 +100,30 @@ const KEYS: Key[] = [];
   KEYS.push({ f: b.llega - 34, blend: 44, arc: 9, rig: (f) => { const p = M(f), t = ramp(f, b.llega, b.cae - 6), a = lerp(-0.08, 1.0, ease(t)), r = lerp(6.5, 4.6, t); return { pos: [p[0] - r * Math.cos(a), p[1] + lerp(1.4, 0.9, t), p[2] + r * Math.sin(a)], look: [p[0], p[1] + lerp(1.2, 1.5, t), p[2]], fov: 50, roll: 0 }; } });
   KEYS.push({ f: b.cae - 6, blend: 24, rig: dolly(b.cae - 6, b.momento + 10, add3(STOP, [-5.4, 1.5, 1.9]), add3(STOP, [-4.4, 1.15, 0.9]), add3(STOP, [1.6, 0.85, 0]), add3(STOP, [1.0, 0.75, 0]), 50, 48) });
   // UN MOMENTO / HERODOTO: pull back to bring the historian in from the stoa; the messenger gets up
-  KEYS.push({ f: b.momento + 10, blend: 30, rig: dolly(b.momento + 10, b.esparta, add3(STOP, [-1.5, 2.0, 9.5]), add3(STOP, [-4.5, 2.4, 11.5]), add3(STOP, [-4.5, 0.9, -3.5]), add3(STOP, [-3.5, 1.1, -3.0]), 52, 54) });
+  KEYS.push({ f: b.momento + 10, blend: 30, rig: dolly(b.momento + 10, b.esparta, add3(STOP, [-4.2, 1.8, 7.4]), add3(STOP, [-6.4, 2.2, 8.2]), add3(STOP, [-1.4, 0.8, 0.9]), add3(STOP, [-1.2, 1.0, 0.4]), 50, 52) });
   // ESPARTA: he runs out through the gate and up the path into the pines; the camera climbs after him and rises
-  KEYS.push({ f: b.esparta, blend: 34, arc: 3, rig: (f) => { const p = M(f), t = ramp(f, b.esparta, b.veras), out = ramp(f, b.esparta + 34, b.esparta + 64); return { pos: [p[0] + lerp(-6, 2.5, ramp(f, b.esparta, b.esparta + 44)), p[1] + lerp(2.2, 15, t * t), p[2] + lerp(1.2, 9 + 8 * t, out)], look: [p[0] + lerp(4, 0, ramp(f, b.esparta, b.esparta + 44)), p[1] + lerp(1.2, 2.2, t), p[2] + lerp(0, -9, t)], fov: lerp(50, 54, t), roll: 0 }; } });
+  KEYS.push({ f: b.esparta, blend: 34, arc: 3, rig: (f) => { const p = M(f), t = ramp(f, b.esparta, b.veras), out = ramp(f, b.esparta + 18, b.esparta + 48); return { pos: [p[0] + lerp(-7.5, 3, ramp(f, b.esparta + 10, b.esparta + 60)), p[1] + lerp(2.4, 14, t * t) + 2.5 * Math.sin(Math.PI * ramp(f, b.esparta + 14, b.esparta + 50)), p[2] + lerp(1.2, 11 + 8 * t, out)], look: [p[0] + lerp(4, 0, ramp(f, b.esparta, b.esparta + 44)), p[1] + lerp(1.2, 1.5, t), p[2] + lerp(0, -5, t)], fov: lerp(50, 54, t), roll: 0 }; } });
   // VERAS (1896): over the hills and down the valley to the start at the village of Marathon
   KEYS.push({ f: b.veras, blend: 60, arc: 30, rig: dolly(b.veras, b.breal, onRoad(START_X - 22, 14, 9), onRoad(START_X - 8, 9, 3.2), onRoad(START_X + 2, -1, 1.2), onRoad(START_X - 1, -3, 1.2), 52, 50) });
   // BREAL: along the line of runners to the linguist with his silver cup and the starter with his pistol
-  KEYS.push({ f: b.breal, blend: 30, rig: dolly(b.breal, b.bang + 8, onRoad(START_X - 6, 5.0, 1.7), onRoad(START_X - 3.5, 7.4, 2.2), onRoad(START_X - 1, 5.6, 1.2), onRoad(START_X - 1, 1.0, 1.25), 46, 52) });
+  KEYS.push({ f: b.breal, blend: 30, rig: dolly(b.breal, b.bang + 8, onRoad(START_X - 11, 4.4, 1.7), onRoad(START_X - 10, 0.4, 1.8), onRoad(START_X - 4, 7.6, 1.3), onRoad(START_X, 0.6, 1.2), 46, 52) });
   // GANO: tracking the winner as the field runs off, then fast and high down the valley to the taverna
   KEYS.push({ f: b.gano - 10, blend: 30, rig: (f) => { const p = louisAt(f).p, [hx, hz] = roadWest(p[0]), t = ramp(f, b.gano, b.taberna - 8); return { pos: [p[0] - hx * lerp(-6, -18, t) + hz * lerp(3.2, 12, t), p[1] + lerp(1.4, 18, t * (2 - t)), p[2] - hz * lerp(-6, -18, t) - hx * lerp(3.2, 12, t)], look: [p[0] + hx * lerp(-1, 6, t), p[1] + 1.1, p[2] + hz * lerp(-1, 6, t)], fov: lerp(50, 56, t), roll: 0 }; } });
   // TABERNA: down under the vine: the taverner hands him a glass, he drinks it off, and he is away again
   KEYS.push({ f: b.taberna - 8, blend: 30, rig: dolly(b.taberna - 8, b.sigue + 4, add3(TAV_STOP, [-4.4, 1.5, -3.6]), add3(TAV_STOP, [-2.4, 1.35, -3.4]), add3(TAV_STOP, [0.6, 1.2, 0.8]), add3(TAV_STOP, [0.3, 1.25, 0.6]), 48, 46) });
   // ESTADIO: after him to Athens and into the marble stadium full of people
-  KEYS.push({ f: b.sigue + 4, blend: 30, arc: 12, rig: (f) => { const p = louisAt(f).p, t = ramp(f, b.sigue, b.estadio + 40); const fl = 1 - ramp(f, b.estadio - 10, b.estadio + 20); return { pos: [p[0] - lerp(-8, -9, t), p[1] + lerp(2.0, 2.2, t) + 22 * fl * ramp(f, b.sigue, b.sigue + 20), p[2] + lerp(5.5, 6.5, t)], look: [p[0] - 2, p[1] + 1.2, p[2]], fov: 52, roll: 0 }; } });
+  KEYS.push({ f: b.sigue + 4, blend: 30, arc: 12, rig: (f) => { const p = louisAt(f).p, t = ramp(f, b.estadio - 14, b.londres), fl = 1 - ramp(f, b.estadio - 24, b.estadio + 4); return { pos: [p[0] + lerp(7.5, 5.0, t), p[1] + lerp(2.6, 2.4, t) + 24 * fl * ramp(f, b.sigue, b.sigue + 20), p[2] + lerp(4.0, 12.0, t)], look: [p[0] - lerp(12, 22, t), p[1] + lerp(2.2, 6.5, t), p[2] - lerp(2, 24, t)], fov: 56, roll: 0 }; } });
   // LONDRES: up out of the stadium into the clouds ... and down through them over England to the castle
   KEYS.push({ f: b.londres - 14, blend: 30, rig: (f) => { const t = ramp(f, b.londres - 14, ENG_SWITCH); return { pos: [lerp(-20, -10, t), lerp(14, 260, t * t), lerp(14, 40, t)], look: [lerp(-60, -40, t), lerp(10, 300, t), lerp(0, 30, t)], fov: 56, roll: 0 }; } });
-  KEYS.push({ f: ENG_SWITCH, blend: 0, rig: dolly(ENG_SWITCH, b.windsor, [ENG + 180, 240, 110], [START08[0] + 22, 5, 16], [ENG + 80, 160, 40], [START08[0] - 16, 6, -26], 56, 52) });
+  KEYS.push({ f: ENG_SWITCH, blend: 0, rig: dolly(ENG_SWITCH, b.windsor, [ENG + 200, 240, 60], [START08[0] + 34, 3.6, 1.2], [ENG + 80, 160, 20], [START08[0] - 20, 6, -22], 56, 50) });
   // WINDSOR: the start on the lawn below the castle; the gun; they are off down the avenue
-  KEYS.push({ f: b.windsor, blend: 22, rig: dolly(b.windsor, b.palco - 10, [START08[0] + 22, 5, 16], [START08[0] + 30, 2.2, 9], [START08[0] - 16, 6, -26], [START08[0] - 2, 2.6, -6], 52, 50) });
+  KEYS.push({ f: b.windsor, blend: 22, rig: dolly(b.windsor, b.palco - 10, [START08[0] + 34, 3.6, 1.2], [START08[0] + 30, 2.4, 0.8], [START08[0] - 20, 6, -22], [START08[0] - 4, 2.4, -3], 50, 50) });
   // PALCO: a fast flight down the avenue and over the stands to the royal box
   KEYS.push({ f: b.palco - 10, blend: 36, arc: 18, rig: dolly(b.palco - 10, b.medida + 6, add3(ROYAL, [10, 7, 30]), add3(ROYAL, [4, 4.5, 16]), add3(ROYAL, [0, 5.5, 0]), add3(ROYAL, [0, 5.0, 0]), 50, 48) });
   // MEDIDA / META: the runner comes down the straight; we run with him to the line in front of the queen
   KEYS.push({ f: b.medida + 6, blend: 30, rig: (f) => { const p = leaderAt(f).p, t = ramp(f, b.medida + 6, b.meta + 6); return { pos: [p[0] - lerp(6.5, 4.5, t), p[1] + lerp(1.4, 1.5, t), p[2] + lerp(3.4, 5.8, t)], look: [p[0] + 0.5, p[1] + 1.3, p[2] - lerp(0, 2, t)], fov: 50, roll: 0 }; } });
   // REINA: round the runner to the royal box, the queen waving; up and back over the stadium to the end
-  KEYS.push({ f: b.meta + 6, blend: 30, rig: (f) => { const t = ramp(f, b.meta + 6, TT), a = lerp(0.2, 1.1, ease(t)), r = lerp(7, 15, t * t); return { pos: [FIN[0] + r * Math.sin(a) - 2, HE(FIN[0], FIN[2]) + lerp(1.6, 9, t * t), FIN[2] + r * Math.cos(a)], look: [FIN[0] - 1.5, lerp(2.2, 5, t), FIN[2] - lerp(2, 6, t)], fov: lerp(48, 54, t), roll: 0 }; } });
+  KEYS.push({ f: b.meta + 6, blend: 30, rig: (f) => { const t = ramp(f, b.meta + 6, TT), a = lerp(0.2, 1.1, ease(t)), r = lerp(7, 15, t * t); return { pos: [FIN[0] + r * Math.sin(a) - 3, HE(FIN[0], FIN[2]) + lerp(1.6, 8, t * t), FIN[2] + r * Math.cos(a)], look: [FIN[0] - 3.6, lerp(1.6, 3.6, t), FIN[2] - lerp(1.5, 4.5, t)], fov: lerp(48, 56, t), roll: 0 }; } });
 }
 const DBG = (getInputProps() as { cam?: { pos: V3; look: V3; fov?: number } }).cam;
 export const camAt = (_id: number, f: number): Cam => {

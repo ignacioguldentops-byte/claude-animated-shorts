@@ -11,6 +11,9 @@ import { HE, ENG, CASTLE, WCITY, sst } from "./geo";
 import { gent08, lady08, steward } from "./castg";
 import { Char } from "./toon";
 import { flag, prism } from "./setsg";
+import { camAt, TOTAL } from "./story";
+const CAMP: [number, number, number][] = []; for (let f = 0; f < TOTAL; f++) CAMP.push(camAt(0, f).pos);
+const inPath = (x0: number, z0: number, x1: number, z1: number, y0: number, y1: number) => CAMP.some(([x, y, z]) => x > x0 && x < x1 && z > z0 && z < z1 && y > y0 && y < y1);
 export type ERefs = { eng: THREE.Group; grass: GrassH[]; crowds: Crowd[]; flags: THREE.Mesh[]; tiles: { g: THREE.Group; x: number; z: number }[] };
 export const newERefs = (): ERefs => ({ eng: new THREE.Group(), grass: [], crowds: [], flags: [], tiles: [] });
 const R = (i: number, j: number, s = 0) => hash(i, j, 991 + s);
@@ -65,8 +68,8 @@ export const buildEngland = (root: THREE.Object3D, refs: ERefs) => {
   const castE: Char[] = []; for (let i = 0; i < 12; i++) castE.push(i % 3 === 0 ? lady08(i) : i % 5 === 1 ? steward(i) : gent08(i));
   const c1 = makeCrowd(castE, [{ expr: "smile" }, { expr: "laugh", armL: "up", armR: "up", holdR: "hatW" }], st, 9), c2 = makeCrowd(castE, [{ expr: "smile", armR: "wave" }, { expr: "laugh", armL: "up", armR: "up" }], spots, 11); E.add(c1.mesh, c2.mesh); refs.crowds.push(c1, c2);
   // trees: oaks along the avenue, belts of oak, plane and poplar round the park and beyond (the horizon is woods)
-  const tiles = new Map<string, TSpec[]>(), plant = (t: TSpec) => { const k = `${Math.floor(t.x / 100)}|${Math.floor(t.z / 100)}`; let l = tiles.get(k); if (!l) { l = []; tiles.set(k, l); } l.push(t); };
-  for (const s of [-1, 1]) for (let x = X1 + 22; x < WCITY.x - WC.L / 2 - WC.R - 26; x += 13) { const z = s * (11 + 2 * R(Math.round(x), s)); plant({ x, z, y: HE(x, z) - 0.2, h: 15 + 5 * R(Math.round(x), s + 4), sp: "oak", seed: Math.round(x) * 3 + s, lod: 0 }); }
+  const tiles = new Map<string, TSpec[]>(), plant = (t: TSpec) => { const cr = Math.max(2.5, t.h * 0.42) + 1.2, ty = t.y ?? 0; if (inPath(t.x - cr, t.z - cr, t.x + cr, t.z + cr, ty - 1, ty + t.h + 2)) return; solid("tree crown", t.x - t.h * 0.3, t.z - t.h * 0.3, t.x + t.h * 0.3, t.z + t.h * 0.3, ty + t.h, ty + t.h * 0.35); const k = `${Math.floor(t.x / 100)}|${Math.floor(t.z / 100)}`; let l = tiles.get(k); if (!l) { l = []; tiles.set(k, l); } l.push(t); };
+  for (const s of [-1, 1]) for (let x = X1 + 64; x < WCITY.x - WC.L / 2 - WC.R - 26; x += 13) { const z = s * (11 + 2 * R(Math.round(x), s)); plant({ x, z, y: HE(x, z) - 0.2, h: 15 + 5 * R(Math.round(x), s + 4), sp: "oak", seed: Math.round(x) * 3 + s, lod: 0 }); }
   for (let i = 0; i < 900; i++) { const x = ENG - 300 + R(i, 21) * 1250, z = (R(i, 22) - 0.5) * 1100; if (x > X0 - 30 && x < WCITY.x + WC.L / 2 + WC.R + 50 && Math.abs(z) < 150) continue; if (x > X0 - 20 && x < X1 + 20 && z > Z0 - 20 && z < Z1 + 20) continue;
     plant({ x, z, y: HE(x, z) - 0.2, h: 12 + 9 * R(i, 23), sp: (["oak", "plane", "poplar", "oak"] as const)[Math.floor(R(i, 24) * 4)], seed: 7000 + i, lod: Math.abs(z) < 250 ? 1 : 2 }); }
   for (const [k, list] of tiles) { const g = new THREE.Group(); makeTreesV2(g, list); E.add(g); const [tx, tz] = k.split("|").map(Number); refs.tiles.push({ g, x: tx * 100 + 50, z: tz * 100 + 50 }); }
