@@ -16,6 +16,8 @@ for (let f = 0; f < TOTAL; f += step) {
   w.cam.copy(cam.position); w.right.set(1, 0, 0).applyQuaternion(cam.quaternion); w.camF.set(0, 0, -1).applyQuaternion(cam.quaternion);
   for (const s of SOLIDS) if (c.pos[0] > s.x0 - 0.3 && c.pos[0] < s.x1 + 0.3 && c.pos[2] > s.z0 - 0.3 && c.pos[2] < s.z1 + 0.3 && c.pos[1] < s.y1 + 0.3) flag(`camera inside ${s.name}`, f);
   for (const cs of carsAt(id, f)) if (cs.on) { const { p } = carPose(cs); if (Math.hypot(c.pos[0] - p[0], c.pos[2] - p[2]) < 2.6 && c.pos[1] < 2.2) flag("camera inside a car", f); }
+  // the rail fences along the road (posts 1.3 m, rails at 0.55 and 1.05 m, 5.1 m either side of the centre line)
+  { const { roadZ, roadDir } = await import("../src/o/geo"); const x = c.pos[0]; if (x > 90 && x < 702 && c.pos[1] < 1.9) { const [dx] = roadDir(Math.max(80, x)), side = (c.pos[2] - roadZ(x)) * dx; if (Math.abs(Math.abs(side) - 5.1) < 0.4) flag("camera at the fence line", f); } }
   const st = w.stage(id, f), figs = st.places.filter((p: any) => p.key.startsWith("G|") && !p.crowd);
   for (const p of figs) { const sc = p.scale ?? 1, lying = Math.abs(p.roll ?? 0) > 1;
     const rx = w.right.x, rz = w.right.z, pts = lying ? [[p.x + 0.1 * rx, p.y + 0.2, p.z + 0.1 * rz], [p.x - 1.95 * rx, p.y + 0.3, p.z - 1.95 * rz]] : [[p.x, p.y + 0.02, p.z], [p.x, p.y + 1.95 * sc, p.z], [p.x - 0.42 * sc, p.y + 1.1 * sc, p.z], [p.x + 0.42 * sc, p.y + 1.1 * sc, p.z]];
