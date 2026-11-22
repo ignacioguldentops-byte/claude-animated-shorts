@@ -132,7 +132,7 @@ export class World {
     /** someone sitting in a car (lx forward, lz across, in the car's frame) */
     const inCar = (c: CarS, ch: Char, seed: number, lx: number, lz: number, pose: Pose, dy = 0) => { const p = carLocal(c, lx, 0.92 + dy, lz); G(ch, seed, p, { legs: "sit", ...turn([p[0], p[2]], [p[0] + carPose(c).hx * 5, p[2] + carPose(c).hz * 5]), ...pose }, { shadow: false, roll: 0.02 * Math.sin(f * 0.6 + seed) }); };
     /** the dust a moving car leaves behind it: puffs dropped where the car was a moment ago */
-    const carDust = (k: number, n = 16) => { for (let j = 0; j < n; j++) { const age = j * 3 + (f % 3), c = carsAt(id, f - age)[k]; if (!c.on || c.v < 0.04) continue; const p = carLocal(c, -1.9 - 0.1 * age, 0.35 + 0.045 * age, (hs(j, Math.floor((f - age) / 3)) - 0.5) * 1.4), s = 0.7 + 0.12 * age;
+    const carDust = (k: number, n = 16) => { for (let j = 0; j < Math.min(n, 12); j++) { const age = j * 3 + (f % 3), c = carsAt(id, f - age)[k]; if (!c.on || c.v < 0.04) continue; const p = carLocal(c, -1.9 - 0.1 * age, 0.3 + 0.03 * age, (hs(j, Math.floor((f - age) / 3)) - 0.5) * 1.4), s = 0.55 + 0.075 * age;
         K("dust", 128, 128, fxDust, p, s, s, { soft: true, glow: 1.05 }); } };
     const crowdCheer = (k: number) => k;
     const apple = (p: V3, bite = false) => K(`apple|${bite}`, 100, 100, (pp) => fxApple(pp, bite), p, 0.16, 0.16);
@@ -266,7 +266,7 @@ export class World {
     const night = !!s.night, R = this.refs;
     for (const lm of LAMP_MATS) { const h = (lm.userData as { hot: [number, number, number] }).hot, k = night || s.indoor ? 1 : s.fog ? 0.9 : s.light === "golden" ? 0.6 : 0.3; lm.color.setRGB(h[0] * k, h[1] * k, h[2] * k); }
     for (const tn of R.tints) tn.m.color.setRGB(...tn[s.light]);
-    { const dx = c.look[0] - c.pos[0], dz = c.look[2] - c.pos[2], dl = Math.hypot(dx, dz) || 1, k = Math.min(dl, 9) / dl; for (const g of R.grass) g.g.follow(c.pos[0] + dx * k, c.pos[2] + dz * k); }
+    { const dx = c.look[0] - c.pos[0], dz = c.look[2] - c.pos[2], dl = Math.hypot(dx, dz) || 1, k = Math.min(dl, 9) / dl; R.grass.forEach((g, gi) => { g.g.follow(c.pos[0] + dx * k, c.pos[2] + dz * k); g.g.mesh.visible = gi === 0 || (gi === 1 ? c.pos[0] > 110 && c.look[0] > 120 : c.pos[0] > 200 && c.look[0] > 210); }); }
     { const inStad = c.look[0] < 70; const cheer = !inStad ? 0.3 : id === 7 ? (lorzTrack(f) <= FINISH_X + 4 ? 1 : 0.5) : id === 8 ? 0.55 : id === 9 ? (carteroTrack(f) <= FINISH_X + 3 ? 1 : 0.5) : id === 2 ? 0.7 : 0.3; for (const p of R.people) p.c.tick(f, cheer); }
     carsAt(id, f).forEach((cs, i) => { const car = R.cars[i]; car.g.visible = cs.on; if (!cs.on) return; const { p, th } = carPose(cs); car.g.position.set(p[0], 0.0 + 0.012 * Math.sin(f * 1.7 + i) * Math.min(1, cs.v * 6), p[2]); car.g.rotation.set(0, th, 0.006 * Math.sin(f * 1.3 + i) * Math.min(1, cs.v * 6)); car.wheels.forEach((wh) => (wh.rotation.z = -(cs.x * cs.dir) / 0.45)); });
     { const brk = id === 7 ? lorzTrack(f) : id === 8 ? hicksTrack(f) : id === 9 ? carteroTrack(f) : 1e9, v = id === 7 ? 0.3 : id === 8 ? 0.127 : 0.2, t = brk <= FINISH_X ? (FINISH_X - brk) / v : -1; R.tape.forEach((tp, i) => { const a = t < 0 ? 0 : Math.min(1.3, t * 0.12); tp.rotation.y = (i ? 1 : -1) * a; tp.rotation.z = (i ? 1 : -1) * 0.6 * Math.min(1, Math.max(0, t) * 0.05); }); }
