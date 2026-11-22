@@ -190,8 +190,14 @@ export class World {
         G(HICKS, 9, [x, 0.02, LANE_Z], { legs: done ? "stand" : "walk", phase: f * 0.12, facing: 0, expr: "dazed", sweat: 2, armL: "up", armR: "up", headTilt: 12 + 6 * sway }, { roll: 0.08 * sway });
         G(TRN(0), 41, [x + 0.15, 0, LANE_Z + 0.98], { legs: done ? "stand" : "walk", phase: f * 0.12 + 0.5, facing: 0, expr: "pained", armL: "reach", armR: "front", holdR: "drink", headTilt: -6 });
         G(TRN(1), 42, [x + 0.15, 0, LANE_Z - 0.98], { legs: done ? "stand" : "walk", phase: f * 0.12, facing: 0, expr: "nervous", armR: "reach", armL: "front", sweat: 1 });
+        if (f < B.ganador + 24) { // the medal scene carries on while the camera swings away to the real winner
+          G(LORZ, 6, [FINISH_X - 3.6, 0, LANE_Z], { facing: 0, expr: "laugh", armL: "up", armR: "up" });
+          G(OFC(1), 38, [FINISH_X - 2.6, 0, -30.9], { ...turn([FINISH_X - 2.6, -30.9], [FINISH_X - 3.6, LANE_Z]), expr: "laugh", armL: "up", armR: "up" });
+          G(LADY, 40, [FINISH_X - 4.9, 0, -24.6], { legs: "stand", ...turn([FINISH_X - 4.9, -24.6], [FINISH_X - 3.6, LANE_Z]), expr: "smile", armR: "up", armL: "hip" });
+          K("wreath", 240, 240, fxWreath, [FINISH_X - 3.6, 2.05, LANE_Z + 0.05], 1.1, 1.1); crowdCheer(1);
+        } else {
         G(LORZ, 6, [FINISH_X - 11.5, 0, -19.4], { ...turn([FINISH_X - 11.5, -19.4], [FINISH_X - 10, -19.2]), expr: "nervous", armL: "chin", armR: "hang", headTilt: 8 });
-        G(OFC(1), 38, [FINISH_X - 10.1, 0, -19.2], { ...turn([FINISH_X - 10.1, -19.2], [FINISH_X - 11.5, -19.4]), expr: "stern", armR: Math.sin(f * 0.4) > 0 ? "point" : "front", armL: "hip" });
+        G(OFC(1), 38, [FINISH_X - 10.1, 0, -19.2], { ...turn([FINISH_X - 10.1, -19.2], [FINISH_X - 11.5, -19.4]), expr: "stern", armR: Math.sin(f * 0.4) > 0 ? "point" : "front", armL: "hip" }); }
         G(OFC(0), 37, [FINISH_X, 1.08, -32.1], { facing: 0, expr: done ? "shock" : "stern", armR: "front", holdR: "watch", armL: done ? "up" : "hip" }, { shadow: false });
         G(PHOTOG, 39, [FINISH_X + 4.6, 0, -18.1], { ...turn([FINISH_X + 4.6, -18.1], [x, LANE_Z]), expr: "nervous", armR: "front", holdR: "camera", armL: "hang" });
         break; }
