@@ -102,7 +102,7 @@ const KEYS: Key[] = [];
   // 6 the car stops, he jumps in, and they are off past the others
   KEYS.push({ f: b.sube + 4, blend: 30, rig: follow(carC(6), b.sube + 4, b.averia, [-7.5, 5.5, 1.1], [2.5, 7.0, 1.5], [0, 1.1, 0], [0, 1.0, 0], 48, 50) });
   // 7 the breakdown; he hops out and runs; the flight over the gate; the finish; the wreath and the photograph
-  KEYS.push({ f: b.averia, blend: 28, rig: follow(carC(7), b.averia, b.corre, [-1.5, 8.5, 1.9], [-6.5, 8.0, 2.1], [0.4, 1.0, 0], [-1.6, 1.0, 0.8], 52, 54) });
+  KEYS.push({ f: b.averia, blend: 28, rig: follow(carC(7), b.averia, b.corre, [-5.0, 4.4, 2.0], [-8.5, 4.2, 2.2], [0.4, 1.0, 0], [-1.6, 1.0, 0.8], 52, 54) });
   KEYS.push({ f: b.corre, blend: 18, rig: (f) => { const s = lorzRoad(f), t = ramp(f, b.corre, b.primero - 24); return { pos: [s[0] - lerp(7, 8.5, t), lerp(1.7, 2.6, t), s[2] + lerp(4.2, 2.4, t)], look: [s[0] - 0.5, 1.1, s[2]], fov: 50, roll: 0.02 }; } });
   KEYS.push({ f: b.primero - 24, blend: 30, arc: 14, rig: track((f) => [lorzAt(f), 0, LANE_Z], b.primero - 24, b.medalla + 30, [-7.5, 1.5, 6.2], [-4.0, 1.8, 8.6], [0, 1.1, 0], [-1.2, 1.2, 0.6], 50, 52) });
   KEYS.push({ f: b.medalla - 6, blend: 26, rig: dolly(b.medalla - 6, b.ganador + 8, [FINISH_X - 4, 1.6, -17.2], [FINISH_X - 6.5, 1.7, -18.2], [FINISH_X - 2.5, 1.2, -26.5], [FINISH_X - 4, 1.2, -27], 50, 46) });
@@ -110,7 +110,7 @@ const KEYS: Key[] = [];
   KEYS.push({ f: b.ganador, blend: 30, rig: track((f) => [hicksAt(f), 0, LANE_Z], b.ganador, b.ganador + 120, [-10, 1.6, 0.3], [-9, 1.6, 0.6], [0, 1.1, 0], [0, 1.1, 0], 50, 50) });
   KEYS.push({ f: b.ganador + 110, blend: 34, rig: track((f) => [hicksAt(f), 0, LANE_Z], b.ganador + 110, b.cartero2, [-8.0, 1.9, 4.2], [-9.5, 2.3, 5.6], [0, 1.0, 0], [-1.0, 1.0, 0], 52, 52) });
   // 9 out to the orchard: an apple, another, a nap while the others go by; back to the stadium: he is fourth
-  KEYS.push({ f: b.cartero2, blend: 40, arc: 16, rig: dolly(b.cartero2, b.siesta + 30, [NAP[0] - 0.4, 1.6, NAP[2] + 5.0], [NAP[0] - 0.2, 1.9, NAP[2] + 6.2], [NAP[0] + 0.4, 1.1, NAP[2] - 0.4], [NAP[0] - 0.4, 0.5, NAP[2] - 0.6], 46, 46) });
+  KEYS.push({ f: b.cartero2, blend: 40, arc: 16, rig: dolly(b.cartero2, b.siesta + 30, [NAP[0] - 5.5, 1.7, NAP[2] + 2.6], [NAP[0] - 4.6, 1.9, NAP[2] + 2.2], [NAP[0] + 0.4, 1.1, NAP[2] - 0.4], [NAP[0] - 0.4, 0.5, NAP[2] - 0.6], 46, 46) });
   KEYS.push({ f: b.cuarto - 34, blend: 30, arc: 12, rig: track((f) => [carteroAt(f), 0, LANE_Z], b.cuarto - 34, TT, [-6.5, 1.6, 6.0], [-5.5, 2.6, 8.8], [0, 1.1, 0], [-0.8, 1.2, -0.6], 50, 52) });
 }
 const DBG = (getInputProps() as { cam?: { pos: V3; look: V3; fov?: number } }).cam;

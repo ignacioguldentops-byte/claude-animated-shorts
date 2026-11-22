@@ -138,7 +138,7 @@ export function buildWorld(R: THREE.Object3D, refs: ORefs) {
     solid("well", wx - 1.0, wz - 1.0, wx + 1.0, wz + 1.0, 2.8); solid("trough", wx + 1.6, wz - 0.4, wx + 3.4, wz + 0.4, 0.55); }
   // the orchard: apple trees in rows, red apples in the crowns and in the grass
   { const specs: TreeSpec[] = [], ap = pmat("#c8281e", 0.35, 0, { envMapIntensity: 1.2 }), ap2 = pmat("#d84a24", 0.4), leaf = M.wood("#4a3a22");
-    for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) { const x = 100 + i * 9 + (j % 2) * 4, z = roadZ(x) + 11 + j * 8.5; specs.push({ x, z, h: 6.2 + ((i + j) % 3) * 0.6, k: i + j }); solid("apple tree", x - 0.3, z - 0.3, x + 0.3, z + 0.3, 6); }
+    for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) { const x = 100 + i * 9 + (j % 2) * 4, z = roadZ(x) + 11 + j * 8.5; specs.push({ x, z, h: 6.2 + ((i + j) % 3) * 0.6, k: i + j }); solid("apple tree", x - 0.3, z - 0.3, x + 0.3, z + 0.3, 6); const r = 6.2 * 0.38; solid("apple canopy", x - r, z - r, x + r, z + r, 7.6, 1.9); }
     trees(specs, ["#4f8a3a", "#5a9a40", "#467e36"]);
     specs.forEach((t, ti) => { for (let k = 0; k < 26; k++) { const u = S.hash(k, ti, 41) * 2 - 1, a = S.hash(k, ti, 42) * 6.283, rr = 0.92, sq = Math.sqrt(1 - u * u), rx = t.h * 0.33, ryy = t.h * 0.3, cy = t.h * 0.68;
         B.sph(k % 3 ? ap : ap2, t.x + rx * rr * sq * Math.cos(a), cy + ryy * rr * u * 0.8 - 0.15, t.z + rx * rr * sq * Math.sin(a), 0.07); }

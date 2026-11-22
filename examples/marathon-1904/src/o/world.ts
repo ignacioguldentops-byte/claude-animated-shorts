@@ -197,7 +197,7 @@ export class World {
         break; }
       default: { // the orchard, the nap, the others going by; then the stadium: he comes in fourth
         if (f < B.cuarto - 20) { const nap = f >= B.siesta - 12, eatK = Math.floor((f - B.cartero2) / 18) % 2;
-          if (!nap) { G(CARTERO, 7, NAP, { ...turn([NAP[0], NAP[2]], [TREE[0], TREE[2]]), expr: eatK ? "laugh" : "grin", armR: eatK ? "eat" : "up", armL: "front", headTilt: eatK ? 0 : -10 }); apple(eatK ? [NAP[0] + 0.05, 1.62, NAP[2] + 0.15] : [NAP[0] + 0.32, 2.15, NAP[2]], eatK === 1); }
+          if (!nap) { G(CARTERO, 7, NAP, { facing: 0, expr: eatK ? "laugh" : "grin", armR: eatK ? "eat" : "up", armL: "front", headTilt: eatK ? 0 : -10 }); const R = this.right, F = this.camF, ax = eatK ? 0.05 : 0.41, af = eatK ? 0.15 : 0.05; apple([NAP[0] + R.x * ax - F.x * af, eatK ? 1.62 : 1.58, NAP[2] + R.z * ax - F.z * af], eatK === 1); }
           else { const rx = this.right.x * 0.95, rz = this.right.z * 0.95; G(CARTERO, 7, [NAP[0] + rx, 0.26, NAP[2] + rz], { expr: "smile_closed", armL: "hip", armR: "front", headTilt: -8 }, { roll: 1.5, faceUp: true, shadow: false }); zzz([NAP[0] - rx * 0.9, 0.6, NAP[2] - rz * 0.9], 0); apple([NAP[0] + rx * 1.6, 0.12, NAP[2] + rz * 1.6 + 0.3], true); }
           ([[132, 1.6, 0], [138, 2.4, 1], [143, 1.2, 2]] as number[][]).forEach(([x0, off, i]) => roadRunner(RUN(18 + i), 90 + i, x0 - 0.14 * (f - B.siesta + 10), off, -1));
         }
