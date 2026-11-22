@@ -98,7 +98,7 @@ const KEYS: Key[] = [];
   KEYS.push({ f: b.cartero, blend: 30, arc: 6, rig: follow((f) => onRoad(carteroX(f), -1.5), b.cartero, b.perros, [5.5, 5.2, 1.1], [2.0, 4.8, 0.9], [0, 1.0, 0], [0.4, 1.0, 0], 46, 46) });
   KEYS.push({ f: b.perros - 6, blend: 26, rig: (f) => { const d = dogRun(f).p, t = ramp(f, b.perros, b.momento); return { pos: [d[0] + lerp(-0.6, 0.8, t), lerp(1.8, 4.6, t), d[2] + lerp(7.5, 10, t)], look: [d[0] - 0.8, 0.9, d[2] - 1.4], fov: 50, roll: -0.02 }; } });
   // 5 "Un momento... ¿y el del coche?": up and round to the man sitting on the fence
-  KEYS.push({ f: b.momento, blend: 26, arc: 3, rig: dolly(b.momento, b.sube + 10, add3(onRoad(P.quit - 9, -4.2), [0, 2.2, 0]), add3(onRoad(P.quit - 13, -2.4), [0, 2.6, 0]), add3(onRoad(P.quit + 1.2, -3.8), [0, 1.1, 0]), add3(onRoad(P.quit + 0.8, -3.3), [0, 1.1, 0]), 48, 52) });
+  KEYS.push({ f: b.momento, blend: 26, arc: 3, rig: dolly(b.momento, b.sube + 10, add3(onRoad(P.quit - 5.5, -2.6), [0, 1.7, 0]), add3(onRoad(P.quit - 10.5, -3.0), [0, 2.4, 0]), add3(onRoad(P.quit + 0.3, -4.3), [0, 1.05, 0]), add3(onRoad(P.quit + 0.8, -3.1), [0, 1.1, 0]), 46, 50) });
   // 6 the car stops, he jumps in, and they are off past the others
   KEYS.push({ f: b.sube + 4, blend: 30, rig: follow(carC(6), b.sube + 4, b.averia, [-7.5, 5.5, 1.1], [2.5, 7.0, 1.5], [0, 1.1, 0], [0, 1.0, 0], 48, 50) });
   // 7 the breakdown; he hops out and runs; the flight over the gate; the finish; the wreath and the photograph
