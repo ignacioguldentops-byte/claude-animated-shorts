@@ -67,7 +67,7 @@ export class World {
       return Math.abs(lat) > Math.abs(dep) * 0.8 ? { facing: (lat > 0 ? 1 : -1) as 1 | -1 } : dep > 0 ? { back: true } : { facing: 0 }; };
     const runPose = (p: V3, hx: number, hz: number, seed: number, extra: Pose = {}): Pose => ({ legs: "run", phase: f * 0.075 + seed * 0.37, ...turn([p[0], p[2]], [p[0] + hx * 5, p[2] + hz * 5]), ...extra });
     const dust = (x: number, y: number, z: number, k: number, size = 0.5) => { const tt = (((k % 16) + 16) % 16) / 16; K(`puff|${Math.round(tt * 16)}`, 300, 260, (p) => fxPuff(p, tt), [x, y + 0.18 + tt * 0.25, z], size * (0.6 + tt), size * 0.87 * (0.6 + tt), { soft: true }); };
-    const smoke = (p: V3, n: number, seed = 0) => { for (let i = 0; i < n; i++) { const tt = (f * 0.012 + i / n + seed) % 1, s = lerp(0.6, 3.2, tt); K("smoke", 128, 128, (pp) => fxSteam(pp, true), [p[0] + 0.8 * Math.sin(i * 2.1 + tt * 3) + 2.5 * tt, p[1] + 6 * tt, p[2] + 0.6 * Math.cos(i * 1.3 + tt * 2)], s, s, { soft: true, glow: 0.95 }); } };
+    const smoke = (p: V3, n: number, seed = 0) => { for (let i = 0; i < n; i++) { const tt = (f * 0.012 + i / n + seed) % 1, s = lerp(0.6, 3.2, tt); K("smokeL", 128, 128, (pp) => fxSteam(pp, false), [p[0] + 0.8 * Math.sin(i * 2.1 + tt * 3) + 2.5 * tt, p[1] + 6 * tt, p[2] + 0.6 * Math.cos(i * 1.3 + tt * 2)], s, s, { soft: true, glow: 0.62 }); } };
     const ground = (x: number, z: number): V3 => [x, x > 3000 ? HE(x, z) : H(x, z), z];
     if (id === 1) {
       // ---- 490 BC ----
@@ -85,8 +85,10 @@ export class World {
       // Athens: guards at the gate, the citizens of the agora, the historian
       if (f > B.mensajero) {
         for (const s of [-1, 1]) { const q = ground(GATE_X - 7, s * 5.4); G(memo("guard" + s, () => hoplite(s > 0 ? 5 : 6)), 30 + s, q, { ...turn([q[0], q[2]], [STOP[0], STOP[2]]), expr: f > B.cae ? "shock" : "stern", armR: "hang", holdR: "spear", armL: "front", holdL: "shield" }); }
-        for (let i = 0; i < 18; i++) { const a = (i % 2 ? 1 : -1) * (0.45 + (i >> 1) * 0.13 + 0.05 * hs(i, 4)), r = 4.4 + 1.6 * hs(i, 5) + (i % 3) * 0.9, q = ground(STOP[0] + r * Math.cos(a), STOP[2] + r * Math.sin(a)); const arrived = f > B.llega + 10, shocked = f > B.cae, up = f > B.levanta;
-          G(memo("ath" + i, () => athenian(i)), 40 + i, q, { ...turn([q[0], q[2]], up && f > B.esparta + 10 ? [GATE_X, -20] : [STOP[0], STOP[2]]), expr: up ? (i % 2 ? "shock" : "nervous") : shocked ? "shock" : arrived ? (i % 3 ? "laugh" : "grin") : "neutral", armL: shocked && !up ? "up" : arrived && !shocked && i % 2 ? "up" : "hang", armR: up && i % 3 === 0 ? "point" : shocked && !up ? "mouth" : arrived && !shocked ? "wave" : "hang" }); }
+        for (let i = 0; i < 18; i++) { const sd = i % 2 ? 1 : -1, k = i >> 1, a0 = sd * (0.45 + k * 0.13 + 0.05 * hs(i, 4)), r0 = 4.6 + (k % 2) * 1.3 + 0.3 * hs(i, 5), a1 = sd * (0.1 + k * 0.1), r1 = k % 2 ? 3.9 : 2.85;
+          // they rush in round him when he falls, and scatter back when he jumps up again
+          const gt = ease(ramp(f, B.cae + 4, B.cae + 36)) * (1 - ease(ramp(f, B.levanta - 2, B.levanta + 18))), a = lerp(a0, a1, gt), r = lerp(r0, r1, gt), q = ground(STOP[0] + r * Math.cos(a), STOP[2] + r * Math.sin(a)), moving = (f > B.cae + 4 && f < B.cae + 44) || (f > B.levanta - 2 && f < B.levanta + 20); const arrived = f > B.llega + 10, shocked = f > B.cae, up = f > B.levanta;
+          G(memo("ath" + i, () => athenian(i)), 40 + i, q, { ...(moving ? { legs: "walk" as const, phase: f * 0.06 + i * 0.3 } : {}), ...turn([q[0], q[2]], up && f > B.esparta + 10 ? [GATE_X, -20] : [STOP[0], STOP[2]]), expr: up ? (i % 2 ? "shock" : "nervous") : shocked ? "shock" : arrived ? (i % 3 ? "laugh" : "grin") : "neutral", armL: shocked && !up ? "up" : arrived && !shocked && i % 2 ? "up" : "hang", armR: up && i % 3 === 0 ? "point" : shocked && !up ? "mouth" : arrived && !shocked ? "wave" : "hang" }); }
         if (f > B.herodoto - 24) { const hp = histAt(f), walking = f < B.herodoto + 50; G(HISTORIAN, 60, hp, walking ? { legs: "walk", phase: f * 0.04, ...turn([hp[0], hp[2]], [STOP[0], STOP[2]]), expr: "stern", armR: [50, 34, 6], holdR: "scroll", armL: "chin" } : { ...turn([hp[0], hp[2]], [STOP[0], STOP[2]]), expr: f > B.esparta ? "proud" : "stern", armR: [50, 34, 6], holdR: "scroll", armL: f > B.levanta + 10 ? "point" : "chin" }); }
       }
     } else if (id === 2) {
