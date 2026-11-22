@@ -51,3 +51,19 @@ geography (the orchard beside the stadium, the breakdown near the gate) are pict
   reports figures whose feet or head are cut by the frame, figures overlapping, figures inside solids, the camera
   inside a solid or a car. The render only starts when it reports nothing but brief side exits.
 - Voice: `voice/gen.py es-MX-JorgeNeural J 7`, `voice/timing.py` → `src/o/timing.ts`. Sound: `audio/mix_o.py`.
+- Checker additions after review: tree canopies (roadside and apple trees) count as solids for the camera, and the
+  camera may not ride within 0.4 m of the road's rail fences (`camera at the fence line`).
+- Render: prebuilt bundles + `render_ob.sh` chunks, `queue_o*.sh` detached queues, `watch_o.sh` closes hung renders.
+  `assemble_o.py` splices re-rendered ranges over the first renders (later entries win frame by frame).
+
+## Result
+`media_carrera_en_coche.mp4`: 1080x1920, 30 fps, 1593 frames (53.1 s), 27.6 MB, -14.0 LUFS. `preview.jpg` shows six
+moments. Every chunk was reviewed in motion (contact sheets) and fixed before assembly:
+- the dog chase got a mown track through the corn so the runner never disappears in it;
+- the "Un momento" shot became a pull-back that holds Lorz and the car together;
+- the car follow and the breakdown keep the camera inside the fences (no rails across the frame);
+- the flight to the breakdown arcs over the fields instead of skimming them;
+- Hicks and his trainers: a close orbit instead of a near-static frame; the broken tape falls to the ground;
+- the orchard approach comes down the aisle between rows (it used to fly through a tree); the postman faces camera;
+- the medal scene stays on stage until the camera has swung away; every seam between renders was measured
+  (frame-to-frame difference) so no range from an older version shows a jump.
