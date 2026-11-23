@@ -11,6 +11,7 @@ image-based sky light, soft shadows, ambient occlusion, grass blades, real geome
 Start from `examples/marathon-origin/src/g/` (sets, trees, cast, camera, frame checker) and read the "QUALITY STANDARD" and "Standing user rules" sections at the top of
 `SKILL.md` before writing any code. Never fall back to the old painted-toon world with ink lines.
 
-Other standing rules: Spanish narration in the Latin American register (default `es-MX-JorgeNeural`), ~50 s,
+Other standing rules: Spanish narration with the voice `es-ES-AlvaroNeural` ONLY (the Maradona-hair voice; user's order 2026-11-23, every reel), ~50 s,
 1080x1920, under 30 MB, -14 LUFS, no captions/logos/real likenesses, characters never clip into props or each other,
 reply to the user in Spanish.
+Never blurry: light lens blur only, no grain, cards never upscaled, highest bitrate under 30 MB (user's order 2026-11-23).

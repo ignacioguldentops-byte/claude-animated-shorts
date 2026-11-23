@@ -95,7 +95,7 @@ export const camAt = (id: number, f: number): Cam => {
   if (i > 0 && k.blend > 0 && f < k.f + k.blend) { const t = smooth((f - k.f) / k.blend), p = K[i - 1].rig(f); c = { pos: lerp3(p.pos, c.pos, t), look: lerp3(p.look, c.look, t), fov: lerp(p.fov, c.fov, t), roll: lerp(p.roll, c.roll, t) }; const hump = (k.arc ?? 0) * Math.sin(Math.PI * t); c.pos[1] += hump; c.look[1] += hump * 0.85; }
   return c;
 };
-export const dofAt = (id: number, f: number): { cInf: number } => { const c = camAt(id, f), d = Math.hypot(c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]); return { cInf: d < 3 ? 6 : d < 6 ? 4 : 2.5 }; };
+export const dofAt = (id: number, f: number): { cInf: number } => { const c = camAt(id, f), d = Math.hypot(c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]); return { cInf: d < 3 ? 1.6 : d < 6 ? 1.1 : 0.7 }; }; // light touch only: the user found the strong lens blur made the reel look soft
 export type Pool = { p: V3; r: number };
 export type Glow = { p: V3; r: number; col: string; a: number };
 export type Lighting = { wash?: { col: string; a: number }; pools: Pool[]; glows: Glow[]; vig: number; beams?: number; tint?: { col: string; a: number } };

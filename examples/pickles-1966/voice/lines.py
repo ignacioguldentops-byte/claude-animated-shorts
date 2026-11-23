@@ -7,4 +7,4 @@ LINES = [
  ("Verás: Pickles olfatea un arbusto, y ahí, envuelta en papel de periódico, estaba la Copa del Mundo.", "+6%"),
  ("Inglaterra ganó ese Mundial. Y al banquete de los campeones… invitaron a un perro.", "+2%"),
 ]
-PAUSE = [0.55, 0.42, 0.38, 0.55, 0.42, 0.6, 0.0]
+PAUSE = [0.7, 0.55, 0.5, 0.7, 0.55, 0.75, 0.0]

@@ -53,8 +53,12 @@ no longer acceptable.
 ## Standing user rules (override older rules below where they differ)
 - Narration in **Spanish**, Latin American neutral storytelling register, modelled on the user's reference: ~3 words/s,
   sentences of ~12 words chained with "y", "Un momento." and "Verás," slower with a pause after them, ironic payoff.
-  Default voice `es-MX-JorgeNeural` via edge-tts at about +10 % (`templates/realistic/voice/`); offer the comparison
-  of candidates (Jorge MX, Gonzalo CO, Andrew multilingual, Alonso US) if the user asks for a different voice.
+  **THE voice (user's order 2026-11-23, for this and every future reel): `es-ES-AlvaroNeural` via edge-tts**, the
+  voice of the Maradona-hair reel (`examples/maradona-hair/voice_es/`, rate about +10-12 %; per-line rates in
+  `examples/pickles-1966/voice/lines.py` with `gen.py es-ES-AlvaroNeural <tag> -2`). Do not use Jorge or any other voice.
+- **Never blurry (user's order 2026-11-23)**: keep lens blur (DOF) a light touch only (`cInf` <= ~1.6 px, see
+  `examples/pickles-1966/src/w/story.ts` `dofAt`), no film grain, card textures at least as large as they appear on
+  screen (`tier` in `world.ts`), and encode at the highest bitrate that still fits under 30 MB. Sharp beats "cinematic".
 - Length ~49-52 s, strong hook with movement in the first second, lots of movement, true facts with sources.
 - Deliver 1080x1920, 30 fps, **under 30 MB**, -14 LUFS (music +3 dB, SFX -6 dB). No captions, labels, logos, crests or
   real likenesses; all characters invented.

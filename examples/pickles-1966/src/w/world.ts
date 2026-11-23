@@ -17,7 +17,7 @@ const memo = (k: string, make: () => Char) => { let c = CC.get(k); if (!c) { c =
 type Place = { seed?: number; key: string; draw: (p: Pen) => void; x: number; y: number; z: number; scale: number; mirror?: boolean; roll?: number; faceUp?: boolean; sx?: number; sy?: number };
 type FxPlace = { key: string; cw: number; ch: number; draw: (p: Pen) => void; x: number; y: number; z: number; w: number; h: number; flat?: boolean; fixed?: boolean; rot?: number; soft?: boolean; glow?: number };
 type Stage = { places: Place[]; fx: FxPlace[] };
-const tier = (d: number): [number, number, number] => d < 3.2 ? [1800, 3000, 3.0] : d < 6.5 ? [1080, 1800, 1.8] : d < 16 ? [480, 800, 0.8] : [240, 400, 0.4];
+const tier = (d: number): [number, number, number] => d < 3.2 ? [1800, 3000, 3.0] : d < 7 ? [1200, 2000, 2.0] : d < 18 ? [720, 1200, 1.2] : [360, 600, 0.6]; // one step sharper than before: cards never upscaled on screen
 const q = (v: number, n = 120) => Math.round(v * n) / n;
 const fkey = (o: object) => JSON.stringify(o, (_k, v) => (typeof v === "number" ? q(v) : v));
 const LID = [0.5, 1, 1, 0.5], OFFICE_DOOR_Z = 4.92;
