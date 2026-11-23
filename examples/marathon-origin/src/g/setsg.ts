@@ -166,7 +166,7 @@ export const buildGreece = (root: THREE.Object3D, refs: GRefs) => {
     for (const lx of [-5, -2.5, 0, 2.5, 5]) { const a = onRoad(TAV_X + lx, 7.2), b = onRoad(TAV_X + lx, 4.4); BB.rod(m.wood, [a[0], a[1] + 2.62, a[2]], [b[0], b[1] + 2.62, b[2]], 0.05); }
     for (const [lx, lz] of [[-3.5, 5.6], [0.5, 5.4], [3.8, 5.8]]) { const q = onRoad(TAV_X + lx, lz); BB.cyl(m.wood, q[0], q[1] + 0.75, q[2], 0.55, 0.06).cyl(m.wood, q[0], q[1] + 0.37, q[2], 0.06, 0.75); for (const a of [0.8, 2.6, 4.4]) BB.box(m.wood, q[0] + 0.85 * Math.cos(a) - 0.2, q[1], q[2] + 0.85 * Math.sin(a) - 0.2, q[0] + 0.85 * Math.cos(a) + 0.2, q[1] + 0.45, q[2] + 0.85 * Math.sin(a) + 0.2); solid("taverna table", q[0] - 0.6, q[2] - 0.6, q[0] + 0.6, q[2] + 0.6, q[1] + 0.8); }
     for (let i = 0; i < 4; i++) { const q = onRoad(TAV_X - 6.5 + i * 0.9, 7.6); BB.cyl(m.wood, q[0], q[1] + 0.45, q[2], 0.36, 0.9).cyl(m.iron, q[0], q[1] + 0.2, q[2], 0.37, 0.05).cyl(m.iron, q[0], q[1] + 0.7, q[2], 0.37, 0.05); }
-    { const a = onRoad(TAV_X - 5.6, 3.4), b = onRoad(TAV_X + 6.1, 7.4); vine(Bn, Math.min(a[0], b[0]), Math.min(a[2], b[2]), Math.max(a[0], b[0]), Math.max(a[2], b[2]), Math.max(a[1], b[1]) + 2.62); }
+    { const a = onRoad(TAV_X - 5.6, 3.4), b = onRoad(TAV_X + 6.1, 7.4); solid("pergola", Math.min(a[0], b[0]), Math.min(a[2], b[2]), Math.max(a[0], b[0]), Math.max(a[2], b[2]), Math.max(a[1], b[1]) + 3.4, Math.max(a[1], b[1]) + 2.2); vine(Bn, Math.min(a[0], b[0]), Math.min(a[2], b[2]), Math.max(a[0], b[0]), Math.max(a[2], b[2]), Math.max(a[1], b[1]) + 2.62); }
     solid("taverna", p[0] - 6, p[2] - 0.6, p[0] + 6, p[2] + 7, p[1] + 5); }
   solidTag("");
   // trees: olive groves in rows along the road, cypresses by the houses, stone pines and scrub on the hills, pines on

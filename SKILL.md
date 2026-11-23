@@ -31,6 +31,14 @@ no longer acceptable.
   chunked render from a prebuilt bundle (`render_qb.sh`, chunks ≤125 frames, ≤ ~3 chunks per background task), review
   every chunk in motion on contact sheets, re-render only what is wrong, assemble under 30 MB (`assemble_q.py`).
 - Cost: ~6-10 s per frame at 1080x1920 with `--gl swangle`; plan ~3-4 h of render for 50 s.
+- **Lessons from the origin-of-the-marathon short (2026-11-23), now the reference build** (`examples/marathon-origin/`):
+  enclose every set to the horizon (hills dressed with scrub texture + 3D bushes + pines, towns on slopes, far
+  mountains with a forest texture, never a bare backdrop); use trees v2 (`src/g/trees.ts`: branching bark trunks,
+  per-species leaf sprays, shrubs, vines); give every role its own silhouette and use the run/walk cycle and bold
+  outer outline of `src/g/toon.ts` + `outline.ts`; plant no tree or bush where the camera path passes (sample
+  `camAt` for every frame); check the camera against the terrain and tree crowns; in a 9:16 frame keep the people
+  of a scene within about +-14 degrees of the view axis (restage them rather than widen the shot); crowds that must
+  read in the frame gather in ordered rows (no crossing paths).
 - **Lessons from the marathon short (2026-11-22)**: register tree canopies as solids too (the camera once flew
   through an apple tree), and check the camera against fences/rails (`camera at the fence line` in
   `examples/marathon-1904/qa/qa_o.ts`); keep subjects visible (cut a path through tall crops, have figures face the

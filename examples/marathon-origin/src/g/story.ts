@@ -108,7 +108,7 @@ const KEYS: Key[] = [];
   // BREAL: along the line of runners to the linguist with his silver cup and the starter with his pistol
   KEYS.push({ f: b.breal, blend: 30, rig: dolly(b.breal, b.bang + 8, onRoad(START_X - 11, 4.4, 1.7), onRoad(START_X - 10, 0.4, 1.8), onRoad(START_X - 4, 7.6, 1.3), onRoad(START_X, 0.6, 1.2), 46, 52) });
   // GANO: tracking the winner as the field runs off, then fast and high down the valley to the taverna
-  KEYS.push({ f: b.gano - 10, blend: 30, rig: (f) => { const p = louisAt(f).p, [hx, hz] = roadWest(p[0]), t = ramp(f, b.gano, b.taberna - 8); return { pos: [p[0] - hx * lerp(-6, -18, t) + hz * lerp(3.2, 12, t), p[1] + lerp(1.4, 18, t * (2 - t)), p[2] - hz * lerp(-6, -18, t) - hx * lerp(3.2, 12, t)], look: [p[0] + hx * lerp(-1, 6, t), p[1] + 1.1, p[2] + hz * lerp(-1, 6, t)], fov: lerp(50, 56, t), roll: 0 }; } });
+  KEYS.push({ f: b.gano - 10, blend: 30, rig: (f) => { const p = louisAt(f).p, [hx, hz] = roadWest(p[0]), t = ramp(f, b.gano, b.taberna - 8); return { pos: [p[0] - hx * lerp(-6, -18, t) + hz * lerp(-3.4, -12, t), p[1] + lerp(1.4, 18, t * (2 - t)), p[2] - hz * lerp(-6, -18, t) - hx * lerp(-3.4, -12, t)], look: [p[0] + hx * lerp(-1, 6, t), p[1] + 1.1, p[2] + hz * lerp(-1, 6, t)], fov: lerp(50, 56, t), roll: 0 }; } });
   // TABERNA: down under the vine: the taverner hands him a glass, he drinks it off, and he is away again
   KEYS.push({ f: b.taberna - 8, blend: 30, rig: dolly(b.taberna - 8, b.sigue + 4, add3(TAV_STOP, [-4.4, 1.5, -3.6]), add3(TAV_STOP, [-2.4, 1.35, -3.4]), add3(TAV_STOP, [0.6, 1.2, 0.8]), add3(TAV_STOP, [0.3, 1.25, 0.6]), 48, 46) });
   // ESTADIO: after him to Athens and into the marble stadium full of people
