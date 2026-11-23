@@ -31,6 +31,8 @@ no longer acceptable.
   chunked render from a prebuilt bundle (`render_qb.sh`, chunks ≤125 frames, ≤ ~3 chunks per background task), review
   every chunk in motion on contact sheets, re-render only what is wrong, assemble under 30 MB (`assemble_q.py`).
 - Cost: ~6-10 s per frame at 1080x1920 with `--gl swangle`; plan ~3-4 h of render for 50 s.
+- **Current quality bar (user's choice, 2026-11-23):** `examples/marathon-origin/origen_del_maraton.mp4`. Match or beat it;
+  render at full 1080x1920 and 30 fps (no low-res or 15 fps shortcuts).
 - **Lessons from the origin-of-the-marathon short (2026-11-23), now the reference build** (`examples/marathon-origin/`):
   enclose every set to the horizon (hills dressed with scrub texture + 3D bushes + pines, towns on slopes, far
   mountains with a forest texture, never a bare backdrop); use trees v2 (`src/g/trees.ts`: branching bark trunks,
