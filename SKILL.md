@@ -53,9 +53,17 @@ no longer acceptable.
 ## Standing user rules (override older rules below where they differ)
 - Narration in **Spanish**, Latin American neutral storytelling register, modelled on the user's reference: ~3 words/s,
   sentences of ~12 words chained with "y", "Un momento." and "Verás," slower with a pause after them, ironic payoff.
-  **THE voice (user's order 2026-11-23, for this and every future reel): `es-ES-AlvaroNeural` via edge-tts**, the
-  voice of the Maradona-hair reel (`examples/maradona-hair/voice_es/`, rate about +10-12 %; per-line rates in
-  `examples/pickles-1966/voice/lines.py` with `gen.py es-ES-AlvaroNeural <tag> -2`). Do not use Jorge or any other voice.
+  **THE voice (user's order 2026-11-23, for this and every future reel): `es-ES-AlvaroNeural` via edge-tts at a
+  flat +12 %**, exactly as in the Maradona-hair reel (verified 2026-11-24: a fresh +12 % clip matches that reel's voice
+  file at 0.99 correlation). Never slow it down or change the rate per line (the user noticed at +2..+8 %). Generate one
+  clip per sentence and place each where the picture expects it (`examples/pickles-1966/voice/fit12.py`); do not use
+  Jorge or any other voice.
+- **Music = one catchy theme that loops all the way through** (user's order 2026-11-24, after the Maradona reel's
+  "música medio adictiva"): an original 8-bar tune in a bouncy groove (6/8, plucked lead, off-beat chord plucks, bass
+  on 1 and 4, tambourine + drum, ~1 bar per second) that repeats; vary only density and key (minor for trouble, the
+  same tune in major for the payoff), stop it dead for one beat on a "Un momento". No genre changes per scene. See
+  `examples/maradona-hair` (`audio/mix.py`) and `examples/pickles-1966/audio/mix_w.py`. Music level as in those mixes
+  (about -24 dB in the pauses, voice clearly on top).
 - **Never blurry (user's order 2026-11-23)**: keep lens blur (DOF) a light touch only (`cInf` <= ~1.6 px, see
   `examples/pickles-1966/src/w/story.ts` `dofAt`), no film grain, card textures at least as large as they appear on
   screen (`tier` in `world.ts`), and encode at the highest bitrate that still fits under 30 MB. Sharp beats "cinematic".

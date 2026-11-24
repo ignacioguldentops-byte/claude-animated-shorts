@@ -1,0 +1,106 @@
+[
+ {
+  "line": 0,
+  "part": 0,
+  "start": 0.13,
+  "dur": 4.44,
+  "slot_end": 5.03,
+  "text": "¿Qué harías si tu perro encontrara, debajo de un arbusto, algo que medio país está buscando?"
+ },
+ {
+  "line": 1,
+  "part": 0,
+  "start": 5.73,
+  "dur": 2.51,
+  "slot_end": 15.03,
+  "text": "Londres, marzo de 1966."
+ },
+ {
+  "line": 1,
+  "part": 1,
+  "start": 8.42,
+  "dur": 3.93,
+  "slot_end": 15.03,
+  "text": "Cuatro meses antes del Mundial, la Copa del Mundo se exhibe en una muestra de sellos…"
+ },
+ {
+  "line": 1,
+  "part": 2,
+  "start": 12.91,
+  "dur": 1.37,
+  "slot_end": 15.03,
+  "text": "y alguien la roba de su vitrina."
+ },
+ {
+  "line": 2,
+  "part": 0,
+  "start": 15.57,
+  "dur": 4.18,
+  "slot_end": 20.07,
+  "text": "Días después llega un paquete: un trozo de la copa y una carta pidiendo quince mil libras."
+ },
+ {
+  "line": 3,
+  "part": 0,
+  "start": 20.57,
+  "dur": 1.69,
+  "slot_end": 24.5,
+  "text": "La policía detiene a un sospechoso…"
+ },
+ {
+  "line": 3,
+  "part": 1,
+  "start": 22.44,
+  "dur": 1.75,
+  "slot_end": 24.5,
+  "text": "pero la copa no aparece por ningún lado."
+ },
+ {
+  "line": 4,
+  "part": 0,
+  "start": 25.2,
+  "dur": 0.61,
+  "slot_end": 30.7,
+  "text": "Un momento."
+ },
+ {
+  "line": 4,
+  "part": 1,
+  "start": 25.99,
+  "dur": 4.42,
+  "slot_end": 30.7,
+  "text": "Una semana después del robo, un vecino del sur de Londres saca a pasear a su perro, Pickles."
+ },
+ {
+  "line": 5,
+  "part": 0,
+  "start": 31.23,
+  "dur": 5.36,
+  "slot_end": 37.03,
+  "text": "Verás: Pickles olfatea un arbusto, y ahí, envuelta en papel de periódico, estaba la Copa del Mundo."
+ },
+ {
+  "line": 6,
+  "part": 0,
+  "start": 37.77,
+  "dur": 1.44,
+  "slot_end": 43.2,
+  "text": "Inglaterra ganó ese Mundial."
+ },
+ {
+  "line": 6,
+  "part": 1,
+  "start": 39.67,
+  "dur": 1.44,
+  "slot_end": 43.2,
+  "text": "Y al banquete de los campeones…"
+ },
+ {
+  "line": 6,
+  "part": 2,
+  "start": 41.77,
+  "dur": 1.01,
+  "slot_end": 43.2,
+  "text": "invitaron a un perro."
+ }
+]

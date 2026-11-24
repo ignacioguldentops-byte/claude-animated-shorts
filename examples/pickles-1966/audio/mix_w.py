@@ -1,6 +1,5 @@
 # "El perro que encontró la Copa": original score + synthesized SFX, ducked under the voice.
-# 1966 London: a sixties spy-jazz for the theft (walking bass, brushes, vibraphone, muted trumpet), suspense for the
-# ransom and the police, a gentle night vibe for the walk, a shimmering reveal, a brass band swing for the banquet.
+# One catchy caper theme in 6/8 that loops all the way through (minor for the crime, major from the find on).
 # usage: python3 mix_w.py <voice.wav> <tag>  ->  mix_raw<tag>.wav
 import numpy as np, soundfile as sf, sys, json, re, os
 from scipy.signal import butter, sosfilt
@@ -68,68 +67,71 @@ def brass(fs, dur):
     return lp(s, 3400) * np.minimum(1, t / 0.03) * np.minimum(1, (dur - t) / 0.12).clip(0, 1) * 0.08
 def tuba(f, dur): n = int(dur * SR); t = np.arange(n) / SR; return (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(4 * np.pi * f * t) + 0.2 * np.sin(6 * np.pi * f * t)) * np.minimum(1, t / 0.01) * np.exp(-t / 0.22)
 def snare(g=1.0): n = int(0.12 * SR); t = np.arange(n) / SR; return (bp(rng.standard_normal(n), 1200, 6000) * 0.7 + np.sin(2 * np.pi * 220 * t * np.exp(-t * 9)) * 0.5) * env(n, 0.001, 0.035) * g
-# ---------- music ----------
-# A: the spy-jazz (hook + hall): E minor, swung eighths, walking bass, brushes and ride, vibraphone; muted trumpet hits on the theft
-jazz = np.zeros(N); jdr = np.zeros(N); jlead = np.zeros(N)
-bpm = 124; bt = 60 / bpm; sw = 0.62
-WALK = [[0, 3, 5, 6], [7, 6, 5, 3], [0, 3, 5, 7], [10, 9, 7, 6], [5, 8, 10, 11], [12, 11, 10, 8], [7, 10, 12, 11], [0, -2, -3, -5]]
-VMEL = [[(7, 1.5), (10, 0.5), (12, 1), (10, 1)], [(7, 2), (6, 1), (3, 1)], [(5, 1.5), (7, 0.5), (8, 1), (7, 1)], [(3, 2), (0, 2)]]
-t = 0.0; k = 0
-while t < F(C2 + 12):
-    for j in range(4):
-        at(jazz, ubass(Em(WALK[k % 8][j] - 12), bt * 1.1), t + j * bt, 1.0)
-        at(jdr, ride(0.9 if j % 2 else 0.6), t + j * bt); at(jdr, ride(0.5), t + j * bt + sw * bt)
-        at(jdr, brush(1.0 if j % 2 else 0.6), t + j * bt)
-        if j == 0 and k % 2 == 0: at(jdr, kick(0.5), t)
-    tt0 = 0.0
-    for m, d in VMEL[k % 4]: at(jlead, vibe(Em(m + 12), d * bt * 1.6), t + tt0 * bt, 1.0); tt0 += d
-    t += 4 * bt; k += 1
-# the theft: tiptoe pizzicato under the vibes, then a muted trumpet stab when the glass lifts
-tip = np.zeros(N)
-for i, f0 in enumerate(np.arange(B["vitrina"] + 20, GRAB, 7.5)): at(tip, pizz(Em([0, 3, 7, 3, 6, 3, 5, 3][i % 8] + 12)), F(f0), 0.9)
-for k2, d in ((0, 0.18), (3, 0.18), (6, 0.5)): at(jlead, trumpet(Em(k2 + 12), d), F(GRAB) + [0, 0.22, 0.44][[0, 3, 6].index(k2)], 2.4)
-# B: suspense in the office (held strings, a ticking clock, a low pulse); a sting on the letter and on "no aparece"
-sus = np.zeros(N); tick = np.zeros(N)
-at(sus, strings([Em(-5), Em(0), Em(3)], F(B["carta"] - C2 + 10)), F(C2 - 6), 1.0)
-at(sus, strings([Em(-6), Em(1), Em(6)], F(C3 - B["carta"] + 10), 1300), F(B["carta"] - 4), 1.2)
-for f0 in np.arange(C2, C3, 15): n = int(0.03 * SR); at(tick, bp(rng.standard_normal(n), 2500, 6000) * env(n, 0.0005, 0.006) * 0.5, F(f0), 0.9 if int(f0 / 15) % 2 else 0.6)
-for f0 in np.arange(C2, C3, 30): at(sus, ubass(Em(-12), 0.8) * 0.7, F(f0), 1.0)
-at(sus, trumpet(Em(13), 0.7) * 1.5, F(B["carta"]), 1.0); at(sus, trumpet(Em(6), 0.9, False) * 1.2, F(B["nada"]), 1.0)
-# C: the night walk: the vibes again, slower and gentle, bass on one and three; a rising swell into the find
-nite = np.zeros(N); bpm2 = 96; b2 = 60 / bpm2; t = F(C3); k = 0
-NMEL = [[(12, 2), (10, 1), (7, 1)], [(8, 2), (7, 2)], [(10, 2), (12, 1), (14, 1)], [(15, 3), (12, 1)]]
-while t < F(UNWRAP):
-    for j in (0, 2): at(nite, ubass(Em([0, -4, -7, -2][k % 4] - 12), b2 * 1.6), t + j * b2, 0.9)
-    for j in range(4): at(nite, ride(0.35), t + j * b2); at(nite, brush(0.5), t + j * b2 + sw * b2)
-    tt0 = 0.0
-    for m, d in NMEL[k % 4]: at(nite, vibe(Em(m), d * b2 * 1.8), t + tt0 * b2, 0.8); tt0 += d
-    t += 4 * b2; k += 1
-at(nite, strings([Em(0), Em(7), Em(12)], F(UNWRAP - B["olfatea"]) + 0.5, 2200), F(B["olfatea"]), 1.6)
-# D: the reveal: choir and glockenspiel sparkle in E major
-rev = np.zeros(N); at(rev, choir([Em(4), Em(8), Em(11), Em(16)], F(C4 - UNWRAP) + 1.5), F(UNWRAP - 4), 1.0)
-for i, k2 in enumerate([16, 20, 23, 28, 23, 28, 32]): at(rev, glock(Em(k2 + 12), 1.6), F(UNWRAP) + 0.12 * i, 0.8)
-# E: the banquet: a brass band swing in B flat; final chord on the dog
-Bb = lambda k: 233.08 * 2 ** (k / 12)
-band = np.zeros(N); bdr = np.zeros(N); bpm3 = 132; b3 = 60 / bpm3; t = F(C4) - 0.3; k = 0
-CH = [(0, [0, 4, 7]), (5, [5, 9, 12]), (7, [7, 11, 14]), (0, [0, 4, 7])]
-MEL = [[(12, 1), (14, 0.5), (16, 0.5), (19, 1), (16, 1)], [(17, 1), (16, 0.5), (14, 0.5), (12, 2)], [(14, 1), (16, 0.5), (17, 0.5), (19, 1), (21, 1)], [(19, 1), (17, 1), (16, 2)]]
-while t < F(B["perro"]) - 0.1:
-    root, ch = CH[k % 4]
-    for j in range(4):
-        at(band, tuba(Bb(root - 24 + (7 if j % 2 else 0)), b3 * 0.8), t + j * b3, 0.8)
-        at(bdr, snare(0.7 if j % 2 else 0.4), t + j * b3); at(bdr, ride(0.5), t + j * b3 + sw * b3)
-        if j % 2: at(band, brass([Bb(c - 12) for c in ch], b3 * 0.4), t + j * b3, 0.8)
-    tt0 = 0.0
-    for mm, d in MEL[k % 4]: at(band, brass([Bb(mm)], d * b3 * 0.9) * 1.5, t + tt0 * b3, 1.0); tt0 += d
-    t += 4 * b3; k += 1
-for k2 in (0, 4, 7, 12): at(band, brass([Bb(k2)], 2.6) * 2.2, F(B["perro"] + 2), 1.0); at(band, glock(Bb(k2 + 12), 2.0), F(B["perro"] + 2) + 0.03 * k2, 0.8)
+# ---------- music: ONE catchy theme all the way through (the Maradona-hair recipe the user liked) ----------
+# An original 8-bar caper tune in 6/8 (dotted quarter = 120, one bar per second): plucked mandolin lead, chord plucks
+# on the off-beats, bass on 1 and 4, tambourine and drum. Minor (D minor) for the theft, the ransom and the police,
+# thinned out in the office, a full stop on "Un momento", back for the walk, and the SAME tune in D major from the
+# moment the cup comes out of the paper through the banquet. It loops every 8 s, so it sticks.
+def pluck(f, dur=0.5, bright=1.0):     # mandolin-ish double string
+    n = int(dur * SR); t = np.arange(n) / SR; s = np.zeros(n)
+    for d in (1, 1.006):
+        for h in range(1, 9): s += np.sin(2 * np.pi * f * d * h * t + h) * np.exp(-t * (5 + 2.2 * h) / bright) / h ** 1.1
+    return s * np.minimum(1, t / 0.002) * 0.25
+def mbass(f, dur): n = int(dur * SR); t = np.arange(n) / SR; return (np.sin(2 * np.pi * f * t) + 0.35 * np.sin(4 * np.pi * f * t)) * env(n, 0.004, 0.28)
+def jingle(g=1.0): n = int(0.09 * SR); return hp(rng.standard_normal(n), 6500) * env(n, 0.001, 0.022) * g
+def drum(): n = int(0.16 * SR); t = np.arange(n) / SR; return np.sin(2 * np.pi * 150 * t * np.exp(-t * 9)) * env(n, 0.001, 0.05)
+def clap(): n = int(0.12 * SR); return bp(rng.standard_normal(n), 900, 4000) * (env(n, 0.001, 0.02) + 0.6 * np.roll(env(n, 0.001, 0.015), int(0.012 * SR))) * 0.5
+Dk = lambda k: 293.66 * 2 ** (k / 12)   # semitones from D4
+e8 = 60 / 120 / 3; bar = 6 * e8
+MEL_m = [[7, None, 7, 8, 7, 5], [3, None, 2, 0, None, None], [7, None, 7, 8, 7, 5], [10, None, 8, 7, None, None],
+         [12, None, 12, 10, 8, 7], [8, None, 7, 5, 3, 2], [3, 5, 7, 2, None, 1], [2, None, None, 0, None, None]]
+MAJ = {3: 4, 8: 9, 10: 11, 1: 1}
+MEL_M = [[None if m is None else MAJ.get(m, m) for m in b] for b in MEL_m]
+CH_m = [[0, 3, 7], [0, 3, 7], [0, 3, 7], [-2, 2, 5], [-7, -2, 2], [-7, -2, 2], [-5, -1, 2, 5], [0, 3, 7]]
+CH_M = [[0, 4, 7], [0, 4, 7], [0, 4, 7], [-5, -1, 4], [-7, -1, 2], [-7, -1, 2], [-5, -1, 2, 5], [0, 4, 7]]
+ROOT = [0, 0, 0, -2, -7, -7, -5, 0]
+def theme(MEL, CH, bright):
+    lead, acc, low, perc = np.zeros(N), np.zeros(N), np.zeros(N), np.zeros(N)
+    for b in range(int(TOTAL / bar) + 1):
+        t0 = b * bar; i = b % 8
+        for k, beat in enumerate((0, 3)): at(low, mbass(Dk(ROOT[i] - 24 + (7 if k else 0)), e8 * 2.6), t0 + beat * e8, 0.9)
+        for beat in (1, 2, 4, 5):
+            for j, kk in enumerate(CH[i]): at(acc, pluck(Dk(kk - 12), 0.3, 0.8), t0 + beat * e8 + j * 0.006, 0.18)
+        for j, m in enumerate(MEL[i]):
+            if m is not None: at(lead, pluck(Dk(m), 0.34, bright), t0 + j * e8, 0.55)
+        for j in range(6): at(perc, jingle(1.0 if j in (0, 3) else 0.45), t0 + j * e8, 0.5)
+        at(perc, drum(), t0, 0.6); at(perc, drum(), t0 + 3 * e8, 0.35); at(perc, clap(), t0 + 3 * e8, 0.35)
+    return lead, acc, low, perc
+lm, am, bm, pm = theme(MEL_m, CH_m, 1.1)
+lM, aM, bM, pM = theme(MEL_M, CH_M, 1.4)
+spark = np.zeros(N)                       # glockenspiel doubling the lead an octave up in the major sections
+for b in range(int(TOTAL / bar) + 1):
+    for j, m in enumerate(MEL_M[b % 8]):
+        if m is not None: at(spark, glock(Dk(m + 12), 0.6), b * bar + j * e8, 0.35)
 def sec(spans):
     g = np.zeros(N)
     for a, b, x in spans: g[(tt >= F(a)) & (tt < F(b))] = x
-    return lp(g, 4.0)
-mus = ((jazz + jdr * 0.9) * sec([(0, C1 - 6, 0.55), (C1 - 6, B["vitrina"], 1.0), (B["vitrina"], GRAB, 0.5), (GRAB, C2 + 6, 0.9)]) + jlead * sec([(0, C1, 0.6), (C1, B["vitrina"] + 10, 1.0), (B["vitrina"] + 10, C2 + 6, 0.8)])
-       + tip * sec([(B["vitrina"], GRAB + 4, 1.0)]) + sus * 2.6 * sec([(C2 - 10, C3 + 4, 1.0)]) + tick * sec([(C2, C3, 1.0)])
-       + nite * sec([(C3 - 4, UNWRAP + 6, 1.0)]) + rev * 3.0 + (band + bdr * 0.8) * sec([(C4 - 10, FR - 10, 1.0)]))
+    return lp(g, 6.0)
+MOM_A, MOM_B = C3 - 2, B["momento"] + 24          # the music stops dead on "Un momento" and comes back after it
+MIN = [(0, C1, 1.0), (C1, GRAB, 0.9), (GRAB, C2, 1.0), (C2, C3 - 2, 0.0), (MOM_B, UNWRAP - 2, 0.75)]
+mi = sec(MIN); ma = sec([(UNWRAP - 2, B["perro"] + 2, 1.0)])
+office = sec([(C2, MOM_A, 1.0)])                   # the office: same tune, only lead and bass, no percussion, quieter
+pg = sec([(0, C1, 1.0), (C1, GRAB, 0.7), (GRAB, C2, 1.0), (MOM_B, UNWRAP - 2, 0.55), (UNWRAP - 2, C4, 0.8), (C4, B["perro"] + 2, 1.0)])
+mus = (lm + am + bm) * mi + (lm * 0.8 + bm) * office * 0.6 + pm * pg * (mi > 0.01) * 0.5 \
+      + (lM + aM + bM) * ma + pM * pg * ma * 0.5 + spark * sec([(UNWRAP - 2, UNWRAP + 70, 1.0), (C4, B["perro"] + 2, 0.7)])
+# accents kept from the score: the clock ticking in the office, a stab when the glass lifts, a sting on "no aparece",
+# the shimmer of the reveal and the final chord on the dog
+tick = np.zeros(N)
+for f0 in np.arange(C2, MOM_A, 15): n = int(0.03 * SR); at(tick, bp(rng.standard_normal(n), 2500, 6000) * env(n, 0.0005, 0.006) * 0.5, F(f0), 0.9 if int(f0 / 15) % 2 else 0.6)
+acc2 = np.zeros(N)
+for kk in (0, 3, 7, 12): at(acc2, pluck(Dk(kk - 12), 0.9, 0.7), F(GRAB) + 0.02 * kk, 0.6)
+at(acc2, trumpet(Dk(-1), 0.9, False) * 1.2, F(B["nada"]), 1.0)
+at(acc2, choir([Dk(4), Dk(7), Dk(11), Dk(16)], F(C4 - UNWRAP) + 1.5), F(UNWRAP - 4), 2.0)
+for i, k2 in enumerate([12, 16, 19, 24, 19, 24, 28]): at(acc2, glock(Dk(k2 + 12), 1.6), F(UNWRAP) + 0.12 * i, 0.7)
+for kk in (0, 4, 7, 12): at(acc2, pluck(Dk(kk - 12), 1.6, 0.6), F(B["perro"] + 2), 0.6)
+at(acc2, mbass(Dk(-24), 1.2), F(B["perro"] + 2), 1.0)
+for kk in (0, 4, 7, 12): at(acc2, glock(Dk(kk + 12), 2.0), F(B["perro"] + 2) + 0.03 * kk, 0.6)
+mus = mus + tick * 0.8 + acc2
 # ---------- sound effects ----------
 sfx = np.zeros(N)
 def thud(f=90, d=0.25): n = int(0.4 * SR); t = np.arange(n) / SR; return np.sin(2 * np.pi * f * t * np.exp(-t * 6)) * env(n, 0.002, d) + lp(rng.standard_normal(n), 300) * env(n, 0.001, 0.03) * 0.5
