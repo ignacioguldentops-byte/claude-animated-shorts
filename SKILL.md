@@ -5,6 +5,13 @@ description: Make a ~55-70 s vertical cartoon story short in the "2D characters 
 
 # Cartoon 3D story short (three.js + Remotion)
 
+## CURRENT STYLE — user's order 2026-11-25 (overrides the QUALITY STANDARD below)
+"Vuelve de verdad al que hiciste de pelo de Maradona. Hazme otro exactamente con ese mismo estilo, cópialo todo."
+Every new reel copies the Maradona-hair reel (`examples/maradona-hair/`): painted-toon 3D world with ink lines, bean-head
+cards, short punchy shots, the hook/everyman/"Espera"/"Verás"/payoff script formula, the tarantella theme
+(`audio/mix.py`), Alvaro +12 %. Start from `examples/servilleta-messi/src/n/` (hair engine + new story: club bar,
+auction room, stadium). The realistic look described below was rejected by the user.
+
 ## QUALITY STANDARD — mandatory for every reel from 2026-11-21 (user's order: "todos deben ser así a partir de ahora o incluso mejor")
 The bar is `examples/back-room/la_trastienda_reel_v2.mp4` ("La trastienda" v2). Every new reel must match it or beat it.
 Start from `templates/realistic/` (full source), not from `templates/bridge/`. Compare with

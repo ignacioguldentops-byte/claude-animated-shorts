@@ -2,14 +2,13 @@
 
 The user makes viral vertical story reels with the skill in `SKILL.md`.
 
-**Quality bar (mandatory, raised 2026-11-23):** every new reel must be at least as good as
-`examples/marathon-origin/origen_del_maraton.mp4` (the user's chosen standard: enclosed sets to the horizon, trees v2,
-run/walk cycles, bold outline, a distinct look for every character, one continuous moving camera; full resolution
-and 30 fps, never the fast low-res/15 fps shortcuts). Before that the bar was
-`examples/back-room/la_trastienda_reel_v2.mp4` — doodle cast in a realistic, physically lit 3D world (PBR textures,
-image-based sky light, soft shadows, ambient occlusion, grass blades, real geometric detail, full crowds, 3D props).
-Start from `examples/marathon-origin/src/g/` (sets, trees, cast, camera, frame checker) and read the "QUALITY STANDARD" and "Standing user rules" sections at the top of
-`SKILL.md` before writing any code. Never fall back to the old painted-toon world with ink lines.
+**Style (user's order 2026-11-25, overrides everything older):** copy the Maradona-hair reel
+(`examples/maradona-hair/maradona_hair_reel_es_28mb.mp4`, the user's most successful reel) EXACTLY: the painted-toon
+3D world with ink lines, flat bean-head cards, ~15-20 short shots with cuts/crossfades, crash zooms, sparkles and gag
+cards, the paradox hook -> named everyman -> escalation -> "Espera..." -> "Verás:" -> ironic payoff formula, and its
+tarantella music theme. The reference build of this style is `examples/servilleta-messi/src/n/` (a copy of the hair
+engine `examples/maradona-hair/src/h/` with a new story); start from it. The realistic/PBR look of the marathon and
+Ronaldo reels is no longer wanted ("la calidad es mala").
 
 Other standing rules: Spanish narration with the voice `es-ES-AlvaroNeural` at a flat +12 % ONLY (the Maradona-hair voice; user's order 2026-11-23, every reel; never slower), one catchy looping music theme as in the Maradona-hair reel, ~50 s,
 1080x1920, under 30 MB, -14 LUFS, no captions/logos/real likenesses, characters never clip into props or each other,
