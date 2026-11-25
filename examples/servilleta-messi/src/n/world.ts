@@ -384,10 +384,14 @@ export class World {
         G(KID, 31, [x, 0, 0], { legs: "run", phase: ph, facing: 1, expr: "grin", armL: "low", armR: "low" });
         const bx = x + 0.32 + 0.08 * Math.sin(f * 0.6); this.ball(st, bx, 0.03 * Math.abs(Math.sin(f * 0.6)), 0.05, f);
         for (const [k, gx] of [[0, -2.2], [1, -0.2], [2, 1.9]] as const) {
-          const t = clamp01((x - gx + 0.9) / 0.9), fall = clamp01((x - gx) / 0.6);
-          G(bigKid(k), 41 + k, [gx + (t > 0 ? 0.25 * fall : 0), 0, -0.35 - 0.15 * k], { legs: fall > 0.3 ? "kneel" : t > 0 ? "run" : "stand", phase: ph, facing: -1, expr: fall > 0.3 ? "dazed" : t > 0 ? "shock" : "stern", armL: t > 0 ? "reach" : "hip", armR: "hang" }, { roll: -0.35 * fall, scale: 1.12 });
-          if (fall > 0.3 && fall < 1) this.stars(st, gx + 0.3, 1.8, -0.3, f);
+          // the kid's speed blows each big kid away, spinning up out of frame, before they can touch
+          const u = x - gx, warn = clamp01((u + 2.0) / 0.6), s = clamp01((u + 1.35) / 0.4);
+          if (s >= 1 && u > 0.2) continue;
+          const y = 4.2 * Math.pow(s, 1.1) + (u > -0.95 ? 2.5 * (u + 0.95) : 0);
+          G(bigKid(k), 41 + k, [gx + 1.1 * s, y, -0.35 - 0.15 * k - 1.2 * s], { legs: s > 0 ? "run" : warn > 0 ? "run" : "stand", phase: ph, facing: -1, expr: s > 0 ? "dazed" : warn > 0 ? "shock" : "stern", armL: s > 0 ? "up" : warn > 0 ? "reach" : "hip", armR: s > 0 ? "up" : "hang" }, { roll: -2.2 * s, scale: 1.12 });
+          if (s > 0 && s < 0.9) this.stars(st, gx + 1.1 * s, y + 1.9, -0.4, f);
         }
+        for (const gx of [-2.2, -0.2, 1.9]) if (x - gx > -1.4 && x - gx < -0.8) this.puffs(st, f, () => [gx, 0.1], 1, 10, 0.6);
         this.puffs(st, f, (fe) => [kidX(fe) - 0.15, 0.1], 5, 14, 0.4);
         break;
       }

@@ -109,7 +109,7 @@ export const camAt = (id: number, f: number): Cam => {
       { f: 366, pos: c(2.25, 1.3, -0.75), look: c(2.45, 1.22, -1.92), fov: 44 },
       { f: 420, d: 40, e: "s", pos: c(2.4, 1.28, -1.0), look: c(2.45, 1.24, -1.92), fov: 40, roll: 0.02 },
     ], f); break;
-    case 5: { const x = kidX(f); cam = path([{ f: 433, pos: [x + 0.4, 0.85, 4.3], look: [x + 0.2, 0.75, 0], fov: 46 }], f, 0); cam = { ...cam, pos: [x + 0.4, 0.85, 4.3], look: [x + 0.3, 0.75, 0] }; break; }
+    case 5: { const x = kidX(f); cam = path([{ f: 433, pos: [x + 0.4, 0.85, 4.3], look: [x + 0.2, 0.75, 0], fov: 46 }], f, 0); cam = { ...cam, pos: [x + 0.85, 0.95, 4.3], look: [x + 0.75, 0.8, 0], fov: 58 }; break; }
     case 6: cam = path([ // line-up with the ruler -> the treatment and the pile of coins
       { f: 549, pos: [0.6, 1.15, 5.2], look: [0.6, 0.95, 0], fov: 44 },
       { f: 588, d: 30, e: "s", pos: [1.3, 1.0, 3.6], look: [1.6, 0.85, 0], fov: 44 },
