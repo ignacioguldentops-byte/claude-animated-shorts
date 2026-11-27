@@ -12,7 +12,7 @@ import { fxBall, fxCup, fxConfetti, fxQ, fxFlash, fxZ, fxSweat, fxHair, fxFly, f
 import { FPS, SHOTS, W, V3, camAt, smooth, clamp01, lerp, ramp, lampsAt, c, NAP, DIR_AT, AG1_AT, AG2_AT, PERE_T, BAR, walkIn, kidX, GAVEL1, GAVEL2 } from "./story";
 import { lam, add, box, ground, repT } from "./kit";
 import { buildCafe, buildAlley, buildPlane, buildAuction, SetRefs, NIGHT_MATS, LAMP_MATS, CX, PZ, SHX, SHY, SHZ, AX, PED, LECT, AROWS, ACOLS } from "./sets";
-import { GENNARO, GENNARO_APRON, GENNARO_OLD, DIEGO, DIEGO_TRACK, WIFE, NONNA, TOURIST, TOURIST2, folk, PERE, PERE_OLD, DIRECTOR, AGENT1, AGENT2, KID, KID_BARCA, STAR, STAR_ALBI, AUCTIONEER, bigKid } from "./cast";
+import { GENNARO, GENNARO_APRON, GENNARO_OLD, DIEGO, DIEGO_TRACK, WIFE, NONNA, TOURIST, TOURIST2, folk, PERE, PERE_OLD, DIRECTOR, AGENT1, AGENT2, KID, KID_BARCA, STAR, STAR_ALBI, MATE_ALBI, AUCTIONEER, bigKid } from "./cast";
 const GX = 52.5;
 const CKEY = new WeakMap<Char, string>();
 const outQ = (x: number) => 1 - (1 - clamp01(x)) ** 3;
@@ -382,7 +382,7 @@ export class World {
       case 5: { // a 13-year-old who plays like nobody else: past three big kids
         const x = kidX(f), ph = (f - 433) / 7;
         G(KID, 31, [x, 0, 0], { legs: "run", phase: ph, facing: 1, expr: "grin", armL: "low", armR: "low" });
-        const bx = x + 0.32 + 0.08 * Math.sin(f * 0.6); this.ball(st, bx, 0.03 * Math.abs(Math.sin(f * 0.6)), 0.05, f);
+        const tp = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph), bx = x + 0.22 + 0.14 * tp; this.ball(st, bx, 0.025 * Math.sin(Math.PI * tp), 0.06, f);
         for (const [k, gx] of [[0, -2.2], [1, -0.2], [2, 1.9]] as const) {
           // the kid's speed blows each big kid away, spinning up out of frame, before they can touch
           const u = x - gx, warn = clamp01((u + 2.0) / 0.6), s = clamp01((u + 1.35) / 0.4);
@@ -459,26 +459,52 @@ export class World {
         S(DIRECTOR, 21, DIR_AT, { expr: "smile", facing: 0, armL: "front", armR: "front" });
         break;
       }
-      case 12: { // Barça kept the kid and paid for the treatment: he grows
-        const g = smooth(ramp(f, W.paid, W.paid + 34)), j = 0.06 * Math.abs(Math.sin(f * 0.25));
-        G(KID_BARCA, 31, [0, f < W.paid ? j : 0, 0], { expr: f > W.paid ? "laugh" : "grin", facing: 0, armR: f > W.paid ? "up" : "hip", armL: f > W.paid ? "up" : "hang", holdR: f > W.paid ? undefined : undefined }, { scale: 1 + 0.32 * g, sy: 1 + 0.06 * g });
-        if (f < W.paid) { const bh = 0.25 + 0.5 * Math.abs(Math.sin((f - 1224) * 0.16)); this.ball(st, 0.32, bh, 0.15, f); }
-        else { this.card(st, "arrow", 200, 300, fxArrowUp, [-0.75, 0.9 + 0.5 * g, 0.1], 0.36, 0.54); for (let k = 0; k < 5; k++) if ((f + k * 5) % 12 < 6) spark([0.6 * Math.cos(k * 1.3 + f * 0.05), 0.6 + 1.3 * g * hs(k, 2), 0.1], 0.18); }
+      case 12: { // Barça keeps the kid: keepie-ups (foot, foot, knee, head...), he grows past the ruler while the ball is up, traps it, then shows his back: MESSI 10
+        const g = smooth(ramp(f, W.paid, W.paid + 34)), sc = 1 + 0.32 * g;
+        const footY = (l: number) => (9 + 126 * l) * 0.00216 + 0.012;
+        // touches: [frame, kind (0 left foot, 1 right knee, 2 head, 3 stall on the left foot), scale at that moment]
+        const TCH: [number, number, number][] = [[1229, 0, 1], [1241, 0, 1], [1253, 1, 1], [1266, 2, 1], [1281, 0, 1], [1293, 0, 1], [1344, 3, 1.32]];
+        const cp = (k: number, s2: number): [number, number] => k === 0 ? [-0.03 * s2, footY(1) * s2] : k === 1 ? [0.19 * s2, 0.53 * s2] : k === 2 ? [0.02 * s2, 1.3 * s2] : [-0.03 * s2, footY(0.7) * s2];
+        let bx = -0.03, by = 0;
+        if (f < TCH[0][0]) { const t = clamp01((f - 1214) / (TCH[0][0] - 1214)); by = lerp(1.7, footY(1), t * t); }
+        else if (f >= 1344) { if (f < 1350) [bx, by] = cp(3, 1.32); else { const t = clamp01((f - 1350) / 5); bx = lerp(-0.04, 0.34, smooth(clamp01((f - 1350) / 9))); by = lerp(footY(0.7) * 1.32, 0, t * t); } }
+        else { let i = 0; while (i < TCH.length - 2 && f >= TCH[i + 1][0]) i++;
+          const [t0, k0, s0] = TCH[i], [t1, k1, s1] = TCH[i + 1], p0 = cp(k0, s0), p1 = cp(k1, s1), t = clamp01((f - t0) / (t1 - t0));
+          const apex = i === 5 ? 3.8 : Math.max(p0[1], p1[1]) + (k1 === 2 ? 0.24 : 0.36), ctl = 2 * apex - (p0[1] + p1[1]) / 2;
+          bx = lerp(p0[0], p1[0], t); by = (1 - t) * (1 - t) * p0[1] + 2 * t * (1 - t) * ctl + t * t * p1[1]; }
+        const bump = (k: number) => TCH.filter(([, kk]) => kk === k).reduce((m, [tt]) => Math.max(m, clamp01(1 - Math.abs(f - tt) / 4.5)), 0);
+        const stall = f >= 1338 && f < 1352 ? 0.7 * smooth(clamp01((f - 1338) / 5)) * (1 - smooth(clamp01((f - 1348) / 4))) : 0;
+        const back = f >= 1351, up = f > W.paid - 4 && f < 1340;
+        G(KID_BARCA, 31, [0, 0, 0], back ? { back: true, armL: "up", armR: "up", holdL: "finger", holdR: "finger" } :
+          { expr: up ? (g > 0.2 && g < 0.95 ? "shock" : "laugh") : "grin", facing: 0, look: 0, liftL: Math.max(bump(0), stall), liftR: bump(1), headTilt: f > 1260 && f < 1272 ? -7 : 0,
+            armL: up ? "up" : [62, 36, 6], armR: up ? "up" : [62, 36, 6] }, { scale: sc, sy: 1 + 0.05 * g * (1 - g) * 4 });
+        this.ball(st, bx, by, 0.14, f);
+        // the ruler from the doctor's scene: he outgrows it
+        this.card(st, "ruler", 140, 1000, fxRuler, [0.66, 0.85, -0.08], 0.24, 1.7);
+        if (f > W.paid && f < W.paid + 40) for (let k = 0; k < 6; k++) if ((f + k * 5) % 12 < 6) spark([0.42 * Math.cos(k * 1.3 + f * 0.05) - 0.05, 0.4 + 1.4 * g * hs(k, 2), 0.15], 0.16);
+        if (f >= 1344 && f < 1350) spark([0.05, 0.45, 0.2], 0.14);
         this.conf(st, f, 0, 0, 0.5, 22, 5);
         break;
       }
-      case 13: { // eight golden balls, and a World Cup
+      case 13: { // eight golden balls (they drop onto a pyramid, one per pop), then the World Cup in the black cloak
         const cup = f >= W.cup, j = hop(0, 0.18, 3.5);
         if (!cup) {
-          G(STAR, 3, [0, 0, 0], { expr: "grin", armR: "up", armL: "up", holdR: "goldball" }, { scale: 0.97 });
-          const n = Math.min(8, Math.max(0, Math.floor((f - 1372) / 5.5) + 1));
-          for (let i = 0; i < n; i++) { const a = (i / 8) * Math.PI * 2 + f * 0.03, pop = clamp01((f - 1372 - i * 5.5) / 5); this.card(st, "gball", 200, 200, fxGoldBall, [0.9 * Math.cos(a), 1.55 + 0.42 * Math.sin(a), 0.3 * Math.sin(a) + 0.2], 0.3 * (0.6 + 0.4 * pop), 0.3 * (0.6 + 0.4 * pop)); }
+          G(STAR, 3, [-0.36, 0, 0], { expr: f < 1374 ? "grin" : "laugh", armR: "up", armL: "up", holdR: "finger", holdL: "finger", headTilt: -3 }, { scale: 0.97, sy: 1 + 0.015 * Math.sin(f * 0.4) });
+          const SL: [number, number][] = [[0.36, 0], [0.63, 0], [0.9, 0], [0.495, 0.25], [0.765, 0.25], [0.495, 0.5], [0.765, 0.5], [0.63, 0.75]];
+          SL.forEach(([sx, sy], i) => {
+            const tl = 1372 + i * 5.5; if (f < tl - 8) return;
+            const t = clamp01((f - (tl - 8)) / 8), y = sy + 0.135 + (1 - t * t) * 3.2, sq = f >= tl ? 1 + 0.2 * Math.exp(-(f - tl) / 2.2) * Math.cos((f - tl) * 1.4) : 1;
+            this.card(st, "gball", 200, 200, fxGoldBall, [sx, y, 0.12 + i * 0.002], 0.27 * sq, 0.27 / sq);
+            if (f >= tl && f < tl + 5) spark([sx + 0.1, sy + 0.32, 0.2], 0.15);
+          });
+          this.contact(st, 0.63, 0.12, 1.5);
+          this.conf(st, f, 0, 0, 0.5, 30, 5);
         } else {
-          this.fig(st, STAR_ALBI, 3, [0, j, 0], { expr: "laugh", armR: "up", holdR: "trophy", armL: "up" }, { f, scale: 0.97, sy: 1 + 0.03 * Math.sin(f / 3.5 * 2) });
-          const fans: [number, number, number][] = [[-1.5, -0.6, 201], [-0.8, -1.1, 202], [1.0, -1.0, 203], [1.7, -0.5, 204], [-2.3, -1.3, 205], [2.5, -1.4, 206], [0.1, -1.8, 207]];
-          for (const [x, z, sd] of fans) this.fig(st, { ...folk(sd * 3), top: "#8ec9ee", pat: { k: "v", c: "#ffffff" } }, sd, [x, hop(sd, 0.3, 3), z], { expr: sd % 2 ? "laugh" : "grin", armL: "up", armR: "up" }, { f });
+          this.fig(st, STAR_ALBI, 3, [0, j, 0], { expr: "laugh", armR: "up", holdR: "wcup", armL: "up" }, { f, scale: 0.97, sy: 1 + 0.03 * Math.sin(f / 3.5 * 2) });
+          const mates: [number, number, number][] = [[-0.95, -0.5, 0], [0.95, -0.55, 1]];
+          for (const [x, z, i] of mates) this.fig(st, MATE_ALBI(i), 211 + i, [x, hop(211 + i, 0.3, 3), z], { expr: i % 2 ? "laugh" : "grin", armL: "up", armR: "up" }, { f });
           this.conf(st, f, 0, 0, 0.5, 60, 6); this.flashes(st, f, 0.2);
-          spark([0.45, 2.05 + j, 0.05], 0.3);
+          spark([0.42, 2.25 + j, 0.05], 0.3);
         }
         break;
       }

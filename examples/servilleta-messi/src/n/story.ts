@@ -146,8 +146,8 @@ export const camAt = (id: number, f: number): Cam => {
       { f: 1356, d: 50, e: "s", pos: [0.0, 1.3, 4.2], look: [0, 1.2, 0], fov: 50 },
     ], f); break;
     case 13: cam = path([ // hero low angle: eight golden balls, then the World Cup
-      { f: 1362, pos: [1.0, 0.6, 3.9], look: [0, 1.75, 0], fov: 52, roll: 0.05 },
-      { f: W.cup, e: "cut", pos: [-0.7, 0.6, 3.3], look: [0, 1.8, 0], fov: 48, roll: -0.04 },
+      { f: 1362, pos: [0.3, 0.8, 3.7], look: [0.26, 1.15, 0], fov: 58, roll: 0.03 },
+      { f: W.cup, e: "cut", pos: [0, 0.85, 4.0], look: [0, 1.4, 0], fov: 56, roll: -0.03 },
     ], f, 0.003); break;
     case 14: cam = path([ // the auction room, then the gavel
       { f: 1461, pos: [AX - 1.2, 2.2, 3.0], look: [AX + 0.4, 1.1, -4.0], fov: 54 },

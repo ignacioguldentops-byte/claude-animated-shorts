@@ -34,40 +34,58 @@ const boards = (g: G, x: number, y: number, w: number, h: number, col: string, s
   for (let bx = x; bx < x + w; bx += step) ln(g, [[bx, y + 4], [bx, y + h - 4]], 3.5, "rgba(20,10,30,0.55)");
 };
 
+// a two-handled club cup on a wooden plinth
+const cupT = (g: G, x: number, yb: number, sc: number, col: string) => {
+  rc(g, x - 26 * sc, yb - 30 * sc, 52 * sc, 30 * sc, "#3e2416", 3, 3);
+  for (const s2 of [-1, 1]) { g.beginPath(); g.ellipse(x + s2 * 34 * sc, yb - 98 * sc, 13 * sc, 19 * sc, 0, 0, 6.3); g.lineWidth = 13 * sc; g.strokeStyle = INKC; g.stroke(); g.lineWidth = 6 * sc; g.strokeStyle = col; g.stroke(); }
+  pg(g, [[x - 9 * sc, yb - 30 * sc], [x + 9 * sc, yb - 30 * sc], [x + 5 * sc, yb - 56 * sc], [x - 5 * sc, yb - 56 * sc]], col, 3);
+  pg(g, [[x - 34 * sc, yb - 124 * sc], [x + 34 * sc, yb - 124 * sc], [x + 27 * sc, yb - 84 * sc], [x + 9 * sc, yb - 58 * sc], [x - 9 * sc, yb - 58 * sc], [x - 27 * sc, yb - 84 * sc]], col, 3.5);
+  ln(g, [[x - 20 * sc, yb - 116 * sc], [x - 13 * sc, yb - 80 * sc]], 5 * sc, "rgba(255,255,255,0.65)");
+};
+// clear tube of three tennis balls
+const tubeT = (g: G, x: number, yb: number) => {
+  rc(g, x - 22, yb - 150, 44, 150, "#e3f0ee", 3.5, 8);
+  for (let i = 0; i < 3; i++) { el(g, x, yb - 25 - i * 46, 19, 19, "#d6e84a", 3); g.strokeStyle = "rgba(255,255,255,0.85)"; g.lineWidth = 3; g.beginPath(); g.arc(x - 26, yb - 25 - i * 46, 24, -0.6, 0.6); g.stroke(); }
+  rc(g, x - 25, yb - 166, 50, 20, "#2f7a5a", 3, 5);
+};
 const cafeBackDraw = (g: G, r: () => number, niche: boolean) => {
     const M = 400, Y = (m: number) => (3.3 - m) * M;
-    plaster(g, r, 0, 0, 2800, 1320, "#e9b048", "#f6cf72", "#c98a2e");
-    g.fillStyle = vgrad(g, 0, 400, "rgba(120,50,30,0.28)", "rgba(120,50,30,0)"); g.fillRect(0, 0, 2800, 400);
-    // wainscot
-    boards(g, 0, Y(1.05), 2800, 1.05 * M, "#1f6f6a", 72, r);
-    rc(g, -10, Y(1.12), 2820, 34, "#2c8f86", 4); rc(g, -10, Y(0.14), 2820, 0.14 * M + 10, "#174f4c", 4);
+    // tennis-club bar: sage walls, walnut panelling, a clay-red rail
+    plaster(g, r, 0, 0, 2800, 1320, "#9cc29a", "#bcd9b4", "#78a27c");
+    g.fillStyle = vgrad(g, 0, 400, "rgba(30,60,40,0.22)", "rgba(30,60,40,0)"); g.fillRect(0, 0, 2800, 400);
+    boards(g, 0, Y(1.05), 2800, 1.05 * M, "#6a3c22", 72, r);
+    rc(g, -10, Y(1.12), 2820, 34, "#d9773e", 4); rc(g, -10, Y(0.14), 2820, 0.14 * M + 10, "#3e2416", 4);
     for (let x = 60; x < 2800; x += 360) rc(g, x, Y(0.92), 240, 250, null, 3, 6);
-    // shelving unit
+    // the club's trophy cabinet behind the bar
     const sx = 0.2 * M, sw = 2.9 * M, sy = Y(2.8), shh = 1.62 * M;
     g.fillStyle = "rgba(30,15,40,0.25)"; g.fillRect(sx + 16, sy + 18, sw, shh);
-    rc(g, sx, sy, sw, shh, "#7a4224", 5, 6); rc(g, sx + 22, sy + 22, sw - 44, shh - 44, "#27485a", 4);
-    mottle(g, r, sx + 22, sy + 22, sw - 44, shh - 44, 40, ["#3f7088", "#152c3a"], 30, 120, 0.3);
-    const cols = ["#3f8a4a", "#c9373a", "#e9b93c", "#7a4a8a", "#2f6fb0", "#8a4a22", "#e8e2d0", "#1f5a50", "#d9772e"];
+    rc(g, sx, sy, sw, shh, "#4a2a18", 5, 6); rc(g, sx + 22, sy + 22, sw - 44, shh - 44, "#f1e2c0", 4);
+    mottle(g, r, sx + 22, sy + 22, sw - 44, shh - 44, 40, ["#fff6dc", "#d6c29a"], 30, 120, 0.3);
+    const metals = ["#f2c64a", "#e9b93c", "#cfd6de", "#d9a05a"];
     for (let s = 0; s < 3; s++) {
       const yb = sy + 22 + (s + 1) * ((shh - 44) / 3) - 16;
-      let x = sx + 60;
-      while (x < sx + sw - 60) {
-        const bw = 44 + r() * 26, bh = 150 + r() * 60, k = Math.floor(r() * 3);
-        if (r() < 0.86) bottle(g, x + bw / 2, yb, bw, bh, cols[Math.floor(r() * cols.length)], k, r() < 0.5 ? "#f6ecd2" : "#fff7e6");
-        else { rc(g, x, yb - 70, bw + 14, 70, "#fffdf6", 4, 6); el(g, x + bw + 20, yb - 36, 12, 16, null, 4); }
-        x += bw + 16 + r() * 12;
+      let x = sx + 70, k = s;
+      while (x < sx + sw - 90) {
+        const t = (k + Math.floor(r() * 2)) % 5; k++;
+        if (t === 0 || t === 3) { const sc = 0.95 + r() * 0.45; cupT(g, x + 40 * sc, yb, sc, metals[Math.floor(r() * metals.length)]); x += 92 * sc + 24; }
+        else if (t === 1) { tubeT(g, x + 24, yb); tubeT(g, x + 74, yb); x += 120; }
+        else if (t === 2) { frame(g, x, yb - 150, 120, 150, Math.floor(r() * 3), "#4a2a18"); x += 140; }
+        else { for (let i = 0; i < 3; i++) el(g, x + 22 + i * 40, yb - 20, 20, 20, "#d6e84a", 3); for (let i = 0; i < 2; i++) el(g, x + 42 + i * 40, yb - 56, 20, 20, "#d6e84a", 3); el(g, x + 62, yb - 92, 20, 20, "#d6e84a", 3); x += 150; }
       }
-      rc(g, sx + 10, yb, sw - 20, 20, "#8f5230", 4);
+      rc(g, sx + 10, yb, sw - 20, 20, "#6a3c22", 4);
     }
-    rc(g, sx - 16, sy - 30, sw + 32, 40, "#8f5230", 5, 4);
+    // glass doors: two mullions and glints
+    for (const fx of [sx + sw / 3, sx + (2 * sw) / 3]) rc(g, fx - 8, sy + 10, 16, shh - 20, "#4a2a18", 3);
+    g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 14; for (let i = 0; i < 6; i++) { const x0 = sx + 80 + i * 190; g.beginPath(); g.moveTo(x0, sy + shh - 40); g.lineTo(x0 + 120, sy + 40); g.stroke(); }
+    rc(g, sx - 16, sy - 30, sw + 32, 40, "#6a3c22", 5, 4);
     // pennant string above the shelves
     const py = Y(3.05);
     ln(g, [[40, py], [sx + sw + 60, py + 26]], 3);
-    for (let i = 0; i < 14; i++) { const x = 70 + i * 86, y = py + i * 1.9; pg(g, [[x, y], [x + 62, y + 1.5], [x + 31, y + 78]], i % 2 ? "#fbfbf6" : "#2f8a4a", 3.5); }
+    for (let i = 0; i < 14; i++) { const x = 70 + i * 86, y = py + i * 1.9; pg(g, [[x, y], [x + 62, y + 1.5], [x + 31, y + 78]], i % 2 ? "#fbfbf6" : "#d9773e", 3.5); }
     // clock
     const cx = 3.62 * M, cy = Y(2.62);
     g.fillStyle = "rgba(30,15,40,0.22)"; g.beginPath(); g.arc(cx + 8, cy + 10, 92, 0, 6.3); g.fill();
-    el(g, cx, cy, 92, 92, "#7a4224", 5); el(g, cx, cy, 74, 74, "#fff7e6", 4);
+    el(g, cx, cy, 92, 92, "#2f7a5a", 5); el(g, cx, cy, 74, 74, "#fbfbf6", 4);
     for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; ln(g, [[cx + 58 * Math.cos(a), cy + 58 * Math.sin(a)], [cx + 68 * Math.cos(a), cy + 68 * Math.sin(a)]], i % 3 ? 3 : 5); }
     ln(g, [[cx, cy], [cx + 28, cy - 34]], 6); ln(g, [[cx, cy], [cx - 8, cy - 56]], 4); el(g, cx, cy, 6, 6, INKC, 0);
     if (niche) {
@@ -133,27 +151,46 @@ export const PAINT: Record<string, Painter> = {
   // café side wall: 5.2 m x 3.3 m, 300 px/m
   cafeSide: { w: 1560, h: 990, draw: (g, r) => {
     const M = 300, Y = (m: number) => (3.3 - m) * M;
-    plaster(g, r, 0, 0, 1560, 990, "#e9b048", "#f6cf72", "#c98a2e", 0.75);
-    g.fillStyle = vgrad(g, 0, 300, "rgba(120,50,30,0.28)", "rgba(120,50,30,0)"); g.fillRect(0, 0, 1560, 300);
-    boards(g, 0, Y(1.05), 1560, 1.05 * M, "#1f6f6a", 54, r);
-    rc(g, -10, Y(1.12), 1580, 26, "#2c8f86", 3.5); rc(g, -10, Y(0.14), 1580, 0.14 * M + 10, "#174f4c", 3.5);
+    plaster(g, r, 0, 0, 1560, 990, "#9cc29a", "#bcd9b4", "#78a27c", 0.75);
+    g.fillStyle = vgrad(g, 0, 300, "rgba(30,60,40,0.22)", "rgba(30,60,40,0)"); g.fillRect(0, 0, 1560, 300);
+    boards(g, 0, Y(1.05), 1560, 1.05 * M, "#6a3c22", 54, r);
+    rc(g, -10, Y(1.12), 1580, 26, "#d9773e", 3.5); rc(g, -10, Y(0.14), 1580, 0.14 * M + 10, "#3e2416", 3.5);
     for (let x = 50; x < 1560; x += 270) rc(g, x, Y(0.92), 180, 188, null, 2.5, 5);
-    frame(g, 150, Y(2.5), 150, 190, 1); frame(g, 380, Y(2.2), 120, 120, 0, "#8f5230"); frame(g, 580, Y(2.6), 190, 140, 2); frame(g, 880, Y(2.35), 130, 170, 0); frame(g, 1110, Y(2.6), 170, 130, 1, "#8f5230");
-    rc(g, 1240, Y(1.75), 250, 18, "#7a4224", 3.5); for (let i = 0; i < 4; i++) { rc(g, 1256 + i * 58, Y(1.75) - 74, 44, 74, ["#c9373a", "#e9b93c", "#3f8a4a", "#fffdf6"][i], 3, 5); rc(g, 1252 + i * 58, Y(1.75) - 86, 52, 14, "#d9b24a", 2.5, 3); }
-    rc(g, 150, Y(1.72), 420, 16, "#7a4224", 3.5); for (let i = 0; i < 4; i++) { ln(g, [[200 + i * 100, Y(1.72) + 16], [200 + i * 100, Y(1.72) + 40]], 5); el(g, 200 + i * 100, Y(1.72) + 44, 7, 7, "#d9b24a", 2.5); }
+    // a big window onto the clay courts
+    { const x = 560, y = Y(2.75), w = 640, h = 1.5 * M;
+      g.fillStyle = "rgba(30,15,40,0.22)"; g.fillRect(x + 10, y + 12, w, h);
+      rc(g, x - 18, y - 18, w + 36, h + 36, "#fbf8f0", 5, 4);
+      g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+      g.fillStyle = vgrad(g, y, y + h, "#8fd0f2", "#d8f0fa"); g.fillRect(x, y, w, h);
+      for (let i = 0; i < 9; i++) el(g, x + i * 80 + 20, y + h * 0.42 + (i % 2) * 10, 60, 46, i % 2 ? "#4f9a52" : "#3f8a4a", 3);
+      rc(g, x - 10, y + h * 0.5, w + 20, h * 0.5, "#d9773e", 0); mottle(g, r, x, y + h * 0.5, w, h * 0.5, 20, ["#e98a50", "#c0602e"], 20, 80, 0.3);
+      ln(g, [[x + 60, y + h], [x + 150, y + h * 0.55]], 4, "#ffffff"); ln(g, [[x + w - 60, y + h], [x + w - 150, y + h * 0.55]], 4, "#ffffff"); ln(g, [[x + 150, y + h * 0.55], [x + w - 150, y + h * 0.55]], 4, "#ffffff");
+      rc(g, x + 70, y + h * 0.68, w - 140, 34, "rgba(40,40,60,0.45)", 3); ln(g, [[x + 70, y + h * 0.68], [x + w - 70, y + h * 0.68]], 5, "#ffffff");
+      el(g, x + w * 0.62, y + h * 0.84, 9, 9, "#d6e84a", 2.5);
+      g.restore();
+      for (const fx of [x + w / 2]) rc(g, fx - 9, y, 18, h, "#fbf8f0", 4); rc(g, x, y + h * 0.33 - 8, w, 16, "#fbf8f0", 4); }
+    frame(g, 150, Y(2.5), 150, 190, 1, "#4a2a18"); frame(g, 340, Y(2.2), 120, 120, 0, "#4a2a18");
+    // racket rack
+    rc(g, 1270, Y(2.2), 230, 18, "#6a3c22", 3.5);
+    for (let i = 0; i < 3; i++) { const cx2 = 1310 + i * 75, cy2 = Y(2.2) + 20; el(g, cx2, cy2 + 60, 30, 42, "#f4f1ea", 4); for (let k = -1; k <= 1; k++) { ln(g, [[cx2 + k * 12, cy2 + 22], [cx2 + k * 12, cy2 + 98]], 1.5, "#b9b6bd"); ln(g, [[cx2 - 26, cy2 + 60 + k * 16], [cx2 + 26, cy2 + 60 + k * 16]], 1.5, "#b9b6bd"); } rc(g, cx2 - 6, cy2 + 100, 12, 70, ["#c9373a", "#2f6fb0", "#2f7a5a"][i], 3, 4); }
+    rc(g, 1250, Y(1.6), 260, 16, "#6a3c22", 3.5); for (let i = 0; i < 4; i++) cupT(g, 1290 + i * 62, Y(1.6), 0.5, ["#f2c64a", "#cfd6de", "#e9b93c", "#d9a05a"][i]);
   } },
   cafeFloor: { w: 512, h: 512, draw: (g, r) => {
+    // Barcelona hydraulic tiles: cream ground, clay flower, green corner quarter-circles
     for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) {
-      const c = (x + y) % 2 ? "#efe3c8" : "#3a2a3a"; g.fillStyle = c; g.fillRect(x * 256, y * 256, 256, 256);
-      mottle(g, r, x * 256, y * 256, 256, 256, 14, (x + y) % 2 ? ["#fff7e2", "#cdbd9c"] : ["#5a4660", "#241a26"], 20, 70, 0.3);
-      g.strokeStyle = "rgba(255,255,255,0.18)"; g.lineWidth = 4; g.strokeRect(x * 256 + 8, y * 256 + 8, 240, 240);
+      const X0 = x * 256, Y0 = y * 256, cx = X0 + 128, cy = Y0 + 128;
+      g.fillStyle = "#efe3c8"; g.fillRect(X0, Y0, 256, 256); mottle(g, r, X0, Y0, 256, 256, 10, ["#fff7e2", "#d6c6a4"], 20, 70, 0.3);
+      for (const [qx, qy] of [[X0, Y0], [X0 + 256, Y0], [X0, Y0 + 256], [X0 + 256, Y0 + 256]]) { g.fillStyle = "#2f5a48"; g.beginPath(); g.arc(qx, qy, 64, 0, 6.3); g.fill(); g.fillStyle = "#efe3c8"; g.beginPath(); g.arc(qx, qy, 40, 0, 6.3); g.fill(); g.fillStyle = "#c0603a"; g.beginPath(); g.arc(qx, qy, 22, 0, 6.3); g.fill(); }
+      for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; g.fillStyle = "#c0603a"; g.beginPath(); g.ellipse(cx + 40 * Math.cos(a), cy + 40 * Math.sin(a), 38, 17, a, 0, 6.3); g.fill(); }
+      g.fillStyle = "#2f5a48"; g.beginPath(); g.arc(cx, cy, 18, 0, 6.3); g.fill(); g.fillStyle = "#e9b93c"; g.beginPath(); g.arc(cx, cy, 8, 0, 6.3); g.fill();
     }
-    g.strokeStyle = INKC; g.lineWidth = 5; for (const k of [0, 256, 512]) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, 512); g.moveTo(0, k); g.lineTo(512, k); g.stroke(); }
+    g.strokeStyle = "rgba(60,40,40,0.55)"; g.lineWidth = 3; for (const k of [0, 256, 512]) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, 512); g.moveTo(0, k); g.lineTo(512, k); g.stroke(); }
   } },
   counterFront: { w: 512, h: 512, draw: (g, r) => {
-    g.fillStyle = "#8a4726"; g.fillRect(0, 0, 512, 512); mottle(g, r, 0, 0, 512, 512, 30, ["#b06a3a", "#5a2a14"], 20, 110, 0.25);
-    rc(g, 36, 70, 440, 330, "#9a5530", 5, 8); rc(g, 70, 104, 372, 262, "#7a3e20", 4, 6); ln(g, [[80, 114], [432, 114]], 4, "rgba(255,220,170,0.35)");
-    rc(g, -10, 430, 532, 90, "#3a2a3a", 5); rc(g, -10, 448, 532, 16, "#d9a53a", 3.5); rc(g, -10, -10, 532, 52, "#6e3a1c", 5);
+    // club-green panelled bar with white piping (like court lines) and a brass foot rail
+    g.fillStyle = "#2f6a4a"; g.fillRect(0, 0, 512, 512); mottle(g, r, 0, 0, 512, 512, 30, ["#3f8a5e", "#1f4a34"], 20, 110, 0.25);
+    rc(g, 36, 70, 440, 330, "#357552", 5, 8); ln(g, [[60, 94], [452, 94], [452, 376], [60, 376], [60, 94]], 6, "#f4f1ea"); ln(g, [[256, 94], [256, 376]], 6, "#f4f1ea");
+    rc(g, -10, 430, 532, 90, "#3e2416", 5); rc(g, -10, 448, 532, 16, "#d9a53a", 3.5); rc(g, -10, -10, 532, 52, "#6a3c22", 5);
     g.strokeStyle = INKC; g.lineWidth = 5; g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 512); g.moveTo(512, 0); g.lineTo(512, 512); g.stroke();
   } },
   marble: { w: 512, h: 512, draw: (g, r) => {
@@ -161,7 +198,7 @@ export const PAINT: Record<string, Painter> = {
     for (let i = 0; i < 9; i++) { let x = r() * 512, y = r() * 512; const pts = [[x, y]]; for (let k = 0; k < 6; k++) { x += 20 + r() * 60; y += (r() - 0.5) * 70; pts.push([x, y]); } ln(g, pts, 2 + r() * 2, "rgba(120,100,110,0.35)"); }
   } },
   espresso: { w: 800, h: 520, draw: (g, r) => {
-    rc(g, 10, 60, 780, 450, "#c9373a", 6, 26); mottle(g, r, 10, 60, 780, 450, 20, ["#ef6a5a", "#8a1f26"], 30, 120, 0.25);
+    rc(g, 10, 60, 780, 450, "#aab3bd", 6, 26); mottle(g, r, 10, 60, 780, 450, 20, ["#dfe4e8", "#7a8490"], 30, 120, 0.25);
     rc(g, 60, 20, 680, 70, "#d6dbe0", 5, 10); for (let i = 0; i < 6; i++) { rc(g, 90 + i * 108, -28, 78, 56, "#fffdf6", 4, 8); }
     rc(g, 60, 130, 680, 150, "#dfe4e8", 5, 12); ln(g, [[80, 150], [720, 150]], 6, "rgba(255,255,255,0.8)");
     el(g, 400, 205, 52, 52, "#fff7e6", 5); ln(g, [[400, 205], [428, 180]], 5); for (let i = 0; i < 8; i++) { const a = Math.PI * (0.75 + i * 0.21); ln(g, [[400 + 38 * Math.cos(a), 205 + 38 * Math.sin(a)], [400 + 46 * Math.cos(a), 205 + 46 * Math.sin(a)]], 3); }
@@ -170,7 +207,7 @@ export const PAINT: Record<string, Painter> = {
     rc(g, 50, 440, 700, 50, "#aab2ba", 5, 6); for (let x = 70; x < 740; x += 26) ln(g, [[x, 452], [x, 480]], 3);
     ln(g, [[760, 150], [776, 320], [770, 400]], 9); ln(g, [[760, 150], [776, 320], [770, 400]], 4, "#dfe4e8");
   } },
-  plasterExt: { w: 1024, h: 1024, draw: (g, r) => { plaster(g, r, 0, 0, 1024, 1024, "#e6a56a", "#f4c690", "#c07a48"); } },
+  plasterExt: { w: 1024, h: 1024, draw: (g, r) => { plaster(g, r, 0, 0, 1024, 1024, "#9cc29a", "#bcd9b4", "#78a27c"); } },
   paving: { w: 2048, h: 2048, draw: (g, r) => {
     g.fillStyle = "#6f7288"; g.fillRect(0, 0, 2048, 2048);
     const rows = 12, rh = 2048 / rows;
@@ -192,7 +229,7 @@ export const PAINT: Record<string, Painter> = {
     for (let i = 0; i < 16; i++) pg(g, [[i * 128 + 8, 14], [i * 128 + 120, 14], [i * 128 + 64, 150]], i % 2 ? "#fbfbf6" : "#2f8a4a", 6);
   } },
   awning: { w: 256, h: 256, draw: (g) => { for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? "#fbf3e2" : "#cf3a3a"; g.fillRect(i * 64, 0, 64, 256); } g.strokeStyle = "rgba(36,23,38,0.35)"; g.lineWidth = 3; for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, 256); g.stroke(); } } },
-  doorWood: { w: 256, h: 512, draw: (g, r) => { boards(g, 0, 0, 256, 512, "#2f7a5a", 64, r); rc(g, 20, 30, 216, 200, null, 4, 6); rc(g, 20, 270, 216, 210, null, 4, 6); el(g, 216, 262, 10, 10, "#d9a53a", 3); } },
+  doorWood: { w: 256, h: 512, draw: (g, r) => { boards(g, 0, 0, 256, 512, "#6a3c22", 64, r); rc(g, 20, 30, 216, 200, null, 4, 6); rc(g, 20, 270, 216, 210, null, 4, 6); el(g, 216, 262, 10, 10, "#d9a53a", 3); } },
   // the mural wall that closes the alley: 5.6 m x 13 m, 180 px/m
   mural: { w: 1008, h: 2340, draw: (g, r) => {
     const M = 180, Y = (m: number) => (13 - m) * M;

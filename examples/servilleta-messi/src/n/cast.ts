@@ -47,9 +47,10 @@ export const DIRECTOR: Char = { hair: { k: "side", c: "#4a3426" }, glasses: "rou
 export const AGENT1: Char = { hair: { k: "bald", c: "#2a1d16" }, stache: "#2a1d16", top: "#8a5a34", vest: "#6a4226", tie: "#e9b93c", collar: "#fbfbf6", legs: "#5a3b22", build: "stout" };
 export const AGENT2: Char = { hair: { k: "curly", c: "#16100c" }, glasses: "sun", top: "#2c3a5a", tie: "#62b5e5", collar: "#fbfbf6", legs: "#2c3a5a" };
 export const KID: Char = { hair: { k: "short", c: "#5a3b22" }, top: "#c9373a", pat: { k: "v", c: "#241726" }, shorts: "#241726", bare: true, socks: "#c9373a", legs: "#241726", build: "kid", skin: "#fbefe2" };
-export const KID_BARCA: Char = { ...KID, top: GRANA, pat: { k: "v", c: BLAU }, shorts: BLAU, socks: BLAU };
-export const STAR: Char = { hair: { k: "side", c: "#5a3b22" }, top: GRANA, pat: { k: "v", c: BLAU }, num: "10", shorts: BLAU, bare: true, socks: BLAU, legs: BLAU, skin: "#fbefe2" };
-export const STAR_ALBI: Char = { ...STAR, top: "#8ec9ee", pat: { k: "v", c: "#ffffff" }, shorts: "#241726", socks: "#ffffff", legs: "#241726" };
+export const KID_BARCA: Char = { ...KID, top: GRANA, pat: { k: "v", c: BLAU }, shorts: BLAU, socks: BLAU, num: "10", name: "MESSI" };
+export const STAR: Char = { hair: { k: "side", c: "#4a3020" }, beard: "#4a3020", top: GRANA, pat: { k: "v", c: BLAU }, num: "10", name: "MESSI", shorts: BLAU, bare: true, socks: BLAU, legs: BLAU, skin: "#fbefe2" };
+export const STAR_ALBI: Char = { ...STAR, top: "#8ec9ee", pat: { k: "v", c: "#ffffff" }, shorts: "#241726", socks: "#ffffff", legs: "#241726", cape: ["#17141d", "#e9b93c"] };
+export const MATE_ALBI = (i: number): Char => ({ ...STAR_ALBI, beard: undefined, cape: undefined, name: undefined, num: ["7", "11", "23", "24", "9"][i % 5], hair: { k: (["curly", "short", "long", "bald", "tuft"] as const)[i % 5], c: ["#2a1b17", "#5a3b22", "#c9a05a", "#2a1b17", "#3a2a1f"][i % 5] }, skin: ["#fbefe2", "#e9c6a0", "#fbf1e6", "#c98d62", "#fbefe2"][i % 5], build: i % 3 === 2 ? "stout" : "adult" });
 export const AUCTIONEER: Char = { hair: { k: "bald", c: "#b9b6bd" }, stache: "#b9b6bd", glasses: "round", top: "#fbfbf6", vest: "#241726", bow: "#241726", buttons: "#e8c45a", legs: "#241726", build: "stout" };
 /** big kids in other clubs' kits (generic colours) */
 export const bigKid = (i: number): Char => ({ hair: { k: (["short", "tuft", "side", "curly"] as const)[i % 4], c: ["#2a1d16", "#7a4a2a", "#c9a24a", "#16100c"][i % 4] }, top: ["#2f8a4a", "#e9b93c", "#3f8fc9", "#8a5ac9"][i % 4], pat: i % 2 ? { k: "h", c: "#fbfbf6" } : undefined, shorts: "#fbfbf6", bare: true, socks: ["#2f8a4a", "#e9b93c", "#3f8fc9", "#8a5ac9"][i % 4], legs: "#fbfbf6", skin: ["#fbefe2", "#e2b088", "#f1c9a2", "#c99067"][i % 4] });

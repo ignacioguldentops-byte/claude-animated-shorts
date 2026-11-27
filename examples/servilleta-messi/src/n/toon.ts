@@ -950,12 +950,12 @@ export const fxBlob = (p: Pen, col: string) => {
 // ===================== figure v3: richer cast =====================
 // White bean heads, bigger features, glasses, hats, moustaches, patterned clothes with garments, held props, kneel/sit.
 export type ArmK = "hang" | "hip" | "up" | "wave" | "front" | "chin" | "point" | "pray" | "mouth" | "reach" | "low" | [number, number] | [number, number, number];
-export type Hold = "cup" | "camera" | "wallet" | "hair" | "frame" | "cane" | "flower" | "coin" | "rag" | "candle" | "phone" | "bag" | "trophy" | "tweezer" | "napkin" | "paddle" | "gavel" | "pills" | "glass" | "pad" | "pen" | "stack" | "goldball" | "racket";
+export type Hold = "cup" | "camera" | "wallet" | "hair" | "frame" | "cane" | "flower" | "coin" | "rag" | "candle" | "phone" | "bag" | "trophy" | "tweezer" | "napkin" | "paddle" | "gavel" | "pills" | "glass" | "pad" | "pen" | "stack" | "goldball" | "racket" | "finger" | "wcup";
 export type Char = {
   skin?: string; build?: Build; head?: number;
   hair?: { k: "curly" | "short" | "bun" | "bald" | "side" | "long" | "tuft"; c: string };
   hat?: { k: "coppola" | "scarf" | "beanie" | "bucket" | "cap" | "chef"; c: string; c2?: string };
-  glasses?: "round" | "sun"; stache?: string; stubble?: boolean; earring?: string;
+  glasses?: "round" | "sun"; stache?: string; stubble?: boolean; earring?: string; beard?: string; cape?: [string, string]; name?: string;
   top: string; pat?: { k: "v" | "h" | "check" | "dots" | "flower"; c: string };
   apron?: string; vest?: string; bow?: string; tie?: string; collar?: string; scarf?: [string, string]; num?: string; buttons?: string;
   pocket?: boolean; necklace?: string; skirt?: string;
@@ -964,7 +964,7 @@ export type Char = {
 export type Pose = {
   expr?: Expr; facing?: -1 | 0 | 1; look?: number; blink?: number; tilt?: number; headTilt?: number;
   legs?: "stand" | "walk" | "run" | "kneel" | "sit"; phase?: number; armL?: ArmK; armR?: ArmK; holdL?: Hold; holdR?: Hold;
-  back?: boolean; sweat?: number; light?: number; seed?: number;
+  back?: boolean; sweat?: number; light?: number; seed?: number; liftL?: number; liftR?: number;
 };
 // hand [dx outward, dy down] in u from the shoulder, elbow bulge outward
 const ARMS: Record<string, [number, number, number]> = {
@@ -1004,6 +1004,13 @@ const holdDraw = (p: Pen, k: Hold, x: number, y: number, u: number, s: number) =
     case "stack": for (let i = 0; i < 7; i++) p.poly(rrect(x - 17 * u + (i % 2) * u, y - (i + 1) * 5.5 * u, x + 17 * u + (i % 2) * u, y - i * 5.5 * u, u), "#fffdf8", 1.4 * u); break;
     case "goldball": p.ell(x, y - 14 * u, 14 * u, 14 * u, "#f2c64a", o); p.arc(x, y - 14 * u, 7 * u, 7 * u, 200, 380, 1.6 * u, "#a87a1c"); p.stroke([[x - 6 * u, y - 22 * u], [x - 2 * u, y - 25 * u]], 2 * u, "#fff3b0"); break;
     case "racket": p.stroke([[x, y + 4 * u], [x, y - 20 * u]], 3.6 * u, "#c9373a"); p.ell(x, y - 38 * u, 13 * u, 18 * u, "#f4f1ea", o); for (const d of [-6, 0, 6]) { p.stroke([[x + d * u, y - 54 * u], [x + d * u, y - 22 * u]], 0.9 * u, "#b9b6bd"); p.stroke([[x - 12 * u, y - 38 * u + d * u * 1.5], [x + 12 * u, y - 38 * u + d * u * 1.5]], 0.9 * u, "#b9b6bd"); } break;
+    case "finger": p.stroke([[x, y + 4 * u], [x + s * 1.5 * u, y - 13 * u]], 6.4 * u, INK); p.stroke([[x, y + 4 * u], [x + s * 1.5 * u, y - 13 * u]], 3.6 * u, "#fbefe2"); break;
+    case "wcup": { // the World Cup: malachite-banded base, gold spiral body, globe on top
+      p.poly(rrect(x - 13 * u, y - 10 * u, x + 13 * u, y + 4 * u, 2 * u), "#e9b93c", o); for (const d of [-6, 0]) p.band([[x - 12 * u, y + d * u - 2 * u], [x + 12 * u, y + d * u - 2 * u]], "#2f8a5a", 2.6 * u, 0, "butt");
+      p.poly([[x - 11 * u, y - 10 * u], [x + 11 * u, y - 10 * u], [x + 6 * u, y - 30 * u], [x + 14 * u, y - 48 * u], [x - 14 * u, y - 48 * u], [x - 6 * u, y - 30 * u]], "#f2c64a", o);
+      p.stroke([[x - 9 * u, y - 14 * u], [x + 5 * u, y - 28 * u], [x - 7 * u, y - 44 * u]], 1.8 * u, "#a87a1c"); p.stroke([[x + 8 * u, y - 14 * u], [x - 3 * u, y - 30 * u], [x + 9 * u, y - 44 * u]], 1.8 * u, "#a87a1c");
+      p.ell(x, y - 60 * u, 14 * u, 14 * u, "#f2c64a", o); p.arc(x, y - 60 * u, 14 * u, 5 * u, 0, 360, 1.5 * u, "#a87a1c"); p.arc(x, y - 60 * u, 6 * u, 14 * u, 0, 360, 1.5 * u, "#a87a1c");
+      p.stroke([[x - 7 * u, y - 66 * u], [x - 3 * u, y - 70 * u]], 2.2 * u, "#fff3b0"); break; }
     case "trophy": p.poly([[x - 12 * u, y - 46 * u], [x + 12 * u, y - 46 * u], [x + 8 * u, y - 22 * u], [x + 2.5 * u, y - 16 * u], [x + 2.5 * u, y - 6 * u], [x + 9 * u, y - 2 * u], [x - 9 * u, y - 2 * u], [x - 2.5 * u, y - 6 * u], [x - 2.5 * u, y - 16 * u], [x - 8 * u, y - 22 * u]], "#f2c64a", o);
       for (const d of [-1, 1]) p.arc(x + d * 13 * u, y - 36 * u, 5 * u, 7 * u, d > 0 ? -90 : 90, d > 0 ? 90 : 270, 2.2 * u); p.stroke([[x - 6 * u, y - 40 * u], [x - 4 * u, y - 28 * u]], 2 * u, "#fff3b0"); break;
   }
@@ -1029,9 +1036,9 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
   else {
     const L = walk ? (legs === "run" ? 72 : 40) : 0;
     for (const [s, ph] of [[-1, 0], [1, 0.5]] as const) {
-      const sn = Math.sin(two * (phase + ph)), up = Math.max(0, sn) * L;
-      const hx = 300 + s * 15 * u, fx = 300 + s * 22 * u + (walk ? facing * 12 * u * Math.cos(two * (phase + ph)) : 0), fy = sole - 4 * u - up;
-      const k: P2 = [(hx + fx) / 2 + s * (1.5 * u + up * 0.16), (hipY + fy) / 2 - up * 0.08];
+      const sn = Math.sin(two * (phase + ph)), lift = (s < 0 ? q.liftL : q.liftR) ?? 0, up = Math.max(0, sn) * L + lift * 0.6 * Bd.legs * HH;
+      const hx = 300 + s * 15 * u, fx = 300 + s * (22 - 16 * lift) * u + (walk ? facing * 12 * u * Math.cos(two * (phase + ph)) : 0), fy = sole - 4 * u - up;
+      const k: P2 = [(hx + fx) / 2 + s * (1.5 * u + up * (0.16 + 0.34 * lift)), (hipY + fy) / 2 - up * (0.08 + 0.3 * lift)];
       drawLeg(curve([hx, hipY], k, [fx, fy]));
       const out = facing || s; foot([fx - out * 3 * u, fy], [fx + out * 13 * u, fy + 0.5 * u]);
     }
@@ -1080,7 +1087,7 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
       if (c.pocket) { p.poly(rrect(tcx + 0.28 * T.a, tcy - 0.12 * T.b, tcx + 0.62 * T.a, tcy + 0.1 * T.b, 2 * u), mix(c.vest ?? c.top, "#ffffff", 0.12), 1.5 * u); }
       if (c.necklace) for (let i = 0; i <= 8; i++) { const a = rad(20 + i * 17.5); p.dot(tcx + 24 * u * Math.cos(a), chin + 0.02 * HH + 14 * u * Math.sin(a), 2.4 * u, c.necklace); }
     }
-    if (c.num) { const [nx, ny] = p.P(tcx, tcy + 0.12 * T.b); g.save(); g.font = `900 ${Math.round(0.62 * T.b)}px Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = 2.4 * u; g.strokeStyle = INK; g.fillStyle = "#ffffff"; g.strokeText(c.num, nx, ny); g.fillText(c.num, nx, ny); g.restore(); }
+    if (c.num) { const nm = back && c.name, [nx, ny] = p.P(tcx, tcy + (nm ? 0.3 : 0.12) * T.b); g.save(); g.font = `900 ${Math.round((nm ? 0.5 : 0.62) * T.b)}px Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = 2.4 * u; g.strokeStyle = INK; g.fillStyle = "#ffffff"; g.strokeText(c.num, nx, ny); g.fillText(c.num, nx, ny); g.restore(); }
     // form shade toward the far side + a soft light rim just inside it
     const lx = Math.cos(light), ly = Math.sin(light), [ax, ay] = p.P(tcx + lx * T.a, tcy + ly * T.b), [bx, by] = p.P(tcx - lx * T.a, tcy - ly * T.b);
     const lg = g.createLinearGradient(ax, ay, bx, by);
@@ -1091,6 +1098,15 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
   if (!back && c.bow) { const y = chin + 0.1 * HH; for (const s of [-1, 1]) p.poly([[tcx, y], [tcx + s * 17 * u, y - 9 * u], [tcx + s * 17 * u, y + 9 * u]], c.bow, 2 * u); p.ell(tcx, y, 4.5 * u, 5 * u, c.bow, 2 * u); }
   if (c.scarf) { const y = chin + 0.08 * HH, [c1, c2] = c.scarf; p.band([[tcx - 0.8 * T.a, y - 2 * u], [tcx, y + 5 * u], [tcx + 0.8 * T.a, y - 2 * u]], c1, 15 * u, 2 * u, "round");
     const tx = tcx + 0.42 * T.a; p.poly(rrect(tx - 9 * u, y, tx + 9 * u, y + 0.62 * HH, 2 * u), c1, 2 * u); for (let i = 0; i < 4; i++) p.band([[tx - 8 * u, y + (0.1 + i * 0.14) * HH], [tx + 8 * u, y + (0.1 + i * 0.14) * HH]], c2, 0.06 * HH, 0, "butt"); }
+  if (c.cape) { // a sheer black cloak with gold trim, open at the front
+    const [cc, ct] = c.cape, yb = Math.min(sole - 0.3 * HH, torsoBot + 0.75 * HH);
+    for (const s of [-1, 1]) {
+      const pts: P2[] = [[tcx + s * (back ? 0.05 : 0.3) * T.a, chin + 0.02 * HH], [tcx + s * 0.95 * T.a, chin + 0.1 * HH], [tcx + s * 1.25 * T.a, torsoBot], [tcx + s * 1.32 * T.a, yb], [tcx + s * (back ? 0.05 : 0.5) * T.a, yb + 4 * u]];
+      g.save(); g.globalAlpha = 0.9; p.poly(pts, cc, 0); g.restore(); p.poly(pts, null, ow * 0.8);
+      if (!back) p.band([[tcx + s * 0.3 * T.a, chin + 0.02 * HH], [tcx + s * 0.5 * T.a, yb + 2 * u]], ct, 5 * u, 1.4 * u, "butt");
+    }
+  }
+  if (back && c.name) { const [nx, ny] = p.P(tcx, tcy - 0.2 * T.b); g.save(); g.font = `900 ${Math.round(0.3 * T.b)}px Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = 1.8 * u; g.strokeStyle = INK; g.fillStyle = "#ffffff"; g.strokeText(c.name, nx, ny); g.fillText(c.name, nx, ny); g.restore(); }
   for (const a of arms) if (a.front) drawArm(a);
   // ---- head ----
   const Ah = A + headTilt, [cpx, cpy] = rotAbout([300, chin], rad(A), [300, hipY]);
@@ -1159,6 +1175,13 @@ export const figure = (p: Pen, c: Char, q: Pose = {}) => {
     if (!back) {
     const brim = !!ht && ht.k !== "scarf", fu = W * 1.08 / 100, fx = cx + 7 * fu * f, ex = 13 * fu, gr = 15.5 * fu;
     if (c.glasses === "round") for (const s of [-1, 1]) p.ell(fx + s * (ex + 2.5 * fu), hc, gr, gr, "#f2f8ff", 0);
+    if (c.beard) { // full beard: the lower part of the head, closed by an arch under the cheeks
+      const n = hp.length, keep = ([, y]: P2) => y > hc + 0.02 * H.b, st = Math.max(0, hp.findIndex((q0, i) => keep(q0) && !keep(hp[(i + n - 1) % n])));
+      const low = [...hp.slice(st), ...hp.slice(0, st)].filter(keep).map(([x, y]) => [cx + (x - cx) * 1.035, hc + (y - hc) * 1.035] as P2);
+      const bd: P2[] = [...low, ...curve(low[low.length - 1], [cx + 7 * u * f, hc + 0.62 * H.b], low[0], 10)];
+      p.shadedFill(bd, c.beard, mul(c.beard, SH_FELT), light, H.a, 0.35); p.poly(bd, null, ow * 0.7);
+      for (let i = 0; i < 7; i++) p.arc(cx + (rnd(seed + i, 51) - 0.5) * 1.2 * H.a, hc + (0.55 + 0.3 * rnd(seed + i, 52)) * H.b, 7 * u, 5 * u, 20, 160, 1.6 * u, shade(c.beard, 1.6));
+    }
     faceFront(p, cx, hc, W * 1.08, expr, f, look, blink, brim, c.glasses === "round" ? "#f2f8ff" : skin, undefined, false);
     if (c.glasses) {
       const gx = (s: number) => fx + s * (ex + 2.5 * fu);

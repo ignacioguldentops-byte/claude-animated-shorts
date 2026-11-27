@@ -31,13 +31,13 @@ export function buildCafe(R: THREE.Object3D): SetRefs {
   const wallOld = A(wall(CX - 3.5, -5, CX + 3.5, -5, 0, 3.3), lam("cafeBack0", () => ({ map: T("cafeBack0") })));
   A(wall(CX - 3.5, 0.15, CX - 3.5, -5, 0, 3.3), lam("cafeSide", () => ({ map: T("cafeSide") })));
   A(wall(CX + 3.5, -5, CX + 3.5, 0.15, 0, 3.3, -1), lam("cafeSideR", () => ({ map: TR("cafeSide") })));
-  A(ceil(CX - 3.5, CX + 3.5, -5, 0.15, 3.3), lam("cCeil", () => ({ color: "#f1dfb6" })));
+  A(ceil(CX - 3.5, CX + 3.5, -5, 0.15, 3.3), lam("cCeil", () => ({ color: "#f4efe2" })));
   for (const z of [-4.1, -2.6, -1.1]) A(box(CX - 3.5, 3.08, z - 0.09, CX + 3.5, 3.3, z + 0.09), dwood);
   // front wall with a window (x -2.6..-0.4, y 0.9..2.2) and the door (x 0.6..1.9, y < 2.3)
   const ext = lam("cExt", () => ({ map: TR("plasterExt") }));
   for (const [x0, x1, y0, y1] of [[-3.5, -2.6, 0, 3.3], [-2.6, -0.4, 0, 0.9], [-2.6, -0.4, 2.2, 3.3], [-0.4, 0.6, 0, 3.3], [0.6, 1.9, 2.3, 3.3], [1.9, 3.5, 0, 3.3]])
     A(box(CX + x0, y0, 0, CX + x1, y1, 0.15, 4), ext, true);
-  const green = lam("cGreen", () => ({ color: "#2f7a5a" }));
+  const green = lam("cGreen", () => ({ color: "#5a3420" }));
   for (const [x0, x1, y0, y1] of [[-2.66, -0.34, 0.84, 0.92], [-2.66, -0.34, 2.18, 2.26], [-2.66, -2.58, 0.9, 2.2], [-0.42, -0.34, 0.9, 2.2], [-1.53, -1.47, 0.9, 2.2], [0.54, 0.62, 0, 2.3], [1.88, 1.96, 0, 2.3], [0.54, 1.96, 2.28, 2.36]])
     A(box(CX + x0, y0, -0.03, CX + x1, y1, 0.18), green);
   A(box(CX + 0.54, 0, 0.15, CX + 0.6, 2.28, 1.4), lam("doorWood", () => ({ map: T("doorWood") })));
@@ -45,14 +45,14 @@ export function buildCafe(R: THREE.Object3D): SetRefs {
   A(box(CX - 3.4, 0, -4.0, CX - 0.5, 1.08, -3.35, 1), lam("counter", () => ({ map: TR("counterFront") })));
   A(box(CX - 3.45, 1.08, -4.06, CX - 0.44, 1.15, -3.29, 1.5), lam("marble", () => ({ map: TR("marble") })));
   A(box(CX - 3.45, 0, -5, CX - 0.4, 0.95, -4.62), wood); A(box(CX - 3.46, 0.95, -5, CX - 0.38, 1.0, -4.6), dwood);
-  A(box(CX - 3.1, 1.0, -4.98, CX - 2.2, 1.56, -4.62), lam("espBody", () => ({ color: "#c9373a" })));
+  A(box(CX - 3.1, 1.0, -4.98, CX - 2.2, 1.56, -4.62), lam("espBody", () => ({ color: "#9aa3ad" })));
   A(wall(CX - 3.1, -4.615, CX - 2.2, -4.615, 1.0, 1.56), lam("espresso", () => ({ map: T("espresso") })));
   for (let i = 0; i < 5; i++) { A(cyl(0.045, 0.035, 0.07, CX - 3.0 + i * 0.17, 1.6, -4.8, 12), white); }
   // things on the bar: cups + saucers, a jar, a little bell
   for (const [dx, dz] of [[-1.0, -3.6], [-2.5, -3.7]]) { A(cyl(0.085, 0.085, 0.012, CX + dx, 1.157, dz, 16), white); A(cyl(0.045, 0.035, 0.065, CX + dx, 1.195, dz, 12), white); }
   A(cyl(0.07, 0.07, 0.2, CX - 3.1, 1.25, -3.65, 14), lam("cJar", () => ({ color: "#bfe3f5" }))); A(cyl(0.075, 0.075, 0.03, CX - 3.1, 1.365, -3.65, 14), brass);
   // bar stools
-  for (const dx of [-2.9, -2.0, -1.1]) { A(cyl(0.17, 0.17, 0.07, CX + dx, 0.75, -3.0, 18), lam("cStool", () => ({ color: "#cf3a3a" }))); A(cyl(0.025, 0.025, 0.72, CX + dx, 0.36, -3.0, 8), iron); A(cyl(0.2, 0.22, 0.03, CX + dx, 0.015, -3.0, 18), iron); const ring = new THREE.TorusGeometry(0.13, 0.012, 6, 18); ring.rotateX(Math.PI / 2); ring.translate(CX + dx, 0.3, -3.0); A(ring, brass); }
+  for (const dx of [-2.9, -2.0, -1.1]) { A(cyl(0.17, 0.17, 0.07, CX + dx, 0.75, -3.0, 18), lam("cStool", () => ({ color: "#2f7a5a" }))); A(cyl(0.025, 0.025, 0.72, CX + dx, 0.36, -3.0, 8), iron); A(cyl(0.2, 0.22, 0.03, CX + dx, 0.015, -3.0, 18), iron); const ring = new THREE.TorusGeometry(0.13, 0.012, 6, 18); ring.rotateX(Math.PI / 2); ring.translate(CX + dx, 0.3, -3.0); A(ring, brass); }
   // tables + chairs near the front
   for (const [dx, dz] of [[2.45, -1.3], [-2.3, -1.25]]) {
     A(cyl(0.4, 0.4, 0.045, CX + dx, 0.75, dz, 24), lam("marble", () => ({ map: TR("marble") }))); A(cyl(0.03, 0.03, 0.73, CX + dx, 0.365, dz, 8), iron); A(cyl(0.2, 0.24, 0.03, CX + dx, 0.015, dz, 16), iron);
@@ -67,8 +67,8 @@ export function buildCafe(R: THREE.Object3D): SetRefs {
   // hanging lamps (bulbs are HDR -> bloom; the light itself comes from world.ts point lights)
   for (const [dx, dz] of [[-2.6, -3.68], [-1.2, -3.68], [0.9, -2.2]]) {
     A(box(CX + dx - 0.01, 2.62, dz - 0.01, CX + dx + 0.01, 3.3, dz + 0.01), iron);
-    A(cyl(0.05, 0.3, 0.24, CX + dx, 2.52, dz, 20, true), lam("cShade", () => ({ color: "#1f6f6a", side: THREE.DoubleSide })));
-    const b = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 8), hot([7, 5.2, 2.6])); b.position.set(CX + dx, 2.42, dz); b.layers.set(NOINK); R.add(b);
+    A(cyl(0.035, 0.07, 0.07, CX + dx, 2.62, dz, 14), brass);
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.15, 18, 12), hot([2.6, 2.4, 1.9])); b.position.set(CX + dx, 2.46, dz); b.layers.set(NOINK); R.add(b);
   }
   // shrine (3D parts): golden frame, lace shelf, candles; the "30 years later" extras
   const shrine = new THREE.Group(), shrineOld = new THREE.Group(); R.add(shrine, shrineOld);

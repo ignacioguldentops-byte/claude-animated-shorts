@@ -141,6 +141,10 @@ at(sfx, scratch(2.6), F(1003), 1.0); at(sfx, scratch(0.25), F(1093), 1.0); at(sf
 at(sfx, sparkle(), F(1112), 0.8)
 at(sfx, pop(), F(1168), 0.8)                                        # ?
 at(sfx, boing(), F(W_PAID), 0.7); at(sfx, sparkle(), F(W_PAID + 10), 0.8)
+# football: a tap per dribbling stride, then the keepie-ups (foot, foot, knee, head, foot, big kick up, trap)
+for f in np.arange(433 + 3.5, 545, 7): at(sfx, thud(230, 0.06), F(f), 0.22)
+for f, g_, fr in ((1229, 0.4, 240), (1241, 0.4, 240), (1253, 0.32, 180), (1266, 0.42, 150), (1281, 0.4, 240), (1293, 0.55, 210), (1344, 0.45, 200)): at(sfx, thud(fr, 0.08), F(f), g_)
+at(sfx, whoosh(0.4, 600, 3000), F(1294), 0.45); at(sfx, thud(200, 0.07), F(1355), 0.3); at(sfx, thud(200, 0.05), F(1360), 0.15)
 for i in range(8): at(sfx, pop(), F(1372 + i * 5.5), 0.45); at(sfx, clink((2637 * 2 ** (i / 12), 3951), 0.08), F(1372 + i * 5.5), 0.5)
 at(sfx, sparkle(), F(1424), 1.0); at(sfx, thud(80, 0.3), F(1424), 0.9)
 at(sfx, knock(), F(1528), 1.5); coinrain(1528, 1560, 0.55); at(sfx, sparkle(), F(1530), 0.7)
